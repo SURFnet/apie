@@ -1,0 +1,23 @@
+seeds:
+  - method: get
+    path: /courses
+  - method: get
+    path: /programs
+rules:
+- match:
+    - [request, method, get]
+    - [request, path, /courses]
+    - [response, body, pageNumber, ?pageNumber]
+    - [response, body, hasNextPage, true]
+  generates:
+    - method: get
+      path: /courses?pageNumber={(inc ?pageNumber)}
+- match:
+    - [request, method, get]
+    - [request, path, /courses]
+    - [response, body, items, "?i", courseId, "?courseId"]
+  generates:
+    - method: get
+      path: /courses/{?courseId}
+    - method: get
+      path: /courses/{?courseId}/offerings
