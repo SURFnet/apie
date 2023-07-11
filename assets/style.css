@@ -1,0 +1,56 @@
+html {
+    font-family: sans-serif;
+    font-size: 1rem;
+}
+
+dl > div {
+    margin-bottom: 1em;
+}
+
+dd {
+    margin-top: .5em;
+    margin-inline-start: 1em;
+}
+
+dt {
+    font-style: italic;
+}
+ul, ol {
+    margin: 1em;
+    padding: 0;
+}
+
+li {
+    margin-bottom: .5em;
+}
+
+section {
+    margin: 2em 1em 0 1em;
+}
+h2, h3, h4 {
+    margin-left: -1rem;
+}
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.3rem; }
+
+summary, div.details {
+    margin-bottom: .5em;
+}
+
+pre, code {
+    background: #eee;
+}
+pre {
+    border-radius: .5em;
+    padding: 1em;
+    overflow: auto;
+}
+q {
+    font-style: italic;
+}
+.interaction-summary > span,
+span.schema-path,
+span.schema-keyword {
+    font-family: monospace;
+}

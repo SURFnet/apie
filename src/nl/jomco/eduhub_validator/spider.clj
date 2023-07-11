@@ -1,31 +1,31 @@
-(ns nl.jomco.eduhub-validator
-  (:require [nl.jomco.spider :as spider]
-            [nl.jomco.openapi.v3.validator :as validator]
-            [nl.jomco.openapi.v3.path-matcher :refer [paths-matcher]]
+(ns nl.jomco.eduhub-validator.spider
+  (:require [clojure.data.json :as json]
+            [clojure.edn :as edn]
             [clojure.tools.cli :refer [parse-opts]]
-            [ring.middleware.params :as params]
-            [clj-yaml.core :as yaml]
-            [clojure.data.json :as json]))
+            [nl.jomco.openapi.v3.path-matcher :refer [paths-matcher]]
+            [nl.jomco.openapi.v3.validator :as validator]
+            [nl.jomco.spider :as spider]
+            [ring.middleware.params :as params]))
 
-(defn read-yaml
+(defn read-edn
   [path]
   {:pre [path]}
-  (yaml/parse-string (or (slurp path)
-                         (throw (ex-info (str "Can't read " path)
-                                         {:path path})))))
+  (edn/read-string (or (slurp path)
+                       (throw (ex-info (str "Can't read " path)
+                                       {:path path})))))
+
 (defn read-spec
   [spec-path]
-   (-> spec-path
-       slurp
-       (json/read-str {:key-fn keyword})))
+  (-> spec-path
+      slurp
+      (json/read-str)))
 
 (defn fixup-interaction
-  "Convert spider interaction to format expected by validator"
+  "Convert spider interaction to format expected by validator."
   [{:keys [request response]}]
   {:request  (-> request
                  (params/assoc-query-params "UTF-8"))
-   :response (-> response
-                 (assoc :body (json/read-str (json/write-str (response :body)) {:key-fn keyword})))})
+   :response response})
 
 (def cli-options
   [["-o" "--openapi OPENAPI-PATH" "OpenAPI specification"
@@ -37,14 +37,14 @@
 
 (defn spider-and-validate
   [{:keys [openapi rules base-url]}]
-  (let [{:keys [rules seeds]} (read-yaml rules)
+  (let [{:keys [rules seeds]} (read-edn rules)
         seeds                 (map (fn [{:keys [path] :as seed}]
                                      (assoc seed :url (spider/make-url base-url path)))
                                    seeds)
         openapi-spec          (read-spec openapi)
         validate              (-> (validator/validator-context openapi-spec {})
                                   (validator/interaction-validator))
-        matcher               (paths-matcher (keys (:paths openapi-spec)))
+        matcher               (paths-matcher (keys (get openapi-spec "paths")))
         op-path               (fn [interaction]
                                 (when-let [template (:template (matcher (:uri (:request interaction))))]
                                   [:paths template (:method (:request interaction))]))]
@@ -58,11 +58,16 @@
                       :issues (validate % [])
                       :operation-path (op-path %))))))
 
+(defn wash-interaction [interaction]
+  (-> interaction
+      (update :response dissoc :http-client) ;; TODO move to spider
+      ))
+
 (defn -main
   [& args]
-  (let [{:keys [errors summary options arguments]} (parse-opts args cli-options)]
+  (let [{:keys [errors summary options]} (parse-opts args cli-options)]
     (when (seq errors)
       (println errors)
       (println summary)
       (System/exit 1))
-    (prn (spider-and-validate options))))
+    (prn (map wash-interaction (spider-and-validate options)))))
