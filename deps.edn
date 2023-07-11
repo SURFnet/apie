@@ -1,5 +1,6 @@
 {:deps
- {ht.sr.jomco/spider            {:git/sha "15df14ccd47ca67b6a15a79bf1eb5975908d1ae9"}
+ {nl.jomco/spider               {:git/url "https://git.sr.ht/~jomco/spider"
+                                 :git/sha "15df14ccd47ca67b6a15a79bf1eb5975908d1ae9"}
   nl.jomco/openapi-v3-validator {:mvn/version "0.1.0-SNAPSHOT"}
   org.clojure/tools.cli         {:mvn/version "1.0.219"}
   clj-commons/clj-yaml          {:mvn/version "1.0.26"}}}
