@@ -6,4 +6,4 @@
   nl.jomco/openapi-v3-validator  {:git/url "https://git.sr.ht/~jomco/openapi-v3-validator"
                                   :git/sha "2859707888cbd656aa530964361ce8f9459186c5"}
   nl.jomco/spider                {:git/url "https://git.sr.ht/~jomco/spider"
-                                  :git/sha "15df14ccd47ca67b6a15a79bf1eb5975908d1ae9"}}}
+                                  :git/sha "28d5622803eada27f1469da7ed9bac0389f2b8ae"}}}

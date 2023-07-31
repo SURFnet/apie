@@ -58,11 +58,6 @@
                       :issues (validate % [])
                       :operation-path (op-path %))))))
 
-(defn wash-interaction [interaction]
-  (-> interaction
-      (update :response dissoc :http-client) ;; TODO move to spider
-      ))
-
 (defn -main
   [& args]
   (let [{:keys [errors summary options]} (parse-opts args cli-options)]
@@ -70,4 +65,4 @@
       (println errors)
       (println summary)
       (System/exit 1))
-    (prn (map wash-interaction (spider-and-validate options)))))
+    (prn (spider-and-validate options))))
