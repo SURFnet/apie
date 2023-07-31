@@ -41,6 +41,29 @@
 (def report-title "SURFeduhub validation report")
 (def css-resource "style.css")
 
+(defn interactions-summary [interactions]
+  (let [server-names (->> interactions
+                          (map :request)
+                          (map :server-name)
+                          set)
+        start-at     (->> interactions
+                          (map :start-at)
+                          (sort)
+                          (first))
+        finish-at    (->> interactions
+                          (map :finish-at)
+                          (sort)
+                          (last))]
+    [:section.summary
+     [:dl
+      [:div
+       [:dt "Server" (if (> (count server-names) 1) "s" "")]
+       [:dd (interpose ", "
+              (map #(vector :strong (h %)) (sort server-names)))]]
+      [:div
+       [:dt "Run time"]
+       [:dd "From "[:strong start-at] " till " [:strong finish-at]]]]]))
+
 (defn kpis-section [interactions]
   [:section.kpis
    [:h2 "KPIs"]
@@ -228,6 +251,7 @@
       [:h1 report-title]]
 
      [:main
+      (interactions-summary interactions)
       (kpis-section interactions)
       (per-path-section interactions)]]]))
 

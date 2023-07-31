@@ -22,10 +22,8 @@
 
 (defn fixup-interaction
   "Convert spider interaction to format expected by validator."
-  [{:keys [request response]}]
-  {:request  (-> request
-                 (params/assoc-query-params "UTF-8"))
-   :response response})
+  [interaction]
+  (update interaction :request #(params/assoc-query-params % "UTF-8")))
 
 (def cli-options
   [["-o" "--openapi OPENAPI-PATH" "OpenAPI specification"
@@ -34,6 +32,14 @@
     :missing "rules path is required"]
    ["-u" "--base-url URL" "Base URL of service to validate"
     :missing "service-base-url is required"]])
+
+(defn interact [req]
+  (let [start-at    (java.util.Date.)
+        interaction (spider/interact req)
+        finish-at   (java.util.Date.)]
+    (assoc interaction
+           :start-at start-at
+           :finish-at finish-at)))
 
 (defn spider-and-validate
   [{:keys [openapi rules base-url]}]
@@ -49,8 +55,10 @@
                                 (when-let [template (:template (matcher (:uri (:request interaction))))]
                                   [:paths template (:method (:request interaction))]))]
     (->> (iterate (fn [state]
-                    (spider/step state rules))
-                  (spider/step {:pool (set seeds), :seen #{}} rules))
+                    (spider/step state rules
+                                 :interact interact))
+                  (spider/step {:pool (set seeds), :seen #{}} rules
+                               :interact interact))
          (take-while some?)
          (map :interaction)
          (map fixup-interaction)
