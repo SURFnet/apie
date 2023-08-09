@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if bb -e '(System/exit 0)' 2>/dev/null; then
+    RUNTIME="bb"
+else
+    RUNTIME="clojure -M"
+fi
+
 if [ "$#" = "1" ]; then
     :
 else
@@ -7,7 +13,7 @@ else
     exit 1
 fi
 
-clojure -M \
+${RUNTIME} \
         -m nl.jomco.eduhub-validator.spider \
         -o ooapi.json \
         -r rules.edn \

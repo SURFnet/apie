@@ -4,8 +4,7 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
-            [hiccup.core :as hiccup]
-            [hiccup.util :as hiccup-util]
+            [hiccup2.core :as hiccup2]
             [nl.jomco.http-status-codes :as http-status]))
 
 (def cli-options [])
@@ -13,10 +12,8 @@
 (def max-issues-per-schema-path 10)
 (def max-issues 3)
 
-(def h #(hiccup-util/escape-html %))
-
 (defn pretty-json [v]
-  [:pre.json (h (json/write-str v :indent true :escape-slash false))])
+  [:pre.json (json/write-str v :indent true :escape-slash false)])
 
 (defn with-issues [interactions]
   (filter :issues interactions))
@@ -55,7 +52,7 @@
       [:div
        [:dt "Server" (if (> (count server-names) 1) "s" "")]
        [:dd (interpose ", "
-              (map #(vector :strong (h %)) (sort server-names)))]]
+              (map #(vector :strong %) (sort server-names)))]]
       [:div
        [:dt "Run time"]
        [:dd "From "[:strong start-at] " till " [:strong finish-at]]]]]))
@@ -81,7 +78,7 @@
   [:span.interaction-summary
    [:span.method (string/upper-case (name method))]
    " "
-   [:span.url (h url)]
+   [:span.url url]
    " → "
 
    [:span.status
@@ -117,7 +114,7 @@
   [:span.issue-summary
    "Missing " [:strong "required"] " field(s): "
    (interpose ", "
-              (map #(vector :code.expected (h %))
+              (map #(vector :code.expected %)
                    (:missing hints)))])
 
 (defmethod issue-summary "enum"
@@ -127,7 +124,7 @@
    " value for " [:code (last path)]
    " of: "
    (interpose ", "
-              (map #(vector :code.expected (h %))
+              (map #(vector :code.expected %)
                    (get schema schema-keyword)))])
 
 (defmethod issue-summary "oneOf"
@@ -136,8 +133,8 @@
    "Expected " [:strong "one of"] ": "
    (interpose ", "
               (map #(if-let [title (get % "title")]
-                      [:q (h title)]
-                      [:code.expected (h %)])
+                      [:q title]
+                      [:code.expected %])
                    (get schema schema-keyword)))])
 
 (defmethod issue-summary "anyOf"
@@ -146,8 +143,8 @@
    "Expected " [:strong "any of"] ": "
    (interpose ", "
               (map #(if-let [title (get % "title")]
-                      [:q (h title)]
-                      [:code.expected (h %)])
+                      [:q title]
+                      [:code.expected %])
                    (get schema schema-keyword)))])
 
 (defmethod issue-summary :default
@@ -164,7 +161,7 @@
                         "Schema path"  schema-path}]
       [:div
        [:dt label]
-       [:dd (interpose " / " (map #(vector :code (h %)) path))]])]
+       [:dd (interpose " / " (map #(vector :code %) path))]])]
    ;; TODO handle sub-issues using issue-snippet
    (-> issue
        (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
@@ -193,7 +190,7 @@
               (sort-by (fn [[path interactions]]
                          [(* -1 (score-percent interactions)) path])))]
      [:section
-      [:h3.interaction-path (h path)]
+      [:h3.interaction-path path]
       (let [n             (count interactions)
             n-with-issues (->> interactions (filter :issues) (count))]
         [:dl
@@ -256,7 +253,7 @@
 
 (defn report
   [interactions]
-  (hiccup/html
+  (hiccup2/html
    [:html
     [:head [:title report-title]]
     [:style (-> css-resource (io/resource) (slurp))]
