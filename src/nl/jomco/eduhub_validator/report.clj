@@ -1,19 +1,21 @@
 (ns nl.jomco.eduhub-validator.report
-  (:require [clojure.data.json :as json]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [hiccup2.core :as hiccup2]
-            [nl.jomco.http-status-codes :as http-status]))
+            [nl.jomco.http-status-codes :as http-status]
+            [nl.jomco.eduhub-validator.report.json :as json]))
 
 (def cli-options [])
 
 (def max-issues-per-schema-path 10)
 (def max-issues 3)
+(def max-value-depth 1)
+(def max-value-length 120)
 
-(defn pretty-json [v]
-  [:pre.json (json/write-str v :indent true :escape-slash false)])
+(defn pretty-json [v & opts]
+  [:pre.json (apply json/to-s v opts)])
 
 (defn with-issues [interactions]
   (filter :issues interactions))
@@ -170,7 +172,8 @@
 (defn- instance-details [instance i]
   [:details.instance (when (= 0 i) {:open true})
    [:summary "Value"]
-   (pretty-json instance)])
+   (pretty-json instance
+                :max-depth max-value-depth, :max-length max-value-length)])
 
 (defn- issue-snippet [{:keys [instance interaction] :as issue} i]
   [:details.interaction (when (= 0 i) {:open true})

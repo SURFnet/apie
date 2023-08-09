@@ -6,4 +6,9 @@
   nl.jomco/openapi-v3-validator  {:git/url "https://git.sr.ht/~jomco/openapi-v3-validator"
                                   :git/sha "2859707888cbd656aa530964361ce8f9459186c5"}
   nl.jomco/spider                {:git/url "https://git.sr.ht/~jomco/spider"
-                                  :git/sha "62ce9d5f646416b137636acfe36c4c511ddda21e"}}}
+                                  :git/sha "62ce9d5f646416b137636acfe36c4c511ddda21e"}}
+
+ :aliases {:test      {:extra-deps {lambdaisland/kaocha {:mvn/version "1.85.1342"}}
+                       :main-opts  ["-m" "kaocha.runner"]}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.05.26"}}
+                       :main-opts  ["-m" "clj-kondo.main"]}}}
