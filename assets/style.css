@@ -38,6 +38,10 @@ summary, div.details {
     margin-bottom: .5em;
 }
 
+details[open] {
+    margin-bottom: 1.5em;
+}
+
 pre, code {
     background: #eee;
 }

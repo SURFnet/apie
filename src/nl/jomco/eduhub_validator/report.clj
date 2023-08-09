@@ -18,13 +18,6 @@
 (defn pretty-json [v]
   [:pre.json (h (json/write-str v :indent true :escape-slash false))])
 
-(defn json-summary
-  "Returns a JSON onliner when it does not exceed 40 characters, otherwise `nil`."
-  [v]
-  (let [json (json/write-str v :indent false)]
-    (when (< (count json) 40)
-      json)))
-
 (defn with-issues [interactions]
   (filter :issues interactions))
 
@@ -164,7 +157,7 @@
 
 (defn issue-details
   [{:keys [path schema-path] :as issue}]
-  [:details.issue-details
+  [:details.issue
    [:summary (issue-summary issue)]
    [:dl
     (for [[label path] {"Path in body" path
@@ -177,19 +170,17 @@
        (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
        (pretty-json))])
 
-(defn- instance-details [instance]
-  (if-let [json (json-summary instance)]
-    [:div.details.instance-details "Value: " [:code json]]
-    [:details.instance-details
-     [:summary "Value"]
-     (pretty-json instance)]))
+(defn- instance-details [instance i]
+  [:details.instance (when (= 0 i) {:open true})
+   [:summary "Value"]
+   (pretty-json instance)])
 
-(defn- issue-snippet [{:keys [instance interaction] :as issue}]
-  [:details
+(defn- issue-snippet [{:keys [instance interaction] :as issue} i]
+  [:details.interaction (when (= 0 i) {:open true})
    [:summary (interaction-summary interaction)]
    [:div
     (issue-details issue)
-    (instance-details instance)]])
+    (instance-details instance i)]])
 
 (defn per-path-section [interactions]
   [:section
@@ -233,17 +224,23 @@
                   "1 validation issue")
                 " (by schema path):"]
                [:ol.by-schema-path
-                (for [[schema-path issues] (take max-issues-per-schema-path
-                                                 issues-by-schema-path)]
+                (for [[[schema-path issues] i]
+                      (map vector
+                           (take max-issues-per-schema-path
+                                 issues-by-schema-path)
+                           (iterate inc 0))]
                   [:li
-                   [:details
+                   [:details.schem-path (when (= 0 i) {:open true})
                     [:summary
                      [:span.schema-path (string/join "/" schema-path)]
                      ": "
                      [:span.count (count issues)]]
                     [:ul
-                     (for [issue (take max-issues issues)]
-                       [:li (issue-snippet issue)])
+                     (for [[issue i]
+                           (map vector
+                                (take max-issues issues)
+                                (iterate inc 0))]
+                       [:li (issue-snippet issue i)])
                      (when (> (count issues) max-issues)
                        [:li.and-more
                         "and "
