@@ -10,6 +10,9 @@
 
 (def cli-options [])
 
+(def max-issues-per-schema-path 10)
+(def max-issues 3)
+
 (def h #(hiccup-util/escape-html %))
 
 (defn pretty-json [v]
@@ -230,7 +233,8 @@
                   "1 validation issue")
                 " (by schema path):"]
                [:ol.by-schema-path
-                (for [[schema-path issues] issues-by-schema-path]
+                (for [[schema-path issues] (take max-issues-per-schema-path
+                                                 issues-by-schema-path)]
                   [:li
                    [:details
                     [:summary
@@ -238,8 +242,21 @@
                      ": "
                      [:span.count (count issues)]]
                     [:ul
-                     (for [issue issues]
-                       [:li (issue-snippet issue)])]]])]]]))])])])
+                     (for [issue (take max-issues issues)]
+                       [:li (issue-snippet issue)])
+                     (when (> (count issues) max-issues)
+                       [:li.and-more
+                        "and "
+                        (- (count issues) max-issues)
+                        " more.."])]]])
+
+                (when (> (count issues-by-schema-path) max-issues-per-schema-path)
+                  [:li.and-more
+                   "and "
+                   (- (count issues-by-schema-path)
+                      max-issues-per-schema-path)
+                   " more.."])]]]))])])])
+
 (defn report
   [interactions]
   (hiccup/html

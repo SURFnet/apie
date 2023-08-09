@@ -54,3 +54,7 @@ span.schema-path,
 span.schema-keyword {
     font-family: monospace;
 }
+
+li.and-more {
+    font-style: italic;
+}
