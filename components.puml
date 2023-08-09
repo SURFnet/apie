@@ -1,0 +1,34 @@
+@startuml
+!theme mono
+
+skinparam {
+        ComponentBackgroundColor #ddd
+}
+
+file "OOAPI Specification" as ooapi
+file "Profile adjustments" as profiel_diff
+component "merge-yaml-tree" as preproc
+
+profiel_diff -D-> preproc
+ooapi -D-> preproc
+
+file "ooapi-variant.json" as profiel_spec
+
+preproc -D-> profiel_spec
+
+file "rules.edn" as relspec
+cloud "OOAPI Endpoint" as service
+file "observations.edn" as observations
+file "report.html" as report
+component "report.sh" as gen
+
+component "spider.sh" as spider
+
+observations -d-> gen
+gen -d-> report
+
+spider <-- service
+spider -d-> observations
+relspec -d-> spider
+profiel_spec -d-> spider
+@enduml
