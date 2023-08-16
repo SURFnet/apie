@@ -42,13 +42,33 @@ Validating an endpoint works in two steps:
 ## Spidering an endpoint
 
 ```sh
-./spider.sh https://your-endpoint/ >observations.edn
+./spider.sh -u https://your-endpoint/ >observations.edn
 ```
 
 This will exhaustively index your endpoint paths and print the
 resulting observations to `observations.edn`. This file is in [EDN
 format](https://github.com/edn-format/edn) which is similar to JSON
 and can be read as text, but it will probably be very large.
+
+## Spidering via gateway
+
+_Work in progress_
+
+To run the spider through the Eduhub gateway, you can use the
+`--basic-auth` and `--headers` options:
+
+```sh
+./spider.sh -u https://gateway.test.surfeduhub.nl/ \
+  --basic-auth USERNAME:PASS \
+  -h 'x-route: endpoint=demo04.test.surfeduhub.nl' \
+  -h 'accept: application/json; version=5' \
+  -h 'x-envelope-response: false' \
+  >observations.edn
+```
+
+Currently the test gateway does not correctly process the
+`x-envelope-response` header so the above will result in a lot of
+validation issues related to the response envelope.
 
 ## Creating a report
 

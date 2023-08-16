@@ -277,6 +277,7 @@
       (println summary)
       (System/exit 1))
     (println
-     (report
-      (with-open [in (java.io.PushbackReader. (io/reader (first arguments)))]
-        (edn/read in))))))
+     ;; str needed to coerce hiccup "rawstring"
+     (str (report
+           (with-open [in (java.io.PushbackReader. (io/reader (first arguments)))]
+             (edn/read in)))))))

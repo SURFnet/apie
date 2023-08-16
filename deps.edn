@@ -1,12 +1,13 @@
 {:paths ["src" "assets"]
  :deps
  {org.clojure/tools.cli          {:mvn/version "1.0.219"}
+  org.babashka/http-client       {:mvn/version "0.4.13"}
   hiccup/hiccup                  {:mvn/version "2.0.0-RC1"}
   nl.jomco/clj-http-status-codes {:mvn/version "0.1"}
   nl.jomco/openapi-v3-validator  {:git/url "https://git.sr.ht/~jomco/openapi-v3-validator"
                                   :git/sha "2859707888cbd656aa530964361ce8f9459186c5"}
   nl.jomco/spider                {:git/url "https://git.sr.ht/~jomco/spider"
-                                  :git/sha "62ce9d5f646416b137636acfe36c4c511ddda21e"}}
+                                  :git/sha "789c1717c30aabb35825b07a20c27fe07b1fcf27"}}
 
  :aliases {:test      {:extra-deps {lambdaisland/kaocha {:mvn/version "1.85.1342"}}
                        :main-opts  ["-m" "kaocha.runner"]}
