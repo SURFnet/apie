@@ -245,7 +245,7 @@
                                  issues-by-schema-path)
                            (iterate inc 0))]
                   [:li
-                   [:details.schem-path (when (= 0 i) {:open true})
+                   [:details.schema-path (when (= 0 i) {:open true})
                     [:summary
                      [:span.schema-path (string/join "/" schema-path)]
                      ": "
