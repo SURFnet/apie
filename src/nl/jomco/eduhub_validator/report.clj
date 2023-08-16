@@ -234,7 +234,10 @@
                     [:summary
                      [:span.schema-path (string/join "/" schema-path)]
                      ": "
-                     [:span.count (count issues)]]
+                     [:span.count (count issues) " issues in "
+                      (count (filter (fn [{:keys [issues]}]
+                                       (some #(= schema-path (:canonical-schema-path %)) issues))
+                                     interactions)) " observations"]]
                     [:ul
                      (for [[issue i]
                            (map vector
