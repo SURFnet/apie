@@ -5,9 +5,13 @@
             [clojure.tools.cli :refer [parse-opts]]
             [hiccup2.core :as hiccup2]
             [nl.jomco.http-status-codes :as http-status]
-            [nl.jomco.eduhub-validator.report.json :as json]))
+            [nl.jomco.eduhub-validator.report.json :as json]
+            [clojure.data.json :as data.json]
+            [nl.jomco.openapi.v3.example :as example]))
 
-(def cli-options [])
+(def cli-options
+  [["-o" "--openapi OPENAPI-PATH" "OpenAPI specification"
+    :missing "openapi path is required"]])
 
 (def max-issues-per-schema-path 10)
 (def max-issues 3)
@@ -154,8 +158,15 @@
   [:span.issue-summary
    "Issue: " [:code.schema-keyword schema-keyword]])
 
+(defn issue-example
+  [openapi {:keys [schema-keyword canonical-schema-path]}]
+  (when schema-keyword
+    ;; schema-keyword issues have a full json-schema as the parent of
+    ;; the schema keyword
+    (example/example openapi (subvec canonical-schema-path 0 (dec (count canonical-schema-path))))))
+
 (defn issue-details
-  [{:keys [path schema-path] :as issue}]
+  [openapi {:keys [path schema-path] :as issue}]
   [:details.issue
    [:summary (issue-summary issue)]
    [:dl
@@ -163,26 +174,30 @@
                         "Schema path"  schema-path}]
       [:div
        [:dt label]
-       [:dd (interpose " / " (map #(vector :code %) path))]])]
-   ;; TODO handle sub-issues using issue-snippet
-   (-> issue
-       (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
-       (pretty-json))])
+       [:dd (interpose " / " (map #(vector :code %) path))]])
+    (when-let [example (issue-example openapi issue)]
+      [:div [:dt "Example"]
+       [:dd (pretty-json example)]])
+    ;; TODO handle sub-issues using issue-snippet
+    [:dt "Issue data"]
+    [:dd (-> issue
+             (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
+             (pretty-json))]]])
 
 (defn- instance-details [instance i]
   [:details.instance (when (= 0 i) {:open true})
-   [:summary "Value"]
+   [:summary "Invalid value"]
    (pretty-json instance
                 :max-depth max-value-depth, :max-length max-value-length)])
 
-(defn- issue-snippet [{:keys [instance interaction] :as issue} i]
+(defn- issue-snippet [openapi {:keys [instance interaction] :as issue} i]
   [:details.interaction (when (= 0 i) {:open true})
    [:summary (interaction-summary interaction)]
    [:div
-    (issue-details issue)
+    (issue-details openapi issue)
     (instance-details instance i)]])
 
-(defn per-path-section [interactions]
+(defn per-path-section [openapi interactions]
   [:section
    [:h2 "Results per request path"]
    [:p "(sorted by percentage of issues)"]
@@ -243,7 +258,7 @@
                            (map vector
                                 (take max-issues issues)
                                 (iterate inc 0))]
-                       [:li (issue-snippet issue i)])
+                       [:li (issue-snippet openapi issue i)])
                      (when (> (count issues) max-issues)
                        [:li.and-more
                         "and "
@@ -258,7 +273,7 @@
                    " more.."])]]]))])])])
 
 (defn report
-  [interactions]
+  [openapi interactions]
   (hiccup2/html
    [:html
     [:head [:title report-title]]
@@ -270,17 +285,18 @@
      [:main
       (interactions-summary interactions)
       (kpis-section interactions)
-      (per-path-section interactions)]]]))
+      (per-path-section openapi interactions)]]]))
 
 (defn -main
   [& args]
-  (let [{:keys [errors summary _options arguments]} (parse-opts args cli-options)]
+  (let [{:keys [errors summary options arguments]} (parse-opts args cli-options)
+        {:keys [openapi]} options]
     (when (seq errors)
       (println errors)
       (println summary)
       (System/exit 1))
     (println
      ;; str needed to coerce hiccup "rawstring"
-     (str (report
+     (str (report (data.json/read-json (io/reader openapi) false)
            (with-open [in (java.io.PushbackReader. (io/reader (first arguments)))]
              (edn/read in)))))))
