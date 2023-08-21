@@ -58,7 +58,7 @@
       [:div
        [:dt "Server" (if (> (count server-names) 1) "s" "")]
        [:dd (interpose ", "
-              (map #(vector :strong %) (sort server-names)))]]
+                       (map #(vector :strong %) (sort server-names)))]]
       [:div
        [:dt "Run time"]
        [:dd "From "[:strong start-at] " till " [:strong finish-at]]]]]))
