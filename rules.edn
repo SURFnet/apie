@@ -1,44 +1,44 @@
 {:seeds
  [{:method "get"
    :path   "/"}
-  {:method "get"
-   :path   "/academic-sessions"}  ;; TODO: instance pages, offerings
-  ;; TODO: associations instances (from offering & person)
-  {:method "get"
-   :path   "/buildings"} ;; TODO: instance, rooms
+ ;; {:method "get"
+  ;;  :path   "/academic-sessions"}  ;; TODO: instance pages, offerings
+  ;; ;; TODO: associations instances (from offering & person)
+  ;; {:method "get"
+  ;;  :path   "/buildings"} ;; TODO: instance, rooms
 
   {:method "get"
    :path   "/courses"}   ;; TODO: course components
-  {:method "get"
-   :path   "/education-specifications"}
-  {:method "get"
-   :path   "/groups"} ;; TODO: instances, persons
-  {:method "get"
-   :path   "/news-feeds"} ;; TODO: instances, news-items
-  ;; TODO: /news-items/{id}
-  ;; TODO: /offerings
-  ;; TODO: /components
-  {:method "get"
-   :path   "/organizations"} ;; TODO: instances, programs, courses, components, offerings, groups, education-specifications
-  {:method "get"
-   :path   "/persons"}
-  {:method "get"
-   :path   "/persons/me"} ;; TODO: instances, associations, groups
-  {:method "get"
-   :path   "/programs"} ;; TODO: subprograms, courses
-  {:method "get"
-   :path   "/rooms"} ;; TODO: room instances
+  ;; {:method "get"
+  ;;  :path   "/education-specifications"}
+  ;; {:method "get"
+  ;;  :path   "/groups"} ;; TODO: instances, persons
+  ;; {:method "get"
+  ;;  :path   "/news-feeds"} ;; TODO: instances, news-items
+  ;; ;; TODO: /news-items/{id}
+  ;; ;; TODO: /offerings
+  ;; ;; TODO: /components
+  ;; {:method "get"
+  ;;  :path   "/organizations"} ;; TODO: instances, programs, courses, components, offerings, groups, education-specifications
+  ;; {:method "get"
+  ;;  :path   "/persons"}
+  ;; {:method "get"
+  ;;  :path   "/persons/me"} ;; TODO: instances, associations, groups
+  ;; {:method "get"
+  ;;  :path   "/programs"} ;; TODO: subprograms, courses
+  ;; {:method "get"
+  ;;  :path   "/rooms"} ;; TODO: room instances
   ]
 
  :rules
- [{:match     [[:request, :method, "get"]
-               [:request, :path, "/courses"]
+ [;; page through items list for any kind of entity
+  {:match     [[:request, :method, "get"]
+               [:request, :path, "?path"]
                [:response, :body, "pageNumber", "?pageNumber"]
                [:response, :body, "hasNextPage", true]]
    :generates [{:method "get"
                 :path   "/courses?pageNumber={(inc ?pageNumber)}"}]}
   {:match     [[:request, :method, "get"]
-               [:request, :path, "/courses"]
                [:response, :body, "items", "?i" "courseId" "?courseId"]]
    :generates [{:method "get"
                 :path   "/courses/{?courseId}"}
