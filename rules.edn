@@ -33,13 +33,13 @@
  :rules
  [;; page through items list for any kind of entity
   {:match     [[:request, :method, "get"]
-               [:request, :path, "?path"]
-               [:response, :body, "pageNumber", "?pageNumber"]
+               [:request, :path, ?path]
+               [:response, :body, "pageNumber", ?pageNumber]
                [:response, :body, "hasNextPage", true]]
    :generates [{:method "get"
                 :path   "/courses?pageNumber={(inc ?pageNumber)}"}]}
   {:match     [[:request, :method, "get"]
-               [:response, :body, "items", "?i" "courseId" "?courseId"]]
+               [:response, :body, "items", ?i "courseId" ?courseId]]
    :generates [{:method "get"
                 :path   "/courses/{?courseId}"}
                {:method "get"
@@ -47,21 +47,21 @@
                {:method "get"
                 :path   "/courses/{?courseId}/components"}]}
   {:match     [[:request, :method, "get"]
-               [:response, :body, "items", "?i" "courseId" "?courseId"]]
+               [:response, :body, "items", ?i "courseId" ?courseId]]
    :generates [{:method "get"
                 :path   "/courses/{?courseId}"}
                {:method "get"
                 :path   "/courses/{?courseId}/offerings"}]}
   {:match     [[:request, :method, "get"]
                [:request, :path, "/programs"]
-               [:response, :body, "items", "?i" "programId" "?programId"]]
+               [:response, :body, "items", ?i "programId" ?programId]]
    :generates [{:method "get"
                 :path   "/programs/{?programId}"}
                {:method "get"
                 :path   "/programs/{?programId}/offerings"}]}
   {:match     [[:request, :method, "get"]
                [:request, :path, "/education-specifications"]
-               [:response, :body, "items", "?i" "educationSpecificationId" "?educationSpecificationId"]]
+               [:response, :body, "items", ?i "educationSpecificationId" ?educationSpecificationId]]
    :generates [{:method "get"
                 :path   "/education-specifications/{?educationSpecificationId}"}
                {:method "get"
