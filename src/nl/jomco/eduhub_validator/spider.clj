@@ -135,6 +135,7 @@
                                   (validator/interaction-validator))
         matcher               (paths-matcher (keys (get openapi-spec "paths")))
         op-path               (fn [interaction]
+                                ;; TODO: Don't follow requests to out-of-spec urls
                                 (when-let [template (:template (matcher (:uri (:request interaction))))]
                                   [:paths template (:method (:request interaction))]))]
     (->> (iterate (fn [state]
@@ -156,4 +157,6 @@
       (println errors)
       (println summary)
       (System/exit 1))
-    (pprint/pprint (spider-and-validate options))))
+    (println "[")
+    (run! pprint/pprint (spider-and-validate options))
+    (println "]")))
