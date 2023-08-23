@@ -105,9 +105,9 @@
     (number? v)     "number"
     (string? v)     "string"))
 
-(defmulti issue-summary :schema-keyword)
+(defmulti json-schema-issue-summary :schema-keyword)
 
-(defmethod issue-summary "type"
+(defmethod json-schema-issue-summary "type"
   [{:keys [schema schema-keyword instance]}]
   [:span.issue-summary
    "Expected " [:strong "type"] " "
@@ -115,7 +115,7 @@
    ", got "
    [:code.got (value-type instance)]])
 
-(defmethod issue-summary "required"
+(defmethod json-schema-issue-summary "required"
   [{:keys [hints]}]
   [:span.issue-summary
    "Missing " [:strong "required"] " field(s): "
@@ -123,7 +123,7 @@
               (map #(vector :code.expected %)
                    (:missing hints)))])
 
-(defmethod issue-summary "enum"
+(defmethod json-schema-issue-summary "enum"
   [{:keys [schema schema-keyword path]}]
   [:span.issue-summary
    "Expected " [:strong "enum"]
@@ -133,7 +133,7 @@
               (map #(vector :code.expected %)
                    (get schema schema-keyword)))])
 
-(defmethod issue-summary "oneOf"
+(defmethod json-schema-issue-summary "oneOf"
   [{:keys [schema schema-keyword]}]
   [:span.issue-summary
    "Expected " [:strong "one of"] ": "
@@ -143,7 +143,7 @@
                       [:code.expected %])
                    (get schema schema-keyword)))])
 
-(defmethod issue-summary "anyOf"
+(defmethod json-schema-issue-summary "anyOf"
   [{:keys [schema schema-keyword]}]
   [:span.issue-summary
    "Expected " [:strong "any of"] ": "
@@ -153,10 +153,21 @@
                       [:code.expected %])
                    (get schema schema-keyword)))])
 
-(defmethod issue-summary :default
+(defmethod json-schema-issue-summary :default
   [{:keys [schema-keyword]}]
   [:span.issue-summary
    "Issue: " [:code.schema-keyword schema-keyword]])
+
+(defmulti issue-summary :issue)
+
+(defmethod issue-summary "schema-validation-error"
+  [issue]
+  (json-schema-issue-summary issue))
+
+(defmethod issue-summary :default
+  [{:keys [issue]}]
+  [:span.issue-summary
+   "Issue: " [:code.issue-type issue]])
 
 (defn issue-example
   [openapi {:keys [schema-keyword canonical-schema-path]}]
