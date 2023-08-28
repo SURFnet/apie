@@ -105,10 +105,14 @@
     (number? v)     "number"
     (string? v)     "string"))
 
-(defmulti json-schema-issue-summary :schema-keyword)
+(declare issue-snippet-list)
+
+(defmulti json-schema-issue-summary
+  (fn [openapi issue]
+    (:schema-keyword issue)))
 
 (defmethod json-schema-issue-summary "type"
-  [{:keys [schema schema-keyword instance]}]
+  [openapi {:keys [schema schema-keyword instance]}]
   [:span
    "Expected " [:strong "type"] " "
    [:code.expected (get schema schema-keyword)]
@@ -116,7 +120,7 @@
    [:code.got (value-type instance)]])
 
 (defmethod json-schema-issue-summary "required"
-  [{:keys [hints]}]
+  [openapi {:keys [hints]}]
   [:span
    "Missing " [:strong "required"] " field(s): "
    (interpose ", "
@@ -124,7 +128,7 @@
                    (:missing hints)))])
 
 (defmethod json-schema-issue-summary "enum"
-  [{:keys [schema schema-keyword path]}]
+  [openapi {:keys [schema schema-keyword path]}]
   [:span
    "Expected " [:strong "enum"]
    " value for " [:code (last path)]
@@ -133,18 +137,42 @@
               (map #(vector :code.expected %)
                    (get schema schema-keyword)))])
 
+(defn json-schema-title
+  [{:strs [title $ref] :as schema}]
+  (cond
+    title
+    [:q title]
+
+    $ref
+    [:code.ref $ref]
+
+    :else
+    [:code.expected (pretty-json schema)]))
+
 (defmethod json-schema-issue-summary "oneOf"
-  [{:keys [schema schema-keyword]}]
+  [openapi {:keys [schema schema-keyword hints sub-issues]}]
   [:span
-   "Expected " [:strong "one of"] ": "
+   "Expected exactly " [:strong "one of"] ": "
    (interpose ", "
-              (map #(if-let [title (get % "title")]
-                      [:q title]
-                      [:code.expected %])
-                   (get schema schema-keyword)))])
+              (map json-schema-title
+                   (get schema schema-keyword)))
+   ". Validaded against " (:ok-count hints)
+   [:details
+    (if (zero? (:ok-count hints))
+      (->> sub-issues
+           (keep-indexed
+            (fn [i issues]
+              (when (seq issues)
+                [:li "Invalid " (-> schema
+                                    (get-in [schema-keyword i])
+                                    (json-schema-title)) ". " (count issues) " issues:"
+                 (issue-snippet-list openapi issues)])))
+           (into [:ul]))
+      [:span
+       "But instance validates to " [:b "all"] " the schemas!"])]])
 
 (defmethod json-schema-issue-summary "anyOf"
-  [{:keys [schema schema-keyword]}]
+  [openapi {:keys [schema schema-keyword]}]
   [:span
    "Expected " [:strong "any of"] ": "
    (interpose ", "
@@ -154,23 +182,25 @@
                    (get schema schema-keyword)))])
 
 (defmethod json-schema-issue-summary :default
-  [{:keys [schema-keyword]}]
+  [openapi {:keys [schema-keyword]}]
   [:span
    "JSON Schema Issue: " [:code.schema-keyword schema-keyword]])
 
-(defmulti issue-summary :issue)
+(defmulti issue-summary
+  (fn [openapi issue]
+    (:issue issue)))
 
 (defmethod issue-summary "schema-validation-error"
-  [issue]
-  (json-schema-issue-summary issue))
+  [openapi issue]
+  (json-schema-issue-summary openapi issue))
 
 (defmethod issue-summary :default
-  [{:keys [issue]}]
+  [openapi {:keys [issue]}]
   [:span
    "Issue: " [:code.issue-type issue]])
 
 (defmethod issue-summary "status-error"
-  [{:keys [issue hints instance]}]
+  [openapi {:keys [issue hints instance]}]
   [:span
    [:strong "Status error"] " Expected one of: " (string/join ", " (:ranges hints)) ", got " instance])
 
@@ -182,25 +212,28 @@
     (example/example openapi (subvec canonical-schema-path 0 (dec (count canonical-schema-path))))))
 
 (defn issue-details
-  [openapi {:keys [path schema-path] :as issue}]
-  [:details.issue
-   [:summary
-    [:span.issue-summary
-     (issue-summary issue)]]
-   [:dl
-    (for [[label path] {"Path in body" path
-                        "Schema path"  schema-path}]
+  [openapi {:keys [path schema-path sub-issues] :as issue}]
+  (if (seq sub-issues)
+    (issue-summary openapi issue)
+    [:details.issue
+     [:summary
+      [:span.issue-summary
+       (issue-summary openapi issue)]]
+     [:dl
+      (for [[label path] {"Path in body" path
+                          "Schema path"  schema-path}]
+        [:div
+         [:dt label]
+         [:dd (interpose " / " (map #(vector :code %) path))]])
+      (when-let [example (issue-example openapi issue)]
+        [:div [:dt "Example from schema"]
+         [:dd (pretty-json example)]])
+      ;; TODO handle sub-issues using issue-snippet
       [:div
-       [:dt label]
-       [:dd (interpose " / " (map #(vector :code %) path))]])
-    (when-let [example (issue-example openapi issue)]
-      [:div [:dt "Example from schema"]
-       [:dd (pretty-json example)]])
-    ;; TODO handle sub-issues using issue-snippet
-    [:dt "Issue data"]
-    [:dd (-> issue
-             (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
-             (pretty-json))]]])
+       [:dt "Issue data"]
+       [:dd (-> issue
+                (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
+                (pretty-json))]]]]))
 
 (defn- instance-details [instance i]
   [:details.instance (when (= 0 i) {:open true})
@@ -208,12 +241,43 @@
    (pretty-json instance
                 :max-depth max-value-depth, :max-length max-value-length)])
 
-(defn- issue-snippet [openapi {:keys [instance interaction] :as issue} i]
+(defn- issue-snippet [openapi {:keys [instance] :as issue} i]
+  [:div
+   (issue-details openapi issue)
+   (instance-details instance i)])
+
+(defn- interaction-snippet [openapi {:keys [interaction] :as issue} i]
   [:details.interaction (when (= 0 i) {:open true})
    [:summary (interaction-summary interaction)]
-   [:div
-    (issue-details openapi issue)
-    (instance-details instance i)]])
+   (issue-snippet openapi issue i)])
+
+(defn- issue-snippet-list
+  [openapi issues]
+  [:ol
+   (for [[issue i]
+         (map vector
+              (take max-issues issues)
+              (iterate inc 0))]
+     [:li (issue-snippet openapi issue i)])
+   (when (> (count issues) max-issues)
+     [:li.and-more
+      "and "
+      (- (count issues) max-issues)
+      " more.."])])
+
+(defn- interaction-snippet-list
+  [openapi issues]
+  [:ul
+   (for [[issue i]
+         (map vector
+              (take max-issues issues)
+              (iterate inc 0))]
+     [:li (interaction-snippet openapi issue i)])
+   (when (> (count issues) max-issues)
+     [:li.and-more
+      "and "
+      (- (count issues) max-issues)
+      " more.."])])
 
 (defn per-path-section [openapi interactions]
   [:section
@@ -263,17 +327,7 @@
                      (count (filter (fn [{:keys [issues]}]
                                       (some #(= schema-path (:canonical-schema-path %)) issues))
                                     interactions)) " observations"]]
-                   [:ul
-                    (for [[issue i]
-                          (map vector
-                               (take max-issues issues)
-                               (iterate inc 0))]
-                      [:li (issue-snippet openapi issue i)])
-                    (when (> (count issues) max-issues)
-                      [:li.and-more
-                       "and "
-                       (- (count issues) max-issues)
-                       " more.."])]]])
+                   (interaction-snippet-list openapi issues)]])
 
                (when (> (count issues-by-schema-path) max-issues-per-schema-path)
                  [:li.and-more
