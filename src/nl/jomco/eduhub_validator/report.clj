@@ -109,7 +109,7 @@
 
 (defmethod json-schema-issue-summary "type"
   [{:keys [schema schema-keyword instance]}]
-  [:span.issue-summary
+  [:span
    "Expected " [:strong "type"] " "
    [:code.expected (get schema schema-keyword)]
    ", got "
@@ -117,7 +117,7 @@
 
 (defmethod json-schema-issue-summary "required"
   [{:keys [hints]}]
-  [:span.issue-summary
+  [:span
    "Missing " [:strong "required"] " field(s): "
    (interpose ", "
               (map #(vector :code.expected %)
@@ -125,7 +125,7 @@
 
 (defmethod json-schema-issue-summary "enum"
   [{:keys [schema schema-keyword path]}]
-  [:span.issue-summary
+  [:span
    "Expected " [:strong "enum"]
    " value for " [:code (last path)]
    " of: "
@@ -135,7 +135,7 @@
 
 (defmethod json-schema-issue-summary "oneOf"
   [{:keys [schema schema-keyword]}]
-  [:span.issue-summary
+  [:span
    "Expected " [:strong "one of"] ": "
    (interpose ", "
               (map #(if-let [title (get % "title")]
@@ -145,7 +145,7 @@
 
 (defmethod json-schema-issue-summary "anyOf"
   [{:keys [schema schema-keyword]}]
-  [:span.issue-summary
+  [:span
    "Expected " [:strong "any of"] ": "
    (interpose ", "
               (map #(if-let [title (get % "title")]
@@ -155,8 +155,8 @@
 
 (defmethod json-schema-issue-summary :default
   [{:keys [schema-keyword]}]
-  [:span.issue-summary
-   "Issue: " [:code.schema-keyword schema-keyword]])
+  [:span
+   "JSON Schema Issue: " [:code.schema-keyword schema-keyword]])
 
 (defmulti issue-summary :issue)
 
@@ -166,12 +166,12 @@
 
 (defmethod issue-summary :default
   [{:keys [issue]}]
-  [:span.issue-summary
+  [:span
    "Issue: " [:code.issue-type issue]])
 
-(defmethod issue-summary :default
+(defmethod issue-summary "status-error"
   [{:keys [issue hints instance]}]
-  [:span.issue-summary
+  [:span
    [:strong "Status error"] " Expected one of: " (string/join ", " (:ranges hints)) ", got " instance])
 
 (defn issue-example
@@ -184,7 +184,9 @@
 (defn issue-details
   [openapi {:keys [path schema-path] :as issue}]
   [:details.issue
-   [:summary (issue-summary issue)]
+   [:summary
+    [:span.issue-summary
+     (issue-summary issue)]]
    [:dl
     (for [[label path] {"Path in body" path
                         "Schema path"  schema-path}]
@@ -192,7 +194,7 @@
        [:dt label]
        [:dd (interpose " / " (map #(vector :code %) path))]])
     (when-let [example (issue-example openapi issue)]
-      [:div [:dt "Example"]
+      [:div [:dt "Example from schema"]
        [:dd (pretty-json example)]])
     ;; TODO handle sub-issues using issue-snippet
     [:dt "Issue data"]
