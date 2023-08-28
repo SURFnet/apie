@@ -227,14 +227,8 @@
       [:h3.interaction-path path]
       (let [n             (count interactions)
             n-with-issues (->> interactions (filter :issues) (count))]
-        [:dl
-         [:div
-          [:dt "Observations"]
-          [:dd n]]
-
-         [:div
-          [:dt "Validation score"]
-          [:dd (score-summary interactions)]]
+        [:div
+         (- n n-with-issues) " / " n " valid observations. " (score-summary interactions)
 
          (when (pos? n-with-issues)
            (let [issues-by-schema-path (->> interactions
@@ -246,47 +240,45 @@
                                                        [(* -1 (count issues)) path])))
                  n-issue-types  (count issues-by-schema-path)]
              [:div
-              [:dt "Type of issues"]
-              [:dd
-               [:p
-                (if (> n-issue-types 1)
-                  (format "%d different validation issues"
-                          n-issue-types)
-                  "1 validation issue")
-                " (by schema path):"]
-               [:ol.by-schema-path
-                (for [[[schema-path issues] i]
-                      (map vector
-                           (take max-issues-per-schema-path
-                                 issues-by-schema-path)
-                           (iterate inc 0))]
-                  [:li
-                   [:details.schema-path (when (= 0 i) {:open true})
-                    [:summary
-                     [:span.schema-path (string/join "/" schema-path)]
-                     ": "
-                     [:span.count (count issues) " issues in "
-                      (count (filter (fn [{:keys [issues]}]
-                                       (some #(= schema-path (:canonical-schema-path %)) issues))
-                                     interactions)) " observations"]]
-                    [:ul
-                     (for [[issue i]
-                           (map vector
-                                (take max-issues issues)
-                                (iterate inc 0))]
-                       [:li (issue-snippet openapi issue i)])
-                     (when (> (count issues) max-issues)
-                       [:li.and-more
-                        "and "
-                        (- (count issues) max-issues)
-                        " more.."])]]])
+              [:p
+               (if (> n-issue-types 1)
+                 (format "%d different validation issues"
+                         n-issue-types)
+                 "1 validation issue")
+               " (by schema path):"]
+              [:ol.by-schema-path
+               (for [[[schema-path issues] i]
+                     (map vector
+                          (take max-issues-per-schema-path
+                                issues-by-schema-path)
+                          (iterate inc 0))]
+                 [:li
+                  [:details.schema-path (when (= 0 i) {:open true})
+                   [:summary
+                    [:span.schema-path (string/join "/" schema-path)]
+                    ": "
+                    [:span.count (count issues) " issues in "
+                     (count (filter (fn [{:keys [issues]}]
+                                      (some #(= schema-path (:canonical-schema-path %)) issues))
+                                    interactions)) " observations"]]
+                   [:ul
+                    (for [[issue i]
+                          (map vector
+                               (take max-issues issues)
+                               (iterate inc 0))]
+                      [:li (issue-snippet openapi issue i)])
+                    (when (> (count issues) max-issues)
+                      [:li.and-more
+                       "and "
+                       (- (count issues) max-issues)
+                       " more.."])]]])
 
-                (when (> (count issues-by-schema-path) max-issues-per-schema-path)
-                  [:li.and-more
-                   "and "
-                   (- (count issues-by-schema-path)
-                      max-issues-per-schema-path)
-                   " more.."])]]]))])])])
+               (when (> (count issues-by-schema-path) max-issues-per-schema-path)
+                 [:li.and-more
+                  "and "
+                  (- (count issues-by-schema-path)
+                     max-issues-per-schema-path)
+                  " more.."])]]))])])])
 
 (defn report
   [openapi interactions]
