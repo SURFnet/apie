@@ -169,6 +169,11 @@
   [:span.issue-summary
    "Issue: " [:code.issue-type issue]])
 
+(defmethod issue-summary :default
+  [{:keys [issue hints instance]}]
+  [:span.issue-summary
+   [:strong "Status error"] " Expected one of: " (string/join ", " (:ranges hints)) ", got " instance])
+
 (defn issue-example
   [openapi {:keys [schema-keyword canonical-schema-path]}]
   (when schema-keyword
