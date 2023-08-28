@@ -172,14 +172,23 @@
        "But instance validates to " [:b "all"] " the schemas!"])]])
 
 (defmethod json-schema-issue-summary "anyOf"
-  [openapi {:keys [schema schema-keyword]}]
+  [openapi {:keys [schema schema-keyword hints sub-issues]}]
   [:span
    "Expected " [:strong "any of"] ": "
    (interpose ", "
-              (map #(if-let [title (get % "title")]
-                      [:q title]
-                      [:code.expected %])
-                   (get schema schema-keyword)))])
+              (map json-schema-title
+                   (get schema schema-keyword)))
+   ". Validaded against none."
+   [:details
+    (->> sub-issues
+         (keep-indexed
+          (fn [i issues]
+            (when (seq issues)
+              [:li "Invalid " (-> schema
+                                  (get-in [schema-keyword i])
+                                  (json-schema-title)) ". " (count issues) " issues:"
+               (issue-snippet-list openapi issues)])))
+         (into [:ul]))]])
 
 (defmethod json-schema-issue-summary :default
   [openapi {:keys [schema-keyword]}]
