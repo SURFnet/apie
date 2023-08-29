@@ -137,12 +137,18 @@
         op-path               (fn [interaction]
                                 ;; TODO: Don't follow requests to out-of-spec urls
                                 (when-let [template (:template (matcher (:uri (:request interaction))))]
-                                  [:paths template (:method (:request interaction))]))]
+                                  [:paths template (:method (:request interaction))]))
+        follow?               (fn [{:keys [path uri url]}]
+                                (-> (or path uri url)
+                                    (string/replace #"http(s)?://[^/]+" "")
+                                    matcher))]
     (->> (iterate (fn [state]
                     (spider/step state rules
-                                 :interact interact))
-                  (spider/step {:pool (set seeds), :seen #{}} rules
-                               :interact interact))
+                                 :interact interact
+                                 :follow? follow?))
+                  (spider/step {:pool (set (filter follow? seeds)), :seen #{}} rules
+                               :interact interact
+                               :follow? follow?))
          (take-while some?)
          (map :interaction)
          (map fixup-interaction)

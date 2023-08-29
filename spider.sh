@@ -8,6 +8,6 @@ fi
 
 ${RUNTIME} \
         -m nl.jomco.eduhub-validator.spider \
-        -o ooapi.json \
+        -o ooapi-rio.json \
         -r rules.edn \
         "$@"

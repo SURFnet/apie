@@ -7,7 +7,7 @@
   nl.jomco/openapi-v3-validator  {:git/url "https://git.sr.ht/~jomco/openapi-v3-validator"
                                   :git/sha "2859707888cbd656aa530964361ce8f9459186c5"}
   nl.jomco/spider                {:git/url "https://git.sr.ht/~jomco/spider"
-                                  :git/sha "3106197d9b64c742769df7d037ef643c38ec7f37"}}
+                                  :git/sha "2f662845999635f515f69c79a8f091a8689e30f0"}}
 
  :aliases {:test      {:extra-deps {lambdaisland/kaocha {:mvn/version "1.85.1342"}}
                        :main-opts  ["-m" "kaocha.runner"]}
