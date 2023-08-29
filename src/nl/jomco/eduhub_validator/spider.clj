@@ -7,7 +7,8 @@
             [nl.jomco.openapi.v3.path-matcher :refer [paths-matcher]]
             [nl.jomco.openapi.v3.validator :as validator]
             [nl.jomco.spider :as spider]
-            [ring.middleware.params :as params]))
+            [ring.middleware.params :as params]
+            [clojure.java.io :as io]))
 
 (defn read-edn
   [path]
@@ -25,7 +26,10 @@
 (defn fixup-interaction
   "Convert spider interaction to format expected by validator."
   [interaction]
-  (update interaction :request #(params/assoc-query-params % "UTF-8")))
+  (-> interaction
+      (update :request #(params/assoc-query-params % "UTF-8"))
+      ;; remove java.net.URI - not needed and doesn't print cleanly
+      (update :response dissoc :uri)))
 
 (defn parse-header
   [s]
@@ -55,6 +59,7 @@
     :missing "openapi path is required"]
    ["-r" "--rules RULES-PATH" "Spidering rules"
     :missing "rules path is required"]
+   ["-w" "--write-to RESULT-PATH"]
    ["-u" "--base-url URL" "Base URL of service to validate"
     :missing "service-base-url is required"]
    ["-h" "--headers 'HEADER: VALUE'" "Additional header(s) to add to request "
@@ -163,6 +168,7 @@
       (println errors)
       (println summary)
       (System/exit 1))
-    (println "[")
-    (run! pprint/pprint (spider-and-validate options))
-    (println "]")))
+    (binding [*out* (io/writer (:write-to options) :encoding "UTF-8")]
+      (println "[")
+      (run! pprint/pprint (spider-and-validate options))
+      (println "]"))))

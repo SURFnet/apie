@@ -11,7 +11,8 @@
 
 (def cli-options
   [["-o" "--openapi OPENAPI-PATH" "OpenAPI specification"
-    :missing "openapi path is required"]])
+    :missing "openapi path is required"]
+   ["-p" "--print-to REPORT-PATH" "Path of output file"]])
 
 (def max-issues-per-schema-path 10)
 (def max-issues 3)
@@ -362,14 +363,16 @@
 
 (defn -main
   [& args]
+  (System/setProperty "file.encoding" "UTF-8") ;; Force, for windows
   (let [{:keys [errors summary options arguments]} (parse-opts args cli-options)
         {:keys [openapi]} options]
     (when (seq errors)
       (println errors)
       (println summary)
       (System/exit 1))
-    (println
-     ;; str needed to coerce hiccup "rawstring"
-     (str (report (data.json/read-json (io/reader openapi) false)
-           (with-open [in (java.io.PushbackReader. (io/reader (first arguments)))]
-             (edn/read in)))))))
+    (binding [*out* (io/writer (:print-to options) :encoding "UTF-8")]
+      (println
+       ;; str needed to coerce hiccup "rawstring"
+       (str (report (data.json/read-json (io/reader openapi :encoding "UTF-8") false)
+                    (with-open [in (java.io.PushbackReader. (io/reader (first arguments)))]
+                      (edn/read in))))))))

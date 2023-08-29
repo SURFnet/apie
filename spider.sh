@@ -6,8 +6,4 @@ else
     RUNTIME="clojure -M"
 fi
 
-${RUNTIME} \
-        -m nl.jomco.eduhub-validator.spider \
-        -o ooapi-rio.json \
-        -r rules.edn \
-        "$@"
+${RUNTIME} -m nl.jomco.eduhub-validator.spider "$@"

@@ -42,7 +42,9 @@ Validating an endpoint works in two steps:
 ## Spidering an endpoint
 
 ```sh
-./spider.sh -u https://your-endpoint/ >observations.edn
+./spider.sh -r rules.edn -o openapi.json \
+  -u https://your-endpoint/ \
+  -p observations.edn
 ```
 
 This will exhaustively index your endpoint paths and print the
@@ -58,12 +60,15 @@ To run the spider through the Eduhub gateway, you can use the
 `--basic-auth` and `--headers` options:
 
 ```sh
-./spider.sh -u https://gateway.test.surfeduhub.nl/ \
+./spider.sh \
+  -o openapi.json \
+  -r rules.edn \
+  -u https://gateway.test.surfeduhub.nl/ \
   --basic-auth USERNAME:PASS \
   -h 'x-route: endpoint=demo04.test.surfeduhub.nl' \
   -h 'accept: application/json; version=5' \
   -h 'x-envelope-response: false' \
-  >observations.edn
+  -p observations.edn
 ```
 
 Currently the test gateway does not correctly process the
@@ -75,7 +80,7 @@ validation issues related to the response envelope.
 After spidering is completed, you can create a readable report using
 
 ```sh
-./report.sh observations.edn >report.html
+./report.sh -o openapi.json -p report.html observations.edn
 ```
 
 This report is readable in any web browser.
