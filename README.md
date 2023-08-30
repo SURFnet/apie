@@ -116,15 +116,16 @@ Rules files are `edn` maps and have two keys:
 
 A rule will match a particular interaction if every clause in the
 `match` list matches. A clause represents a path of literal values and
-placeholders. This `generates` a list of requests from a template that
-can use the placeholders:
+placeholders. When placeholders are used, rules can match multiple
+times.  This `generates` a list of requests from a template that can
+use the placeholders:
 
 ```clojure
-  {:match     [[:request, :method, "get"]
-               [:request, :path, ?path]
+  {:match     [[:request :method "get"]
+               [:request :path ?path]
                [:response :status 200]
-               [:response, :body, "pageNumber", ?pageNumber]
-               [:response, :body, "hasNextPage", true]]
+               [:response :body "pageNumber" ?pageNumber]
+               [:response :body "hasNextPage" true]]
    :generates [{:method "get"
                 :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
 ```
@@ -147,6 +148,27 @@ interaction's response.
 
 The reponse body is automatically parsed as json if it has the correct
 content type.
+
+Placeholders appearing multiple times in set of `match` clauses are
+unified; clauses only match when their placeholders have the same
+value.  This can be used to match multiple entries in a list:
+
+```clojure
+  {:match     [[:request :method "get"]
+               [:request :path "/customers"]
+               [:response :status 200]
+               [:response :body "customers" ?index "id" ?id]
+               [:response :body "customers" ?index "name" ?name]]
+
+   :generates [{:method "get"
+                :path   "/customer?id={?id}&name={?name}"}]}
+```
+
+If the interaction response body contains a `"customers"` list of maps
+with `"id"` and `"name"` attributes, this will generate a request for
+every customer in `"customers"`, with their name and id. The `?index`
+placeholder here is used to unify two clauses so that `?id` and
+`?name` match in the same customer map.
 
 ## Template format
 
