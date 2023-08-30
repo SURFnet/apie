@@ -191,6 +191,20 @@
                (issue-snippet-list openapi issues)])))
          (into [:ul]))]])
 
+(defmethod json-schema-issue-summary "contains"
+  [openapi {:keys [schema schema-keyword hints sub-issues]}]
+  [:span
+   "Expected collection to contain " (json-schema-title (get schema schema-keyword))
+   [:details
+    (->> sub-issues
+         (map-indexed
+          (fn [i issues]
+            (if (seq issues)
+              [:li "Item " i " has " (count issues) " issues:"
+               (issue-snippet-list openapi issues)]
+              [:li "Item " i " is valid"])))
+         (into [:ul]))]])
+
 (defmethod json-schema-issue-summary :default
   [openapi {:keys [schema-keyword]}]
   [:span

@@ -5,7 +5,7 @@
   hiccup/hiccup                  {:mvn/version "2.0.0-RC1"}
   nl.jomco/clj-http-status-codes {:mvn/version "0.1"}
   nl.jomco/openapi-v3-validator  {:git/url "https://git.sr.ht/~jomco/openapi-v3-validator"
-                                  :git/sha "2859707888cbd656aa530964361ce8f9459186c5"}
+                                  :git/sha "4ee6ba1c1647d6c0d14106cb45d690283806831d"}
   nl.jomco/spider                {:git/url "https://git.sr.ht/~jomco/spider"
                                   :git/sha "2f662845999635f515f69c79a8f091a8689e30f0"}}
 
