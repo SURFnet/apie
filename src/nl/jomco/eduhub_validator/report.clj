@@ -12,7 +12,7 @@
 (def cli-options
   [["-o" "--openapi OPENAPI-PATH" "OpenAPI specification"
     :missing "openapi path is required"]
-   ["-p" "--print-to REPORT-PATH" "Path of output file"]])
+   ["-w" "--write-to REPORT-PATH" "Path of output file"]])
 
 (def max-issues-per-schema-path 10)
 (def max-issues 3)
@@ -370,7 +370,7 @@
       (println errors)
       (println summary)
       (System/exit 1))
-    (binding [*out* (io/writer (:print-to options) :encoding "UTF-8")]
+    (binding [*out* (io/writer (:write-to options) :encoding "UTF-8")]
       (println
        ;; str needed to coerce hiccup "rawstring"
        (str (report (data.json/read-json (io/reader openapi :encoding "UTF-8") false)

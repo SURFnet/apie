@@ -44,7 +44,7 @@ Validating an endpoint works in two steps:
 ```sh
 ./spider.sh -r rules.edn -o openapi.json \
   -u https://your-endpoint/ \
-  -p observations.edn
+  -w observations.edn
 ```
 
 This will exhaustively index your endpoint paths and print the
@@ -68,7 +68,7 @@ To run the spider through the Eduhub gateway, you can use the
   -h 'x-route: endpoint=demo04.test.surfeduhub.nl' \
   -h 'accept: application/json; version=5' \
   -h 'x-envelope-response: false' \
-  -p observations.edn
+  -w observations.edn
 ```
 
 Currently the test gateway does not correctly process the
