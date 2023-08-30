@@ -101,6 +101,68 @@ Profiles are created using
 include a collection of pre-made profiles in this repository in the
 near future.
 
+## Rules format
+
+Rules files are `edn` maps and have two keys:
+
+- `:seeds` - a list of request maps. Request maps need at least a
+  `:method` and a `:path` key. Seeds represent the initial requests
+  for spidering. There must be at least one seed in order to spider an
+  endpoint.
+
+- `:rules` - a list of rule maps. A rule will `:match` an interaction
+  map and `:generates` one or more request maps.
+  
+
+A rule will match a particular interaction if every clause in the
+`match` list matches. A clause represents a path of literal values and
+placeholders. This `generates` a list of requests from a template that
+can use the placeholders:
+
+```clojure
+  {:match     [[:request, :method, "get"]
+               [:request, :path, ?path]
+               [:response :status 200]
+               [:response, :body, "pageNumber", ?pageNumber]
+               [:response, :body, "hasNextPage", true]]
+   :generates [{:method "get"
+                :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
+```
+
+Literal entries are integers, keywords (starting with `:`) and quoted
+strings. Placeholders are symbols (identifiers) starting with a `?`.
+
+In the above example we have a match if all of the following hold:
+
+- The request is a GET request, with the path matching placeholder
+  `?path`
+- The response has 200 OK status
+- The response body has a field `"pageNumber"` stored in placeholder
+  `?pageNumber`
+- Response body has a field `"hasNextPage"` with value `true`.
+
+This will generate one GET request on the same `?path` with a
+`pageNumber` parameter that is one more than the `?pageNumber` in the
+interaction's response.
+
+The reponse body is automatically parsed as json if it has the correct
+content type.
+
+## Template format
+
+You can insert expressions in the `:generates` template by using
+`{...}` brackets. Placeholders are available in expressions.
+S-expressions can be used for function calls.
+  
+The following functions are available in expressions:
+
+- `(inc EXPR)` increases EXPR by one
+- `(dec EXPR)` decreases EXPR by one
+- `(+ A B)` add A to B
+- `(- A B)` subtract B from A
+- `(not EXPR)` boolean not
+- `(= A B)` true if A equals B
+
 # Component overview
 
 ![component diagram](./components.png)
