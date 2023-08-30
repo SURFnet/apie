@@ -121,13 +121,13 @@ times.  This `generates` a list of requests from a template that can
 use the placeholders:
 
 ```clojure
-  {:match     [[:request :method "get"]
-               [:request :path ?path]
-               [:response :status 200]
-               [:response :body "pageNumber" ?pageNumber]
-               [:response :body "hasNextPage" true]]
-   :generates [{:method "get"
-                :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
+{:match     [[:request :method "get"]
+             [:request :path ?path]
+             [:response :status 200]
+             [:response :body "pageNumber" ?pageNumber]
+             [:response :body "hasNextPage" true]]
+ :generates [{:method "get"
+              :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
 ```
 
 Literal entries are integers, keywords (starting with `:`) and quoted
@@ -154,14 +154,14 @@ unified; clauses only match when their placeholders have the same
 value.  This can be used to match multiple entries in a list:
 
 ```clojure
-  {:match     [[:request :method "get"]
-               [:request :path "/customers"]
-               [:response :status 200]
-               [:response :body "customers" ?index "id" ?id]
-               [:response :body "customers" ?index "name" ?name]]
+{:match     [[:request :method "get"]
+             [:request :path "/customers"]
+             [:response :status 200]
+             [:response :body "customers" ?index "id" ?id]
+             [:response :body "customers" ?index "name" ?name]]
 
-   :generates [{:method "get"
-                :path   "/customer?id={?id}&name={?name}"}]}
+ :generates [{:method "get"
+              :path   "/customer?id={?id}&name={?name}"}]}
 ```
 
 If the interaction response body contains a `"customers"` list of maps
