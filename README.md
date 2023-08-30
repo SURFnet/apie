@@ -85,6 +85,10 @@ After spidering is completed, you can create a readable report using
 
 This report is readable in any web browser.
 
+## On windows
+
+Use `spider.bat` and `report.bat` instead of the `.sh` scripts.
+
 # For specification editors
 
 ## Profiles
