@@ -54,8 +54,6 @@ and can be read as text, but it will probably be very large.
 
 ## Spidering via gateway
 
-_Work in progress_
-
 To run the spider through the Eduhub gateway, you can use the
 `--basic-auth` and `--headers` options:
 
@@ -70,10 +68,6 @@ To run the spider through the Eduhub gateway, you can use the
   -h 'x-envelope-response: false' \
   -w observations.edn
 ```
-
-Currently the test gateway does not correctly process the
-`x-envelope-response` header so the above will result in a lot of
-validation issues related to the response envelope.
 
 ## Creating a report
 
