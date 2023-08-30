@@ -168,7 +168,8 @@
       (println errors)
       (println summary)
       (System/exit 1))
-    (binding [*out* (io/writer (:write-to options) :encoding "UTF-8")]
-      (println "[")
-      (run! pprint/pprint (spider-and-validate options))
-      (println "]"))))
+    (with-open [w (io/writer (:write-to options) :encoding "UTF-8")]
+      (.write w "[")
+      (run! #(do (println (:uri (:request %)))
+                 (pprint/pprint % w)) (spider-and-validate options))
+      (.write w "]"))))
