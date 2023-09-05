@@ -1,18 +1,37 @@
+;; Rules for a "quick check"
+;;
+;; These are the same rules as in `rules.edn`, except these only match
+;; the first page of results from entity lists. So we spider only the
+;; first 20 courses, programs, education-specifications etc.
 {:seeds
  [{:method "get"
-   :path   "/"}]
+   :path   "/"}
+  {:method "get"
+   :path   "/academic-sessions"}
+  {:method "get"
+   :path   "/buildings"}
+
+  {:method "get"
+   :path   "/courses"}
+  {:method "get"
+   :path   "/education-specifications"}
+  {:method "get"
+   :path   "/groups"}
+  {:method "get"
+   :path   "/news-feeds"}
+  {:method "get"
+   :path   "/organizations"}
+  {:method "get"
+   :path   "/persons"}
+  {:method "get"
+   :path   "/persons/me"}
+  {:method "get"
+   :path   "/programs"}
+  {:method "get"
+   :path   "/rooms"}]
 
  :rules
- [;; page through items list for any kind of entity
-  {:match     [[:request, :method, "get"]
-               [:request, :path, ?path]
-               [:response :status 200]
-               [:response, :body, "pageNumber", ?pageNumber]
-               [:response, :body, "hasNextPage", true]]
-   :generates [{:method "get"
-                :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
-
-  {:match     [[:request, :method, "get"]
+ [{:match     [[:request, :method, "get"]
                [:response :status 200]
                [:response, :body, "items", ?i "academicSessionId" ?id]]
    :generates [{:method "get"

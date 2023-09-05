@@ -84,6 +84,22 @@ This report is readable in any web browser.
 
 Use `spider.bat` and `report.bat` instead of the `.sh` scripts.
 
+## Quick indexing
+
+The `config/rules.edn` rules are exhaustive; using these will spider
+all entities (courses, programs, offerings etc) available in the
+endpoint.  This can take long time if there are many entities.  If you
+want a quicker spidering phase, you can use `config/quick-rules.edn`
+which will only index the first page of entities for each type (this
+should be maximum of 20 entities per page):
+
+```sh
+./spider.sh -r config/quick-rules.edn \
+  -o config/rio-profile.json \
+  -u https://your-endpoint/ \
+  -w observations.edn
+```
+
 # For specification editors
 
 ## Profiles
