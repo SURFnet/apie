@@ -1,12 +1,12 @@
 (ns nl.jomco.eduhub-validator.report
-  (:require [clojure.edn :as edn]
+  (:require [clojure.data.json :as data.json]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [hiccup2.core :as hiccup2]
-            [nl.jomco.http-status-codes :as http-status]
             [nl.jomco.eduhub-validator.report.json :as json]
-            [clojure.data.json :as data.json]
+            [nl.jomco.http-status-codes :as http-status]
             [nl.jomco.openapi.v3.example :as example]))
 
 (def cli-options
@@ -109,11 +109,11 @@
 (declare issue-snippet-list)
 
 (defmulti json-schema-issue-summary
-  (fn [openapi issue]
+  (fn [_ issue]
     (:schema-keyword issue)))
 
 (defmethod json-schema-issue-summary "type"
-  [openapi {:keys [schema schema-keyword instance]}]
+  [_ {:keys [schema schema-keyword instance]}]
   [:span
    "Expected " [:strong "type"] " "
    [:code.expected (get schema schema-keyword)]
@@ -121,7 +121,7 @@
    [:code.got (value-type instance)]])
 
 (defmethod json-schema-issue-summary "required"
-  [openapi {:keys [hints]}]
+  [_ {:keys [hints]}]
   [:span
    "Missing " [:strong "required"] " field(s): "
    (interpose ", "
@@ -129,7 +129,7 @@
                    (:missing hints)))])
 
 (defmethod json-schema-issue-summary "enum"
-  [openapi {:keys [schema schema-keyword path]}]
+  [_ {:keys [schema schema-keyword path]}]
   [:span
    "Expected " [:strong "enum"]
    " value for " [:code (last path)]
@@ -173,7 +173,7 @@
        "But instance validates to " [:b "all"] " the schemas!"])]])
 
 (defmethod json-schema-issue-summary "anyOf"
-  [openapi {:keys [schema schema-keyword hints sub-issues]}]
+  [openapi {:keys [schema schema-keyword sub-issues]}]
   [:span
    "Expected " [:strong "any of"] ": "
    (interpose ", "
@@ -192,7 +192,7 @@
          (into [:ul]))]])
 
 (defmethod json-schema-issue-summary "contains"
-  [openapi {:keys [schema schema-keyword hints sub-issues]}]
+  [openapi {:keys [schema schema-keyword sub-issues]}]
   [:span
    "Expected collection to contain " (json-schema-title (get schema schema-keyword))
    [:details
@@ -206,12 +206,12 @@
          (into [:ul]))]])
 
 (defmethod json-schema-issue-summary :default
-  [openapi {:keys [schema-keyword]}]
+  [_ {:keys [schema-keyword]}]
   [:span
    "JSON Schema Issue: " [:code.schema-keyword schema-keyword]])
 
 (defmulti issue-summary
-  (fn [openapi issue]
+  (fn [_ issue]
     (:issue issue)))
 
 (defmethod issue-summary "schema-validation-error"
@@ -219,12 +219,12 @@
   (json-schema-issue-summary openapi issue))
 
 (defmethod issue-summary :default
-  [openapi {:keys [issue]}]
+  [_ {:keys [issue]}]
   [:span
    "Issue: " [:code.issue-type issue]])
 
 (defmethod issue-summary "status-error"
-  [openapi {:keys [issue hints instance]}]
+  [_ {:keys [hints instance]}]
   [:span
    [:strong "Status error"] " Expected one of: " (string/join ", " (:ranges hints)) ", got " instance])
 
