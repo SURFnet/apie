@@ -42,7 +42,8 @@ Validating an endpoint works in two steps:
 ## Spidering an endpoint
 
 ```sh
-./spider.sh -r rules.edn -o rio-profile.json \
+./spider.sh -r config/rules.edn \
+  -o config/rio-profile.json \
   -u https://your-endpoint/ \
   -w observations.edn
 ```
@@ -59,8 +60,8 @@ To run the spider through the Eduhub gateway, you can use the
 
 ```sh
 ./spider.sh \
-  -o rio-profile.json \
-  -r rules.edn \
+  -o config/rio-profile.json \
+  -r config/rules.edn \
   -u https://gateway.test.surfeduhub.nl/ \
   --basic-auth USERNAME:PASS \
   -h 'x-route: endpoint=demo04.test.surfeduhub.nl' \
@@ -74,7 +75,7 @@ To run the spider through the Eduhub gateway, you can use the
 After spidering is completed, you can create a readable report using
 
 ```sh
-./report.sh -o rio-profile.json -p report.html observations.edn
+./report.sh -o config/rio-profile.json -p report.html observations.edn
 ```
 
 This report is readable in any web browser.
@@ -181,5 +182,5 @@ The following functions are available in expressions:
 
 # Component overview
 
-![component diagram](./components.png)
+![component diagram](./docs/components.png)
 
