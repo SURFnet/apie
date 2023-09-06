@@ -4,9 +4,9 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
-            [hiccup2.core :as hiccup2]
+            [hiccup.page]
+            [hiccup.util]
             [nl.jomco.eduhub-validator.report.json :as json]
-            [nl.jomco.http-status-codes :as http-status]
             [nl.jomco.openapi.v3.example :as example]))
 
 (def cli-options
@@ -19,29 +19,30 @@
 (def max-value-depth 1)
 (def max-value-length 120)
 
-(defn pretty-json [v & opts]
+(defn- pretty-json [v & opts]
   [:pre.json (apply json/to-s v opts)])
 
-(defn with-issues [interactions]
+(defn- with-issues [interactions]
   (filter :issues interactions))
 
-(defn score-percent [interactions]
+(defn- score-percent [interactions]
   (* 100.0 (/ (count (with-issues interactions))
               (count interactions))))
 
-(defn score-summary [interactions]
+(defn- score-summary [interactions]
   (let [score (score-percent interactions)]
-    (if (zero? score)
-      (str "🙂 no issues found!")
-      (format "😢 %.1f%% (%d) observations have issues"
-              score
-              (count (with-issues interactions))))))
+    [:div.score
+      (if (zero? score)
+        (str "🙂 no issues found!")
+        (format "😢 %.1f%% (%d) observations have issues."
+                score
+                (count (with-issues interactions))))]))
 
 
 (def report-title "SURFeduhub validation report")
 (def css-resource "style.css")
 
-(defn interactions-summary [interactions]
+(defn- interactions-summary [interactions]
   (let [server-names (->> interactions
                           (map :request)
                           (map :server-name)
@@ -55,6 +56,7 @@
                           (sort)
                           (last))]
     [:section.summary
+     [:h3 "Summary"]
      [:dl
       [:div
        [:dt "Server" (if (> (count server-names) 1) "s" "")]
@@ -64,9 +66,9 @@
        [:dt "Run time"]
        [:dd "From "[:strong start-at] " till " [:strong finish-at]]]]]))
 
-(defn kpis-section [interactions]
+(defn- kpis-section [interactions]
   [:section.kpis
-   [:h2 "KPIs"]
+   [:h3 "KPIs"]
    (let [n             (count interactions)
          n-with-issues (count (with-issues interactions))]
      [:dl
@@ -80,23 +82,13 @@
        [:dt "Validation score"]
        [:dd (score-summary interactions)]]])])
 
-(defn- interaction-summary [{{:keys [method url]} :request
-                             {:keys [status reason-phrase]} :response}]
+(defn- interaction-summary [{{:keys [method url]} :request}]
   [:span.interaction-summary
-   [:span.method (string/upper-case (name method))]
+   [:code.method (string/upper-case (name method))]
    " "
-   [:span.url url]
-   " → "
+   [:code.url url]])
 
-   [:span.status
-    {:class (if (http-status/success-status? status)
-              "status-success"
-              "status-failure")}
-    status
-    " "
-    reason-phrase]])
-
-(defn value-type [v]
+(defn- value-type [v]
   (cond
     (sequential? v) "array"
     (boolean? v)    "boolean"
@@ -228,51 +220,46 @@
   [:span
    [:strong "Status error"] " Expected one of: " (string/join ", " (:ranges hints)) ", got " instance])
 
-(defn issue-example
+(defn- issue-example
   [openapi {:keys [schema-keyword canonical-schema-path]}]
   (when schema-keyword
     ;; schema-keyword issues have a full json-schema as the parent of
     ;; the schema keyword
     (example/example openapi (subvec canonical-schema-path 0 (dec (count canonical-schema-path))))))
 
-(defn issue-details
-  [openapi {:keys [path schema-path sub-issues] :as issue}]
+(defn- path->hiccup [coll]
+  [:span.path (interpose " / " (map #(vector :code %) coll))])
+
+(defn- issue-details
+  [openapi {:keys [instance path schema-path sub-issues] :as issue}]
   (if (seq sub-issues)
     (issue-summary openapi issue)
-    [:details.issue
-     [:summary
-      [:span.issue-summary
-       (issue-summary openapi issue)]]
-     [:dl
-      (for [[label path] {"Path in body" path
-                          "Schema path"  schema-path}]
-        [:div
-         [:dt label]
-         [:dd (interpose " / " (map #(vector :code %) path))]])
-      (when-let [example (issue-example openapi issue)]
-        [:div [:dt "Example from schema"]
-         [:dd (pretty-json example)]])
-      ;; TODO handle sub-issues using issue-snippet
-      [:div
-       [:dt "Issue data"]
-       [:dd (-> issue
-                (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
-                (pretty-json))]]]]))
+    [:dl
+     (for [[label value]
+           {"Value"               (pretty-json instance
+                                               :max-depth max-value-depth
+                                               :max-length max-value-length)
+            "Example from schema" (pretty-json (issue-example openapi issue))
+            "Path in body"        (path->hiccup path)
+            "Full schema path"    (path->hiccup schema-path)}]
+       (when value
+         [:div
+          [:dt label]
+          [:dd value]]))
+     [:div
+      [:dt "Issue data"]
+      [:dd (-> issue
+               (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
+               (pretty-json))]]]))
 
-(defn- instance-details [instance i]
-  [:details.instance (when (= 0 i) {:open true})
-   [:summary "Invalid value"]
-   (pretty-json instance
-                :max-depth max-value-depth, :max-length max-value-length)])
+(defn- issue-snippet [openapi issue _i]
+  (issue-details openapi issue))
 
-(defn- issue-snippet [openapi {:keys [instance] :as issue} i]
-  [:div
-   (issue-details openapi issue)
-   (instance-details instance i)])
-
-(defn- interaction-snippet [openapi {:keys [interaction] :as issue} i]
-  [:details.interaction (when (= 0 i) {:open true})
-   [:summary (interaction-summary interaction)]
+(defn- interaction-snippet [openapi {:keys [interaction path] :as issue} i]
+  [:details.interaction
+   [:summary
+    [:div.headline (interaction-summary interaction)]
+    [:div.summary (issue-summary openapi issue) " at " (path->hiccup path)]]
    (issue-snippet openapi issue i)])
 
 (defn- issue-snippet-list
@@ -303,8 +290,8 @@
       (- (count issues) max-issues)
       " more.."])])
 
-(defn per-path-section [openapi interactions]
-  [:section
+(defn- per-path-section [openapi interactions]
+  [:section.per-path
    [:h2 "Results per request path"]
    [:p "(sorted by percentage of issues)"]
 
@@ -313,12 +300,12 @@
               (group-by :operation-path)
               (sort-by (fn [[path interactions]]
                          [(* -1 (score-percent interactions)) path])))]
-     [:section
-      [:h3.interaction-path path]
+     [:section.interaction-path
+      [:h3 path]
       (let [n             (count interactions)
             n-with-issues (->> interactions (filter :issues) (count))]
         [:div
-         (- n n-with-issues) " / " n " valid observations. " (score-summary interactions)
+         [:div.summary (- n n-with-issues) " of " n " observations have no issues."]
 
          (when (pos? n-with-issues)
            (let [issues-by-schema-path (->> interactions
@@ -329,7 +316,7 @@
                                             (sort-by (fn [[path issues]]
                                                        [(* -1 (count issues)) path])))
                  n-issue-types  (count issues-by-schema-path)]
-             [:div
+             [:div.summary
               [:p
                (if (> n-issue-types 1)
                  (format "%d different validation issues"
@@ -345,12 +332,13 @@
                  [:li
                   [:details.schema-path (when (= 0 i) {:open true})
                    [:summary
-                    [:span.schema-path (string/join "/" schema-path)]
-                    ": "
-                    [:span.count (count issues) " issues in "
-                     (count (filter (fn [{:keys [issues]}]
-                                      (some #(= schema-path (:canonical-schema-path %)) issues))
-                                    interactions)) " observations"]]
+                    [:div.leading [:span.count (count issues)]]
+                    [:div.headline
+                     [:div.schema-path (string/join "/" schema-path)]
+                     [:div.summary (count issues) " issues in "
+                      (count (filter (fn [{:keys [issues]}]
+                                       (some #(= schema-path (:canonical-schema-path %)) issues))
+                                     interactions)) " observations"]]]
                    (interaction-snippet-list openapi issues)]])
 
                (when (> (count issues-by-schema-path) max-issues-per-schema-path)
@@ -360,20 +348,27 @@
                      max-issues-per-schema-path)
                   " more.."])]]))])])])
 
+(defn- raw-css [css]
+  (hiccup.util/raw-string "/*<![CDATA[*/\n" css "/*]]>*/"))
+
 (defn report
   [openapi interactions]
-  (hiccup2/html
+  (hiccup.page/html5
    [:html
-    [:head [:title report-title]]
-    [:style (-> css-resource (io/resource) (slurp))]
+    [:head [:title report-title]
+     [:style (-> css-resource (io/resource) (slurp) (raw-css))]]
     [:body
      [:header
       [:h1 report-title]]
 
      [:main
-      (interactions-summary interactions)
-      (kpis-section interactions)
-      (per-path-section openapi interactions)]]]))
+      [:section.general
+       (interactions-summary interactions)
+       (kpis-section interactions)]
+      (per-path-section openapi interactions)]
+
+     [:footer
+      "This report was generated at " (java.util.Date.)]]]))
 
 (defn -main
   [& args]
