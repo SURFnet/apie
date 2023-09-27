@@ -20,7 +20,7 @@ html {
 
 header, main, footer {
     margin: 1rem auto;
-    max-width: 60rem;
+    max-width: 80rem;
 }
 footer {
     margin-top: 2rem;
@@ -50,6 +50,17 @@ section > section > h3 {
 summary {
     cursor: pointer;
 }
+
+details > summary {
+    list-style: none;
+    position: relative;
+}
+details > summary::after {
+    content: "→";
+    padding-left: 1rem;
+    color: var(--dimmed-color);
+}
+
 dl > div {
     margin-bottom: .5rem;
 }
@@ -62,9 +73,26 @@ dt:after {
 dd {
     margin-left: 1rem;
 }
+
+ol, ul {
+    margin: 1rem 0;
+    padding: 0 0 0 1rem;
+}
+
 .and-more {
     font-style: italic;
-    font-size: 80%;
+    font-size: .8rem;
+}
+
+q.title {
+    font-style: italic;
+}
+
+li.and-more {
+    margin-top: .5rem;
+}
+li.and-more::marker {
+    content: '';
 }
 .json {
     background: var(--code-bg-color);
@@ -90,12 +118,12 @@ section.general dl {
 }
 
 .per-path > p {
-    font-size: 80%;
+    font-size: .8rem;
 }
 
 /* by-path */
 
-ol.by-schema-path, ol.by-schema-path ul {
+ol.by-schema-path, ol.by-schema-path ul.interactions {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -160,28 +188,20 @@ details.schema-path > summary > div.leading .count {
 }
 details.schema-path > summary > div.leading .count:after {
     content: '×';
-    font-size: 80%;
+    font-size: .8rem;
     font-weight: normal;
 }
 details.schema-path > summary > div.headline {
     display: inline-block;
     margin-top: -.2rem;
 }
-details.schema-path > summary > div.headline > .summary {
-    font-size: 80%;
-}
 
-details.interaction > summary {
-    list-style: none;
-    position: relative;
-}
 details.interaction > summary::after {
-    content: "→";
+    padding-left: 0;
     display: block;
     position: absolute;
-    bottom: 0;
     right: .5rem;
-    color: var(--dimmed-color);
+    bottom: 0;
 }
 details[open].interaction > summary::after {
     display: none;
@@ -189,11 +209,4 @@ details[open].interaction > summary::after {
 
 details.interaction > summary > .headline {
     font-weight: bold;
-}
-
-details.interaction > summary > .summary {
-    font-size: 80%;
-}
-details.interaction dl {
-    font-size: 80%;
 }
