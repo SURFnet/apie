@@ -27,4 +27,4 @@ tasks:
   - test-bb: |
       PATH=$PATH:`pwd`/bin
       cd eduhub-validator
-      bb -Sdeps '{:deps {this/project {:local/root "."} lambdaisland/kaocha {:mvn/version "1.85.1342"}}}' -m kaocha.runner/-main
+      bb -Sdeps '{:deps {this/project {:local/root "."} lambdaisland/kaocha {:mvn/version "RELEASE"}}}' -m kaocha.runner/-main

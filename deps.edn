@@ -1,7 +1,7 @@
 {:paths ["src" "assets"]
  :deps
  {org.clojure/tools.cli          {:mvn/version "1.0.219"}
-  org.babashka/http-client       {:mvn/version "0.4.13"}
+  org.babashka/http-client       {:mvn/version "0.4.15"}
   hiccup/hiccup                  {:mvn/version "2.0.0-RC1"}
   nl.jomco/clj-http-status-codes {:mvn/version "0.1"}
   nl.jomco/openapi-v3-validator  {:git/url "https://git.sr.ht/~jomco/openapi-v3-validator"
@@ -9,7 +9,7 @@
   nl.jomco/spider                {:git/url "https://git.sr.ht/~jomco/spider"
                                   :git/sha "318bd389ea434d5308af59d744d9e2fd97ea1779"}}
 
- :aliases {:test      {:extra-deps {lambdaisland/kaocha {:mvn/version "1.85.1342"}}
+ :aliases {:test      {:extra-deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}
                        :main-opts  ["-m" "kaocha.runner"]}
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.05.26"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}
                        :main-opts  ["-m" "clj-kondo.main"]}}}
