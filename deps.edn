@@ -4,8 +4,7 @@
   org.babashka/http-client       {:mvn/version "0.4.15"}
   hiccup/hiccup                  {:mvn/version "2.0.0-RC1"}
   nl.jomco/clj-http-status-codes {:mvn/version "0.1"}
-  nl.jomco/openapi-v3-validator  {:git/url "https://git.sr.ht/~jomco/openapi-v3-validator"
-                                  :git/sha "5c6b8ac7857062a88266f4effde1c023e4f4cfb0"}
+  nl.jomco/openapi-v3-validator  {:mvn/version "0.2.0"}
   nl.jomco/spider                {:git/url "https://git.sr.ht/~jomco/spider"
                                   :git/sha "318bd389ea434d5308af59d744d9e2fd97ea1779"}}
 
