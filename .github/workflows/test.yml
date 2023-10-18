@@ -1,0 +1,40 @@
+name: Run tests
+on: push
+  
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/cache@v3
+      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
+    - uses: actions/cache@v3
+      with:
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
+        path: |
+          ./bin
+          ./lib
+
+    - name: Install clj runtime
+      run: .github/workflows/install-binaries.sh
+          
+    - name: Run tests on Clojure
+      run: bin/clojure -M:test
+
+    - name: Run tests on Babashka
+      run: bin/bb -Sdeps '{:deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}}' -m kaocha.runner/-main 
+          
+    - name: Check dependency freshness
+      run: bin/clojure -M:outdated
+      
+    - name: Run linters
+      run: bin/clojure -M:clj-kondo --lint src test
+
+    - name: Install NVD clojure
+      run: bin/clojure -Ttools install nvd-clojure/nvd-clojure '{:mvn/version "RELEASE"}' :as nvd;
+
+    - name: Check NVD
+      run: bin/clojure -J-Dclojure.main.report=stderr -Tnvd nvd.task/check :classpath \""$(bin/clojure -Spath)\""
+
+
