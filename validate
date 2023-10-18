@@ -6,4 +6,4 @@ else
     RUNTIME="clojure -M"
 fi
 
-$RUNTIME -m nl.jomco.eduhub-validator.report "$@"
+${RUNTIME} -m nl.jomco.eduhub-validator.main "$@"

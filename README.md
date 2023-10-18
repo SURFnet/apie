@@ -42,10 +42,9 @@ Validating an endpoint works in two steps:
 ## Spidering an endpoint
 
 ```sh
-./spider.sh -r config/rules.edn \
-  -o config/rio-profile.json \
-  -u https://your-endpoint/ \
-  -w observations.edn
+./validate --rules config/rules.edn \
+  --spec config/rio-profile.json \
+  --base-url https://your-endpoint/
 ```
 
 This will exhaustively index your endpoint paths, validate against the
@@ -59,30 +58,24 @@ To run the spider through the Eduhub gateway, you can use the
 `--basic-auth` and `--headers` options:
 
 ```sh
-./spider.sh \
-  -o config/rio-profile.json \
-  -r config/rules.edn \
-  -u https://gateway.test.surfeduhub.nl/ \
+./validate \
+  --spec config/rio-profile.json \
+  --rules config/rules.edn \
+  --base-url https://gateway.test.surfeduhub.nl/ \
   --basic-auth USERNAME:PASS \
-  -h 'x-route: endpoint=demo04.test.surfeduhub.nl' \
-  -h 'accept: application/json; version=5' \
-  -h 'x-envelope-response: false' \
-  -w observations.edn
+  --add-header 'x-route: endpoint=demo04.test.surfeduhub.nl' \
+  --add-header 'accept: application/json; version=5' \
+  --add-header 'x-envelope-response: false'
 ```
 
 ## Creating a human-readable report
 
-After spidering is completed, you can create a readable report using
-
-```sh
-./report.sh -o config/rio-profile.json -w report.html observations.edn
-```
-
-This report is readable in any web browser.
+After spidering is completed, a report is generated and written to
+`report.html`. This report is readable in any web browser.
 
 ## On windows
 
-Use `spider.bat` and `report.bat` instead of the `.sh` scripts.
+Use `validate.bat` instead of the `validate` script.
 
 ## Available Eduhub profiles
 
@@ -104,10 +97,9 @@ which will only index the first page of entities for each type (this
 should be maximum of 20 entities per page):
 
 ```sh
-./spider.sh -r config/quick-rules.edn \
-  -o config/rio-profile.json \
-  -u https://your-endpoint/ \
-  -w observations.edn
+./validate --rules config/quick-rules.edn \
+  --spec config/rio-profile.json \
+  --base-url https://your-endpoint/
 ```
 
 # For specification authors
@@ -120,4 +112,9 @@ found in [docs/specification-authors.md](./docs/specification-authors.md).
 ![component diagram](./docs/components.png)
 
 # Reporting vulnerabilities
-If you have found a vulnerability in the code, we would like to hear about it so that we can take appropriate measures as quickly as possible. We are keen to cooperate with you to protect users and systems better. See https://www.surf.nl/.well-known/security.txt for information on how to report vulnerabilities responsibly.
+
+If you have found a vulnerability in the code, we would like to hear
+about it so that we can take appropriate measures as quickly as
+possible. We are keen to cooperate with you to protect users and
+systems better. See https://www.surf.nl/.well-known/security.txt for
+information on how to report vulnerabilities responsibly.

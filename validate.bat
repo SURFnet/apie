@@ -6,4 +6,4 @@ if ERRORLEVEL 0 (
 ) else (
   set RUNTIME="clojure -M"
 )
-%RUNTIME% -m nl.jomco.eduhub-validator.spider %*
+%RUNTIME% -m nl.jomco.eduhub-validator.main %*

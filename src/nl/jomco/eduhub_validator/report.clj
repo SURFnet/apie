@@ -1,18 +1,10 @@
 (ns nl.jomco.eduhub-validator.report
-  (:require [clojure.data.json :as data.json]
-            [clojure.edn :as edn]
+  (:require [clojure.string :as string]
             [clojure.java.io :as io]
-            [clojure.string :as string]
-            [clojure.tools.cli :refer [parse-opts]]
             [hiccup.page]
             [hiccup.util]
             [nl.jomco.eduhub-validator.report.json :as json]
             [nl.jomco.openapi.v3.example :as example]))
-
-(def cli-options
-  [["-o" "--openapi OPENAPI-PATH" "OpenAPI specification"
-    :missing "openapi path is required"]
-   ["-w" "--write-to REPORT-PATH" "Path of output file"]])
 
 (def max-issues-per-schema-path 10)
 (def max-issues 3)
@@ -404,19 +396,3 @@
 
      [:footer
       "This report was generated at " (java.util.Date.)]]]))
-
-(defn -main
-  [& args]
-  (System/setProperty "file.encoding" "UTF-8") ;; Force, for windows
-  (let [{:keys [errors summary options arguments]} (parse-opts args cli-options)
-        {:keys [openapi]} options]
-    (when (seq errors)
-      (println errors)
-      (println summary)
-      (System/exit 1))
-    (binding [*out* (io/writer (:write-to options) :encoding "UTF-8")]
-      (println
-       ;; str needed to coerce hiccup "rawstring"
-       (str (report (data.json/read-json (io/reader openapi :encoding "UTF-8") false)
-                    (with-open [in (java.io.PushbackReader. (io/reader (first arguments)))]
-                      (edn/read in))))))))
