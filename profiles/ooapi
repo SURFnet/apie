@@ -1,9 +1,5 @@
-;; Rules for a "quick check"
-;;
-;; These are the same rules as in `rules.edn`, except these only match
-;; the first page of results from entity lists. So we spider only the
-;; first 20 courses, programs, education-specifications etc.
-{:seeds
+{:openapi-spec "ooapi.openapi.json"
+ :seeds
  [{:method "get"
    :path   "/"}
   {:method "get"
@@ -31,7 +27,16 @@
    :path   "/rooms"}]
 
  :rules
- [{:match     [[:request, :method, "get"]
+ [;; page through items list for any kind of entity
+  {:match     [[:request, :method, "get"]
+               [:request, :path, ?path]
+               [:response :status 200]
+               [:response, :body, "pageNumber", ?pageNumber]
+               [:response, :body, "hasNextPage", true]]
+   :generates [{:method "get"
+                :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
+
+  {:match     [[:request, :method, "get"]
                [:response :status 200]
                [:response, :body, "items", ?i "academicSessionId" ?id]]
    :generates [{:method "get"
