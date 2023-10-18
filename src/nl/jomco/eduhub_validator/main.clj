@@ -5,6 +5,7 @@
             [clojure.pprint :as pprint]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
+            [nl.jomco.eduhub-validator.included-profiles :as included-profiles]
             [nl.jomco.eduhub-validator.report :as report]
             [nl.jomco.eduhub-validator.spider :as spider]))
 
@@ -19,14 +20,8 @@
   [headers [k v]]
   (update-in headers [k] spider/merge-header-values v))
 
-
 (def cli-options
-  [["-s" "--spec OPENAPI-PATH" "Path to OpenAPI JSON specification for validation."
-    :missing "OPENAPI-PATH is missing"
-    :id :openapi-path]
-   ["-r" "--rules RULES-PATH" "Path to rules for spidering. Required when spidering."
-    :id :rules-path]
-   ["-u" "--base-url BASE-URL" "Base URL of service to validate."
+  [["-u" "--base-url BASE-URL" "Base URL of service to validate."
     :missing "BASE-URL is missing"]
    ["-o" "--observations OBSERVATIONS-PATH" "Path to read/write spidering observations."
     :id :observations-path
@@ -34,14 +29,19 @@
    ["-p" "--report REPORT-PATH" "Path to write report."
     :id :report-path
     :default "report.html"]
+   (if-let [[default] included-profiles/profiles]
+     ["-r" "--profile PROFILE" "Path to profile or name of builtin profile"
+      :id :profile
+      :default default]
+     ["-r" "--profile PROFILE" "Path to profile"
+      :id :profile
+      :missing "PROFILE is missing"])
    ["-S" "--no-spider" "Disable spidering (re-use observations from OBSERVATIONS-PATH)."
-    :id :spider?
-    :default true
-    :parse-fn not]
+    :id :no-spider?
+    :default false]
    ["-P" "--no-report" "Disable report generation (spidering will write observations)."
-    :id :report?
-    :default true
-    :parse-fn not]
+    :id :no-report?
+    :default false]
    ["-h" "--add-header 'HEADER: VALUE'" "Add header to request. Can be used multiple times."
     :default {}
     :id :headers
@@ -60,14 +60,24 @@
                   {:user user
                    :pass pass}))]])
 
+(defn file-or-resource
+  "Return f as file if it exists, otherwise as resource.
+
+  Returns nil if neither resource or file are present."
+  [f]
+  (let [file (io/file f)]
+    (if (.exists file)
+      file
+      (io/resource f))))
+
 (defn- read-edn
   [f]
-  (with-open [in (java.io.PushbackReader. (io/reader f :encoding "UTF-8"))]
+  (with-open [in (java.io.PushbackReader. (io/reader (file-or-resource f) :encoding "UTF-8"))]
     (edn/read in)))
 
 (defn- read-json
   [f]
-  (data.json/read-json (io/reader f :encoding "UTF-8") false))
+  (data.json/read-json (io/reader (file-or-resource f) :encoding "UTF-8") false))
 
 (defn- spider
   [spec-data rules-data {:keys [base-url observations-path] :as options}]
@@ -77,7 +87,6 @@
     (run! #(do (println (:url (:request %)))
                (pprint/pprint % w)) (spider/spider-and-validate spec-data rules-data options))
     (.write w "]")))
-
 
 (defn- report
   [spec-data {:keys [observations-path report-path]}]
@@ -89,17 +98,19 @@
 
 (defn -main
   [& args]
-  (let [{:keys [errors summary]
-         {:keys [spider? report?
-                 openapi-path rules-path
-                 base-url] :as options} :options} (parse-opts args cli-options)]
+  (let [{:keys                                         [errors summary]
+         {:keys [no-spider? no-report? profile] :as options} :options}
+        (parse-opts args cli-options)]
     (when (seq errors)
       (run! println errors)
       (println summary)
+      (when included-profiles/profiles
+        (println "\nBuiltin profiles:")
+        (run! #(println " - " %) included-profiles/profiles))
       (System/exit 1))
-    (let [spec-data (read-json openapi-path)
-          rules-data (read-edn rules-path)]
-      (when spider?
-        (spider spec-data rules-data options))
-      (when report?
+    (let [profile-data (read-edn (io/resource profile))
+          spec-data    (read-json (:openapi-spec profile-data))]
+      (when-not no-spider?
+        (spider spec-data profile-data options))
+      (when-not no-report?
         (report spec-data options)))))

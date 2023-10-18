@@ -42,8 +42,7 @@ Validating an endpoint works in two steps:
 ## Spidering an endpoint
 
 ```sh
-./validate --rules config/rules.edn \
-  --spec config/rio-profile.json \
+./validate --profile ooapi
   --base-url https://your-endpoint/
 ```
 
@@ -59,8 +58,7 @@ To run the spider through the Eduhub gateway, you can use the
 
 ```sh
 ./validate \
-  --spec config/rio-profile.json \
-  --rules config/rules.edn \
+  --profile rio
   --base-url https://gateway.test.surfeduhub.nl/ \
   --basic-auth USERNAME:PASS \
   --add-header 'x-route: endpoint=demo04.test.surfeduhub.nl' \
@@ -87,25 +85,16 @@ A few Eduhub profiles are available in the [config](./config) directory:
 The RIO profile defines the subset of the OOAPI that RIO Mapper
 service requires.
 
-## Quick indexing
-
-The `config/rules.edn` rules are exhaustive; using these will spider
-all entities (courses, programs, offerings etc) available in the
-endpoint.  This can take long time if there are many entities.  If you
-want a quicker spidering phase, you can use `config/quick-rules.edn`
-which will only index the first page of entities for each type (this
-should be maximum of 20 entities per page):
-
-```sh
-./validate --rules config/quick-rules.edn \
-  --spec config/rio-profile.json \
-  --base-url https://your-endpoint/
-```
-
 # For specification authors
 
 Information about writing specification profiles and spider rules can be
 found in [docs/specification-authors.md](./docs/specification-authors.md).
+
+# Changes
+
+- Profiles configure the openapi spec (removed --spec option, renamed --rules to --profile).
+- Support for built-in profiles added.
+
 
 # Component overview
 

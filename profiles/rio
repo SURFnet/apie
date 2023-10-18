@@ -1,0 +1,45 @@
+{:openapi-spec "rio.openapi.json"
+ :seeds
+ [{:method "get"
+   :path   "/courses"}
+  {:method "get"
+   :path   "/education-specifications"}
+  {:method "get"
+   :path   "/programs"}]
+
+ :rules
+ [;; page through items list for any kind of entity
+  {:match     [[:request, :method, "get"]
+               [:request, :path, ?path]
+               [:response :status 200]
+               [:response, :body, "pageNumber", ?pageNumber]
+               [:response, :body, "hasNextPage", true]]
+   :generates [{:method "get"
+                :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
+
+
+  {:match     [[:request, :method, "get"]
+               [:response :status 200]
+               [:response, :body, "items", ?i "courseId" ?id]]
+   :generates [{:method "get"
+                :path   "/courses/{?id}"}
+               {:method "get"
+                :path   "/courses/{?id}/offerings"}]}
+
+  {:match     [[:request, :method, "get"]
+               [:response :status 200]
+               [:response, :body, "items", ?i "educationSpecificationId" ?id]]
+   :generates [{:method "get"
+                :path   "/education-specifications/{?id}"}]}
+
+  {:match     [[:request, :method, "get"]
+               [:response :status 200]
+               [:response, :body, "items", ?i "programId" ?id]]
+   :generates [{:method "get"
+                :path   "/programs/{?id}"}
+               {:method "get"
+                :path   "/programs/{?id}/programs"}
+               {:method "get"
+                :path   "/programs/{?id}/courses"}
+               {:method "get"
+                :path   "/programs/{?id}/offerings"}]}]}

@@ -1,2 +1,11 @@
 /.cpcache/
 /.envrc
+/bin/
+/lib/
+eduhub-validator*
+*.tar.gz
+/report.html
+/observations.edn
+/share/
+/target/
+*.jar
