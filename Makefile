@@ -17,29 +17,32 @@
 # and `make eduhub-validator-$VERSION-macos-aarch64.tar.gz` will do
 # what you expect as long as $VERSION is the currently tagged version
 
-VALIDATOR_VERSION:=$(shell git describe --tags)
-BABASHKA_VERSION:=1.3.186-SNAPSHOT  # need latest snapshot for standalone executables
+BB:=bb
+version:=$(shell git describe --tags)
+
+# need latest snapshot for standalone executables
+BABASHKA_VERSION:=1.3.186-SNAPSHOT
 
 .PHONY: uberjar
 
 exec_base_name=eduhub-validator
-release_name=$(exec_base_name)-$(VALIDATOR_VERSION)
+release_name=$(exec_base_name)-$(version)
 source_files=$(shell find src assets profiles -type f)
 
 # uberjar is the babashka uberjar (not a java-compatible jar)
-uberjar=$(exec_base_name)-$(VALIDATOR_VERSION)-standalone.jar
+uberjar=$(exec_base_name)-$(version)-standalone.jar
 
 uberjar: $(uberjar)
 
 $(uberjar): deps.edn bb.edn $(source_files)
-	bb uberjar $@ -m nl.jomco.eduhub-validator.main
+	$(BB) uberjar $@ -m nl.jomco.eduhub-validator.main
 
 release: $(binary_release)
 
 # for unixy systems
 $(release_name)-%/$(exec_base_name): babashka-$(BABASHKA_VERSION)-%.tar.gz $(uberjar)
 	mkdir -p $(dir $@)
-	tar -xO <$< >$@
+	tar -zxO <$< >$@
 	cat $(uberjar) >>$@
 	chmod 755 $@
 
