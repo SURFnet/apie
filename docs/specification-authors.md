@@ -4,16 +4,26 @@ This document is intended for authors of the Open Education
 Specification and related profiles.
 
 Before writing your own profiles and rules take a look at the
-available configuration files in the [config](../config) directory.
+available configuration files in the [profiles](../profiles) directory.
 
-# Open Education Specification Profiles
+# Profiles for different use cases
 
 The Open Education Specification has profiles for different consumers
-(use cases). We describe the profiles as variants of the general
-specification, using standard OpenAPI documents.
+(use cases).
 
-Profiles are created using
-[merge-yaml-tree](https://git.sr.ht/~jomco/merge-yaml-tree). 
+Currently, we have a two profiles:
+
+- `ooapi` - the profile for a complete OOAPI implementation
+- `rio` - the minimum implementation needed for serving the RIO Consumer. 
+
+We describe a profile as a set of rules for indexing specific paths,
+plus a profile-specific OpenAPI specification (this is a subset of the
+generic OOAPI OpenAPI spec).
+
+# OpenAPI Specifications
+
+OpenAPI specs subsets are created using
+[merge-yaml-tree](https://git.sr.ht/~jomco/merge-yaml-tree).
 
 This tool takes two directory trees with YAML files and generates a
 merged tree.  This can be used to create subsets of the [Open
@@ -31,21 +41,21 @@ npx @redocly/openapi-cli bundle --ext=json spec.yaml --force >profile.json
 Where `spec.yaml` is the root YAML document.
 
 In this repository, the resulting JSON specifications are added to the
-[config](../config) directory.
+[profiles](../profiles) directory.
 
-# Rules files
+# Profile files
 
 An OpenAPI specification alone is not enough to index a service. The
 spider also uses rules. These provide seed requests, and rules that
 generate new requests based on the previous response.
 
-Rules files are `edn` maps and have two keys:
+Profile files are `edn` maps and have three keys:
 
+- `:openapi-spec` - the name of the OpenAPI spec for the profile
 - `:seeds` - a list of request maps. Request maps need at least a
   `:method` and a `:path` key. Seeds represent the initial requests
   for spidering. There must be at least one seed in order to spider an
   endpoint.
-
 - `:rules` - a list of rule maps. A rule will `:match` an interaction
   map and `:generates` one or more request maps.
 
@@ -63,7 +73,8 @@ times.  This `generates` a list of requests from a template that can
 use the placeholders:
 
 ```clojure
-{:match     [[:request :method "get"]
+{:openapi-spec "spec.openapi.json"
+ :match     [[:request :method "get"]
              [:request :path ?path]
              [:response :status 200]
              [:response :body "pageNumber" ?pageNumber]
@@ -96,7 +107,8 @@ unified; clauses only match when their placeholders have the same
 value.  This can be used to match multiple entries in a list:
 
 ```clojure
-{:match     [[:request :method "get"]
+{:openapi-spec "spec.openapi.json"
+ :match     [[:request :method "get"]
              [:request :path "/customers"]
              [:response :status 200]
              [:response :body "customers" ?index "id" ?id]
