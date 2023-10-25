@@ -1,35 +1,30 @@
 # Eduhub API validator
 
-A collection of command-line tools to spider and validate [Open
-Education API](https://openonderwijsapi.nl/) endpoints to ensure
-compatibility with services in
+A command-line tool to spider and validate [Open Education
+API](https://openonderwijsapi.nl/) endpoints to ensure compatibility
+with services in
 [SURFeduhub](https://www.surf.nl/surfeduhub-veilig-uitwisselen-van-onderwijsdata).
 
-These are tools are intended for developers of OOAPI endpoints
-at educational institutions or their software suppliers.
+This tool is intended for developers of OOAPI endpoints at educational
+institutions or their software suppliers.
 
-# Prerequisites
+## Downloading a release
 
-The tools in this repository require a Clojure runtime. You can
-install either [Babashka](https://github.com/babashka/babashka#installation) for a standalone
-environment with quick startup time and slightly slower runtime, or
-the full [Clojure
-installation](https://clojure.org/guides/install_clojure) which
-requires Java and is slower to start.
+This repository contains the source code & configuration of the
+validator. If you only need to run the builtin validations, download
+the latest build for your platform from [the Releases
+page](https://github.com/SURFnet/eduhub-validator/releases).
 
-The tools will use Babashka if `bb` is on the PATH, and will use
-`clojure` otherwise.
+The released builds contain a standalone binary `eduhub-validator`
+that has the configuration for multiple OOAPI profiles builtin.
 
-# For endpoint developers
+## For OOAPI endpoint developers
 
-This repository contains the tools and configuration to validate a
-"complete" OpenAPI endpoint with all of the paths available in the
-specification.
+The eduhub-validator binary contains a set of profiles which can be
+used to validate an OpenAPI endpoint for specific use cases.
 
 Endpoints are not required to implement every path in the
-specification. We are working on profiles (variant/subset OpenAPI
-specifications) for different use-cases, like the RIO mapper
-interface, which will be added to this repository.
+specification, 
 
 Validating an endpoint works in two steps:
 
@@ -39,17 +34,20 @@ Validating an endpoint works in two steps:
     
   - Aggregating the observations into a readable HTML report.
   
-## Spidering an endpoint
+## Spidering an endpoint directly
 
 ```sh
-./validate --profile ooapi
-  --base-url https://your-endpoint/
+eduhub-validator --base-url https://your-endpoint/
 ```
 
 This will exhaustively index your endpoint paths, validate against the
-RIO profile and write the results to `observations.edn`. This file is
-in [EDN format](https://github.com/edn-format/edn) which is similar to
-JSON and can be read as text, but it will probably be very large.
+default `rio` profile and write a report to `report.html` which can be
+opened using any web browser.
+
+The intermediate validation results are written to
+`observations.edn`. This file is in [EDN
+format](https://github.com/edn-format/edn) which is similar to JSON
+and can be read as text, but it will probably be very large.
 
 ## Spidering via gateway
 
@@ -57,7 +55,7 @@ To run the spider through the Eduhub gateway, you can use the
 `--basic-auth` and `--headers` options:
 
 ```sh
-./validate \
+eduhub-validator \
   --profile rio
   --base-url https://gateway.test.surfeduhub.nl/ \
   --basic-auth USERNAME:PASS \
@@ -66,39 +64,36 @@ To run the spider through the Eduhub gateway, you can use the
   --add-header 'x-envelope-response: false'
 ```
 
-## Creating a human-readable report
-
-After spidering is completed, a report is generated and written to
-`report.html`. This report is readable in any web browser.
-
-## On windows
-
-Use `validate.bat` instead of the `validate` script.
-
 ## Available Eduhub profiles
 
-A few Eduhub profiles are available in the [config](./config) directory:
+A few Eduhub profiles are available in the [profiles](./profiles)
+directory and are built into the binary releases:
 
-  - `config/openapi.json` -- the full OOAPI v5 specification
-  - `config/rio-profile.json` -- the RIO profile of OOAPI v5.
+  - `ooapi` -- the full OOAPI v5 specification
+  - `rio` -- the RIO profile of OOAPI v5.
   
 The RIO profile defines the subset of the OOAPI that RIO Mapper
 service requires.
 
-# For specification authors
+# Extending the validator
 
-Information about writing specification profiles and spider rules can be
-found in [docs/specification-authors.md](./docs/specification-authors.md).
+## Prerequisites for running/building from source
 
-# Changes
+The source code in this repository requires a Clojure runtime. You can
+install either
+[Babashka](https://github.com/babashka/babashka#installation) for a
+standalone environment with quick startup time and slightly slower
+runtime, or the full [Clojure
+installation](https://clojure.org/guides/install_clojure) which
+requires Java and is slower to start.
 
-- Profiles configure the openapi spec (removed --spec option, renamed --rules to --profile).
-- Support for built-in profiles added.
+The `validator` script in the root of the repository will use Babashka
+if `bb` is on the PATH, and `clojure` otherwise.
 
+## For specification authors
 
-# Component overview
-
-![component diagram](./docs/components.png)
+Information about writing specification profiles can be found in
+[docs/specification-authors.md](./docs/specification-authors.md).
 
 # Reporting vulnerabilities
 
