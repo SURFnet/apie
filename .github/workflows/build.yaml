@@ -1,0 +1,113 @@
+name: Build artifacts
+on:
+  push
+  
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/cache@v3
+      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
+    - uses: actions/cache@v3
+      with:
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
+        path: |
+          ./bin
+          ./lib
+
+    - name: Install clj runtime
+      run: .github/workflows/install-binaries.sh
+          
+    - name: Run tests on Clojure
+      run: bin/clojure -M:test
+
+    - name: Run tests on Babashka
+      run: bin/bb -Sdeps '{:deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}}' -m kaocha.runner/-main 
+          
+    - name: Check dependency freshness
+      run: bin/clojure -M:outdated
+      
+    - name: Run linters
+      run: bin/clojure -M:clj-kondo --lint src test
+
+    - name: Install NVD clojure
+      run: bin/clojure -Ttools install nvd-clojure/nvd-clojure '{:mvn/version "RELEASE"}' :as nvd;
+
+    - name: Check NVD
+      run: bin/clojure -J-Dclojure.main.report=stderr -Tnvd nvd.task/check :classpath \""$(bin/clojure -Spath)\""
+
+  create_release:
+    if: startsWith(github.ref, 'refs/tags/v0') || startsWith(github.ref, 'refs/tags/v1')
+    runs-on: ubuntu-latest
+    needs: checks
+    
+    steps:
+      - name: version
+        # need some shenanigans to get simple tag name from repo/tags/tagname ref
+        run: echo "version=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+        id: version
+
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+    outputs:
+      # ensure dependent workflows can now get version as
+      # `needs.release_version.outputs.version`
+      version: ${{ steps.version.outputs.version }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+  build_artifacts:
+    needs:
+      - create_release
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        arch:
+          - linux-amd64-static.tar.gz
+          - linux-aarch64-static.tar.gz
+          - macos-aarch64.tar.gz
+          - macos-amd64.tar.gz
+          - windows-amd64.zip
+          - standalone.jar
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/cache@v3
+      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
+    - uses: actions/cache@v3
+      with:
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
+        path: |
+          ./bin
+          ./lib
+
+    - name: Artifact name
+      run: echo filename=eduhub-validator-${{ needs.create_release.outputs.version }}-${{ matrix.arch }} >> $GITHUB_OUTPUT
+      id: artifact
+    
+    - name: Install clj runtime
+      run: .github/workflows/install-binaries.sh
+
+    - name: Build artifact
+      run: make ${{ steps.artifact.outputs.filename }} BB=bin/bb
+
+    - name: Upload artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.artifact.outputs.filename }}
+        asset_name: ${{ steps.artifact.outputs.filename }}
+        asset_content_type: application/octet-stream
