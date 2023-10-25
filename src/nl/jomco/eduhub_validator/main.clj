@@ -70,14 +70,20 @@
       file
       (io/resource f))))
 
+(defn file-parent
+  "If f is a file, return its parent directory"
+  [f]
+  (when (instance? java.io.File f)
+    (.getParentFile f)))
+
 (defn- read-edn
   [f]
-  (with-open [in (java.io.PushbackReader. (io/reader (file-or-resource f) :encoding "UTF-8"))]
+  (with-open [in (java.io.PushbackReader. (io/reader f :encoding "UTF-8"))]
     (edn/read in)))
 
 (defn- read-json
   [f]
-  (data.json/read-json (io/reader (file-or-resource f) :encoding "UTF-8") false))
+  (data.json/read-json (io/reader f :encoding "UTF-8") false))
 
 (defn- spider
   [spec-data rules-data {:keys [base-url observations-path] :as options}]
@@ -98,7 +104,7 @@
 
 (defn -main
   [& args]
-  (let [{:keys                                         [errors summary]
+  (let [{:keys                                               [errors summary]
          {:keys [no-spider? no-report? profile] :as options} :options}
         (parse-opts args cli-options)]
     (when (seq errors)
@@ -108,8 +114,16 @@
         (println "\nBuiltin profiles:")
         (run! #(println " - " %) included-profiles/profiles))
       (System/exit 1))
-    (let [profile-data (read-edn (io/resource profile))
-          spec-data    (read-json (:openapi-spec profile-data))]
+    (let [profile*             (file-or-resource profile)
+          parent-dir           (file-parent profile*)
+          {:keys [openapi-spec]
+           :as   profile-data} (read-edn profile*)
+          ;; if the profile configuration is indicated by a file path
+          ;; not in the current working directory, try to find the
+          ;; corresponding openapi spec in the same directory.
+          spec-data            (if parent-dir
+                                 (read-json (io/file parent-dir openapi-spec))
+                                 (read-json (file-or-resource openapi-spec)))]
       (when-not no-spider?
         (spider spec-data profile-data options))
       (when-not no-report?
