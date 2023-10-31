@@ -18,8 +18,10 @@
   (filter :issues interactions))
 
 (defn- score-percent [interactions]
-  (* 100.0 (/ (count (with-issues interactions))
-              (count interactions))))
+  (if (empty? interactions)
+    100.0
+    (* 100.0 (/ (count (with-issues interactions))
+                (count interactions)))))
 
 (defn- score-summary [interactions]
   (let [score (score-percent interactions)]
@@ -31,29 +33,22 @@
                 (count (with-issues interactions))))]))
 
 
-(def report-title "SURFeduhub validation report")
 (def css-resource "style.css")
 
 (defn- interactions-summary [interactions]
-  (let [server-names (->> interactions
-                          (map :request)
-                          (map :server-name)
-                          set)
-        start-at     (->> interactions
+  (let [responses (->> interactions
+                       (map :response))
+        start-at     (->> responses
                           (map :start-at)
                           (sort)
                           (first))
-        finish-at    (->> interactions
+        finish-at    (->> responses
                           (map :finish-at)
                           (sort)
                           (last))]
     [:section.summary
      [:h3 "Summary"]
      [:dl
-      [:div
-       [:dt "Server" (if (> (count server-names) 1) "s" "")]
-       [:dd (interpose ", "
-                       (map #(vector :strong %) (sort server-names)))]]
       [:div
        [:dt "Run time"]
        [:dd "From "[:strong start-at] " till " [:strong finish-at]]]]]))
@@ -74,11 +69,12 @@
        [:dt "Validation score"]
        [:dd (score-summary interactions)]]])])
 
-(defn- interaction-summary [{{:keys [method url]} :request}]
+(defn- interaction-summary [{{:keys [method uri query-string]} :request}]
   [:span.interaction-summary
    [:code.method (string/upper-case (name method))]
    " "
-   [:code.url url]])
+   [:code.url uri (when query-string
+                    (str "?" query-string))]])
 
 (defn- value-type [v]
   (cond
@@ -378,15 +374,19 @@
 (defn- raw-css [css]
   (hiccup.util/raw-string "/*<![CDATA[*/\n" css "/*]]>*/"))
 
+(defn report-title
+  [base-url]
+  (str "Validation report for " base-url))
+
 (defn report
-  [openapi interactions]
+  [openapi interactions base-url]
   (hiccup.page/html5
    [:html
-    [:head [:title report-title]
+    [:head [:title (report-title base-url)]
      [:style (-> css-resource (io/resource) (slurp) (raw-css))]]
     [:body
      [:header
-      [:h1 report-title]]
+      [:h1 (report-title base-url)]]
 
      [:main
       [:section.general

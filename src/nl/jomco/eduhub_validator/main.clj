@@ -51,6 +51,14 @@
    ["-b" "--bearer-token TOKEN"
     "Add bearer token to request."
     :default nil]
+   ["-M" "--max-total-requests N"
+    "Maximum number of requests."
+    :default ##Inf
+    :parse-fn parse-long]
+   ["-m" "--max-requests-per-operation N"
+    "Maximum number of requests per operation in OpenAPI spec."
+    :default ##Inf
+    :parse-fn parse-long]
    ["-a" "--basic-auth 'USER:PASS'" "Send basic authentication header."
     :default nil
     :parse-fn (fn [s]
@@ -65,6 +73,7 @@
 
   Returns nil if neither resource or file are present."
   [f]
+  (assert f)
   (let [file (io/file f)]
     (if (.exists file)
       file
@@ -90,17 +99,17 @@
   (println "Spidering" base-url)
   (with-open [w (io/writer observations-path :encoding "UTF-8")]
     (.write w "[")
-    (run! #(do (println (:url (:request %)))
+    (run! #(do (println (:status (:response %)) (name (:method (:request %))) (:uri (:request %)))
                (pprint/pprint % w)) (spider/spider-and-validate spec-data rules-data options))
     (.write w "]")))
 
 (defn- report
-  [spec-data {:keys [observations-path report-path]}]
+  [spec-data {:keys [observations-path report-path base-url]}]
   (println "Writing report to" report-path)
   (binding [*out* (io/writer report-path :encoding "UTF-8")]
     (println
      ;; str needed to coerce hiccup "rawstring"
-     (str (report/report spec-data (read-edn observations-path))))))
+     (str (report/report spec-data (read-edn observations-path) base-url)))))
 
 (defn -main
   [& args]
@@ -128,3 +137,12 @@
         (spider spec-data profile-data options))
       (when-not no-report?
         (report spec-data options)))))
+
+(comment
+
+  (-main "-M" "5" "-u" "https://demo04.test.surfeduhub.nl/")
+
+  (def ooapi-rules (read-edn (file-or-resource "rio")))
+  (def ooapi-spec (read-json (file-or-resource (:openapi-spec ooapi-rules))))
+
+  (def interactions (spider/spider-and-validate ooapi-spec ooapi-rules {:base-url "https://demo04.test.surfeduhub.nl"})))

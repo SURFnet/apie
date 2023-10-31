@@ -1,15 +1,15 @@
-{:paths ["src" "assets" "profiles"]
- :deps
- {org.clojure/tools.cli          {:mvn/version "1.0.219"}
-  org.babashka/http-client       {:mvn/version "0.4.15"}
-  hiccup/hiccup                  {:mvn/version "2.0.0-RC2"}
-  nl.jomco/clj-http-status-codes {:mvn/version "0.1"}
-  nl.jomco/openapi-v3-validator  {:mvn/version "0.2.0"}
-  nl.jomco/spider                {:mvn/version "0.1.0"}}
-
+{:paths   ["src" "assets" "profiles"]
+ :deps    {org.clojure/tools.cli          {:mvn/version "1.0.219"}
+           ring/ring-core                 {:mvn/version "1.10.0"}
+           org.babashka/http-client       {:mvn/version "0.4.15"}
+           org.clojure/data.json          {:mvn/version "2.4.0"}
+           hiccup/hiccup                  {:mvn/version "2.0.0-RC2"}
+           nl.jomco/clj-http-status-codes {:mvn/version "0.1"}
+           nl.jomco/openapi-v3-validator  {:mvn/version "0.2.1"}
+           nl.jomco/spider                {:mvn/version "0.2.0"}}
  :aliases {:test      {:extra-deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}
                        :main-opts  ["-m" "kaocha.runner"]}
            :clj-kondo {:replace-deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}
-                       :main-opts  ["-m" "clj-kondo.main"]}
+                       :main-opts    ["-m" "clj-kondo.main"]}
            :outdated  {:replace-deps {com.github.liquidz/antq {:mvn/version "RELEASE"}}
-                       :main-opts ["-m" "antq.core"]}}}
+                       :main-opts    ["-m" "antq.core"]}}}
