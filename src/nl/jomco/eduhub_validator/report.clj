@@ -185,20 +185,23 @@
 (defmethod json-schema-issue-summary "contains"
   [_ {:keys [schema schema-keyword instance]}]
   [:span
-   "Expected collection of " (count instance)
-   " items to contain " (json-schema-title (get schema schema-keyword))])
+   "Expected list of " (count instance)
+   " items to " [:strong "contain"]
+   " at least one valid "
+   (json-schema-title (get schema schema-keyword))])
 
 (defmethod issue-details "contains"
-  [openapi {:keys [instance sub-issues]}]
+  [openapi {:keys [instance sub-issues schema schema-keyword]}]
   (if (seq instance)
-    (->> sub-issues
-          (map-indexed
-           (fn [i issues]
-             (when (seq issues)
-               [:div
-                [:dt "Item " i " has " (count issues) " issues"]
-                [:dd (issue-snippets-list openapi issues)]])))
-          (into [:dl]))
+    (let [title (json-schema-title (get schema schema-keyword))]
+      (->> sub-issues
+           (map-indexed
+            (fn [i issues]
+              (when (seq issues)
+                [:div
+                 [:dt "Item " i " is not a valid " title "; has " (count issues) " issues"]
+                 [:dd (issue-snippets-list openapi issues)]])))
+           (into [:dl])))
     [:dl [:dt "Collection is empty!"]]))
 
 (defmethod json-schema-issue-summary "maxItems"
