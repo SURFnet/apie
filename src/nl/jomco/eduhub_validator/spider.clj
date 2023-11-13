@@ -4,18 +4,14 @@
             [nl.jomco.spider :as spider]
             [clojure.string :as string]
             [clojure.data.json :as json]
-            [babashka.http-client :as http-client]
-            [ring.middleware.params :as params]))
+            [babashka.http-client :as http-client]))
 
 (defn fixup-request
   "Convert spider request to format expected by validator"
   [{:keys [path] :as request}]
-  (let [[uri query-string] (string/split path #"\?" 2)]
-    (-> request
-        (dissoc :path)
-        (assoc :uri uri
-               :query-string query-string)
-        (params/assoc-query-params "UTF-8"))))
+  (-> request
+      (dissoc :path)
+      (assoc :uri path)))
 
 (defn fixup-interaction
   "Convert spider interaction to format expected by validator."
@@ -112,13 +108,20 @@
              (merge request)
              (assoc :path (str path-prefix path)))))))
 
+(defn json-type?
+  [r]
+  (string/starts-with? (get-in r [:headers "content-type"] "") "application/json"))
+
 (defn wrap-json-body
   [f]
   (fn [request]
-    (let [response (f request)]
-      (if (string/starts-with? (get-in response [:headers "content-type"]) "application/json")
-        (update response :body json/read-str)
-        response))))
+    (let [request (if (json-type? request)
+                    (update request :body json/write-str)
+                    request)]
+      (let [response (f request)]
+        (if (json-type? response)
+          (update response :body json/read-str)
+          response)))))
 
 (defn wrap-max-requests-per-operation
   [f max-requests-per-operation op-path]
@@ -146,6 +149,7 @@
     :always
     (wrap-client (http-client/client (assoc http-client/default-client-opts
                                             :follow-redirects :never)))
+
     :always
     (wrap-base-url base-url)
 

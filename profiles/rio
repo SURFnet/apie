@@ -1,45 +1,57 @@
 {:openapi-spec "rio.openapi.json"
  :seeds
- [{:method "get"
-   :path   "/courses"}
-  {:method "get"
-   :path   "/education-specifications"}
-  {:method "get"
-   :path   "/programs"}]
+ [{:method       "get"
+   :path         "/courses"
+   :query-params {"consumer" "rio"}}
+  {:method       "get"
+   :path         "/education-specifications"
+   :query-params {"consumer" "rio"}}
+  {:method       "get"
+   :path         "/programs"
+   :query-params {"consumer" "rio"}}]
 
  :rules
- [;; page through items list for any kind of entity
-  {:match     [[:request, :method, "get"]
-               [:request, :path, ?path]
+ [;; page through items list for any kind of entity, assumes consumer query param is present
+  {:match     [[:request :method, "get"]
+               [:request :path ?path]
+               [:request :query-params "consumer" ?consumer]
                [:response :status 200]
                [:response, :body, "pageNumber", ?pageNumber]
                [:response, :body, "hasNextPage", true]]
-   :generates [{:method "get"
-                :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
-
+   :generates [{:method       "get"
+                :path         ?path
+                :query-params {"pageNumber" "{(inc ?pageNumber)}" ;; params must be strings
+                               "consumer"   ?consumer}}]}
 
   {:match     [[:request, :method, "get"]
                [:response :status 200]
                [:response, :body, "items", ?i "courseId" ?id]]
-   :generates [{:method "get"
-                :path   "/courses/{?id}"}
-               {:method "get"
-                :path   "/courses/{?id}/offerings"}]}
+   :generates [{:method       "get"
+                :path         "/courses/{?id}"
+                :query-params {"consumer" "rio"}}
+               {:method       "get"
+                :path         "/courses/{?id}/offerings"
+                :query-params {"consumer" "rio"}}]}
 
   {:match     [[:request, :method, "get"]
                [:response :status 200]
                [:response, :body, "items", ?i "educationSpecificationId" ?id]]
-   :generates [{:method "get"
-                :path   "/education-specifications/{?id}"}]}
+   :generates [{:method       "get"
+                :path         "/education-specifications/{?id}"
+                :query-params {"consumer" "rio"}}]}
 
   {:match     [[:request, :method, "get"]
                [:response :status 200]
                [:response, :body, "items", ?i "programId" ?id]]
-   :generates [{:method "get"
-                :path   "/programs/{?id}"}
-               {:method "get"
-                :path   "/programs/{?id}/programs"}
-               {:method "get"
-                :path   "/programs/{?id}/courses"}
-               {:method "get"
-                :path   "/programs/{?id}/offerings"}]}]}
+   :generates [{:method       "get"
+                :path         "/programs/{?id}"
+                :query-params {"consumer" "rio"}}
+               {:method       "get"
+                :path         "/programs/{?id}/programs"
+                :query-params {"consumer" "rio"}}
+               {:method       "get"
+                :path         "/programs/{?id}/courses"
+                :query-params {"consumer" "rio"}}
+               {:method       "get"
+                :path         "/programs/{?id}/offerings"
+                :query-params {"consumer" "rio"}}]}]}

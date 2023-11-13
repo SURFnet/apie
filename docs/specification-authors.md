@@ -80,7 +80,8 @@ use the placeholders:
              [:response :body "pageNumber" ?pageNumber]
              [:response :body "hasNextPage" true]]
  :generates [{:method "get"
-              :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
+              :path   ?path
+              :query-params {"pageNumber" "{(inc ?pageNumber)}"}}]}
 ```
 
 Literal entries are integers, keywords (starting with `:`) and quoted
@@ -115,7 +116,9 @@ value.  This can be used to match multiple entries in a list:
              [:response :body "customers" ?index "name" ?name]]
 
  :generates [{:method "get"
-              :path   "/customer?id={?id}&name={?name}"}]}
+              :path   "/customer"
+              :query-params {"id" ?id
+                             "name" ?name}}]}
 ```
 
 If the interaction response body contains a `"customers"` list of maps
@@ -134,9 +137,37 @@ A generator template looks like a RING request map:
  :headers {"X-Header" "Header-value"}}
 ```
 
-You can insert expressions in the template by using `{...}`
-brackets. Placeholders are available in expressions.  S-expressions
-can be used for function calls.
+Possible keys
+
+ - :body -- request body string or vector / map to be passed as json
+ - :form-params -- a map of request body parameters (will be form encoded)
+ - :host -- address of remote host
+ - :method -- request method, "get", "post" etc
+ - :path -- the URI path, /without/ query string or host
+ - :port -- network port, optional
+ - :query-params -- map of query parameters
+ - :scheme -- scheme; "http" or "https"
+ 
+
+These will be merged with the provided values from `base-uri` when
+spidering, so usually `:host` `:scheme` and `:port` should be left
+off.
+
+Query parameters can be provided using `:query-params`, a map of
+key-value pairs, with vectors for params that appear multiple times:
+
+```clojure
+{:method "get"
+ :path   "/some/character"
+ :query-params {"medium" "TV"
+                "format" "cartoon"
+                "extra" ?extraPlaceholder}}
+```
+
+You can insert expressions in the template by using `{...}`  brackets
+in strings, or directly in vector elements and map values (not in map
+keys). Placeholders are expressions in templates.  S-expressions can
+be used for function calls.
 
 The following functions are available in expressions:
 

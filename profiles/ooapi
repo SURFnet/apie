@@ -28,14 +28,15 @@
 
  :rules
  [;; page through items list for any kind of entity
-  {:match     [[:request, :method, "get"]
-               [:request, :path, ?path]
+  {:match     [[:request :method, "get"]
+               [:request :path ?path]
                [:response :status 200]
                [:response, :body, "pageNumber", ?pageNumber]
                [:response, :body, "hasNextPage", true]]
-   :generates [{:method "get"
-                :path   "{?path}?pageNumber={(inc ?pageNumber)}"}]}
-
+   :generates [{:method       "get"
+                :path         ?path
+                ;; params must be passed as strings
+                :query-params {"pageNumber" "{(inc ?pageNumber)}"}}]}
   {:match     [[:request, :method, "get"]
                [:response :status 200]
                [:response, :body, "items", ?i "academicSessionId" ?id]]

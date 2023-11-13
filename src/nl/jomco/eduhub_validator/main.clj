@@ -7,7 +7,8 @@
             [clojure.tools.cli :refer [parse-opts]]
             [nl.jomco.eduhub-validator.included-profiles :as included-profiles]
             [nl.jomco.eduhub-validator.report :as report]
-            [nl.jomco.eduhub-validator.spider :as spider]))
+            [nl.jomco.eduhub-validator.spider :as spider]
+            [ring.util.codec :as codec]))
 
 (defn- parse-header
   [s]
@@ -94,12 +95,20 @@
   [f]
   (data.json/read-json (io/reader f :encoding "UTF-8") false))
 
+(defn print-interaction
+  [{{:keys [uri query-params method]} :request
+    {:keys [status]} :response}]
+  (let [uri (if query-params
+              (str uri "?" (codec/form-encode query-params "UTF-8"))
+              uri)]
+    (println status (string/upper-case (name method)) uri)))
+
 (defn- spider
   [spec-data rules-data {:keys [base-url observations-path] :as options}]
   (println "Spidering" base-url)
   (with-open [w (io/writer observations-path :encoding "UTF-8")]
     (.write w "[")
-    (run! #(do (println (:status (:response %)) (name (:method (:request %))) (:uri (:request %)))
+    (run! #(do (print-interaction %)
                (pprint/pprint % w)) (spider/spider-and-validate spec-data rules-data options))
     (.write w "]")))
 
