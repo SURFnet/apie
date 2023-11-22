@@ -11,10 +11,35 @@
    :query-params {"status" "sold"}}
   {:method "get"
    :path   "/store/inventory"}]
-  :rules
- [{:match     [[:request :method, "get"]
+ :rules
+ [;; if a pet is found in lists, it should also have its own resource
+  ;; url
+  {:match     [[:request :method, "get"]
                [:request :path "/pet/findByStatus"]
                [:response :status 200]
                [:response :body ?i "id" ?petId]]
-   :generates [{:method "get"
-                :path   "/pet/{ ?petId }"}]}]}
+   :generates [
+               {:method "get"
+                :path   "/pet/{ ?petId }"}]}
+
+  ;; if a pet is avalailable, order it
+  {:match     [[:request :method, "get"]
+               [:request :path "/pet/findByStatus"]
+               [:response :status 200]
+               [:response :body ?i "id" ?petId]
+               [:response :body ?i "status" "available"]]
+   :generates [
+               {:method  "post"
+                :path    "/store/order"
+                :headers {"content-type" "application/json"}
+                :body    {:id       (inc ?petId)
+                          :petId    ?petId
+                          :quantity 1
+                          :shipDate "2023-10-10"}}]}
+
+  ;; if we generated an order, delete it after
+  {:match     [[:request :method "post"]
+               [:request :path "/store/order"]
+               [:request :body :id ?orderId]]
+   :generates [{:method "delete"
+                :path   "/store/order/{ ?orderId }"}]}]}

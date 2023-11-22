@@ -38,7 +38,8 @@ apie --profile example-profiles/petstore.edn \
 
 This will spider the paths in the profile, validate against the
 included openapi specification and write a report to `report.html`
-which can be opened using any web browser.
+which can be opened using any web browser. See the [petstore example
+report](https://surfnet.github.io/apie/example-report.html).
 
 The intermediate validation results are written to
 `observations.edn`. This file is in [EDN
