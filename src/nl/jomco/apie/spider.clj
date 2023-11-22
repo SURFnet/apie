@@ -1,4 +1,4 @@
-(ns nl.jomco.eduhub-validator.spider
+(ns nl.jomco.apie.spider
   (:require [nl.jomco.openapi.v3.path-matcher :refer [paths-matcher]]
             [nl.jomco.openapi.v3.validator :as validator]
             [nl.jomco.spider :as spider]

@@ -1,4 +1,4 @@
-(ns nl.jomco.eduhub-validator.included-profiles
+(ns nl.jomco.apie.included-profiles
   "Include configuration for specific profiles in the jar/binary"
   (:require [clojure.java.io :as io]))
 

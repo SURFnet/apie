@@ -1,9 +1,9 @@
-(ns nl.jomco.eduhub-validator.report
+(ns nl.jomco.apie.report
   (:require [clojure.string :as string]
             [clojure.java.io :as io]
             [hiccup.page]
             [hiccup.util]
-            [nl.jomco.eduhub-validator.report.json :as json]
+            [nl.jomco.apie.report.json :as json]
             [nl.jomco.openapi.v3.example :as example]))
 
 (def max-issues-per-schema-path 10)

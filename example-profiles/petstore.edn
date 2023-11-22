@@ -1,0 +1,20 @@
+{:openapi-spec "petstore.openapi.json"
+ :seeds
+ [{:method       "get"
+   :path         "/pet/findByStatus"
+   :query-params {"status" "pending"}}
+  {:method       "get"
+   :path         "/pet/findByStatus"
+   :query-params {"status" "available"}}
+  {:method       "get"
+   :path         "/pet/findByStatus"
+   :query-params {"status" "sold"}}
+  {:method "get"
+   :path   "/store/inventory"}]
+  :rules
+ [{:match     [[:request :method, "get"]
+               [:request :path "/pet/findByStatus"]
+               [:response :status 200]
+               [:response :body ?i "id" ?petId]]
+   :generates [{:method "get"
+                :path   "/pet/{ ?petId }"}]}]}

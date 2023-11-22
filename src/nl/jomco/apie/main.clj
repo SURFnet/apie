@@ -1,13 +1,13 @@
-(ns nl.jomco.eduhub-validator.main
+(ns nl.jomco.apie.main
   (:require [clojure.data.json :as data.json]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
-            [nl.jomco.eduhub-validator.included-profiles :as included-profiles]
-            [nl.jomco.eduhub-validator.report :as report]
-            [nl.jomco.eduhub-validator.spider :as spider]
+            [nl.jomco.apie.included-profiles :as included-profiles]
+            [nl.jomco.apie.report :as report]
+            [nl.jomco.apie.spider :as spider]
             [ring.util.codec :as codec]))
 
 (defn- parse-header

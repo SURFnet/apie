@@ -1,34 +1,15 @@
-# For Eduhub specification authors
+# For OpenAPI specification authors
 
-This document is intended for authors of the Open Education
-Specification and related profiles.
+This document is intended for authors of the OpenAPI specs and the
+related profile configuration.
 
 Before writing your own profiles and rules take a look at the
-available configuration files in the [profiles](../profiles) directory.
-
-# Profiles for different use cases
-
-The Open Education Specification has profiles for different consumers
-(use cases).
-
-Currently, we have a two profiles:
-
-- `ooapi` - the profile for a complete OOAPI implementation
-- `rio` - the minimum implementation needed for serving the RIO Consumer. 
-
-We describe a profile as a set of rules for indexing specific paths,
-plus a profile-specific OpenAPI specification (this is a subset of the
-generic OOAPI OpenAPI spec).
+available configuration files in the
+[example-profiles](../example-profiles) directory. More examples can
+be found in the [eduhub-validator
+profiles](https://github.com/SURFnet/eduhub-validator/tree/master/profiles)
 
 # OpenAPI Specifications
-
-OpenAPI specs subsets are created using
-[merge-yaml-tree](https://git.sr.ht/~jomco/merge-yaml-tree).
-
-This tool takes two directory trees with YAML files and generates a
-merged tree.  This can be used to create subsets of the [Open
-Education
-Specification](https://github.com/open-education-api/specification/tree/master/v5).
 
 The validator in this repository expects a JSON formatted single-file
 specification. To generate a JSON version of a YAML directory tree you
@@ -39,9 +20,6 @@ npx @redocly/openapi-cli bundle --ext=json spec.yaml --force >profile.json
 ```
 
 Where `spec.yaml` is the root YAML document.
-
-In this repository, the resulting JSON specifications are added to the
-[profiles](../profiles) directory.
 
 # Profile files
 
@@ -188,3 +166,5 @@ the spidering and rules implementation.
 
 [https://git.sr.ht/~jomco/openapi-v3-validator](https://git.sr.ht/~jomco/openapi-v3-validator) -
 the OpenAPI validation implementation.
+
+[https://github.com/SURFnet/eduhub-validator/](https://github.com/SURFnet/eduhub-validator/) - Apie builds for OpenOnderwijsAPI endpoints.

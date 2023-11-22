@@ -2,7 +2,6 @@
 /.envrc
 /bin/
 /lib/
-eduhub-validator*
 *.tar.gz
 /report.html
 /observations.edn
