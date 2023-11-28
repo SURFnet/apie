@@ -28,7 +28,7 @@ BABASHKA_VERSION:=1.3.186-SNAPSHOT
 exec_base_name=apie
 release_name=$(exec_base_name)-$(version)
 source_files=$(shell find src assets profiles -type f)
-current_arch=$(shell bb current_arch.clj)
+current_arch=$(shell bb dev/current_arch.clj)
 
 # uberjar is the babashka uberjar (not a java-compatible jar)
 uberjar=$(exec_base_name)-$(version)-standalone.jar
@@ -73,5 +73,4 @@ $(exec_base_name).exe: $(release_name)-$(current_arch)/$(exec_base_name).exe
 
 # build for local use, non-windows
 $(exec_base_name): $(release_name)-$(current_arch)/$(exec_base_name)
-	echo $(current_arch)
 	cp $< $@

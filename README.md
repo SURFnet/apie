@@ -1,4 +1,4 @@
-# Apie 🙈 OpenAPI Service Validator 🙈
+# Apie 🙈 OpenAPI Service Validator
 
 A command-line tool to spider and validate API endpoints to ensure
 compatibility with OpenAPI v3 specs.
@@ -58,7 +58,7 @@ page](https://github.com/SURFnet/apie/releases).
 
 The released builds contain a standalone binary `apie`.
 
-# Extending the validator
+# Developing Apie
 
 ## Prerequisites for running/building from source
 
@@ -70,10 +70,17 @@ runtime, or the full [Clojure
 installation](https://clojure.org/guides/install_clojure) which
 requires Java and is slower to start.
 
-The `validator` script in the root of the repository will use Babashka
-if `bb` is on the PATH, and `clojure` otherwise.
+For running the validator without building, you can use the
+`dev/validate` or `dev/validate.bat` script.
 
-The Makefile can build a release for your current os:
+The `dev/validate` script will use Babashka if `bb` is on the PATH,
+and `clojure` otherwise.
+
+Alternatively, start a Clojure REPL and go from there.
+
+## Building Apie
+
+The Makefile can build a release for your current operating system:
 
 ```
 make apie  # on linux / macos
@@ -82,10 +89,10 @@ make apie  # on linux / macos
 or
 
 ```
-make apie.exe  # on windows (untested)
+make apie.exe  # for windows (untested)
 ```
 
-We build for all supported platforms on Github; see
+We build releases for all supported platforms on Github; see
 `.github/workflows/build.yaml` for details.
 
 # Reporting vulnerabilities
