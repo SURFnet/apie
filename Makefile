@@ -27,7 +27,7 @@ BABASHKA_VERSION:=1.3.186-SNAPSHOT
 
 exec_base_name=apie
 release_name=$(exec_base_name)-$(version)
-source_files=$(shell find src assets profiles -type f)
+source_files=$(shell find src assets -type f)
 current_arch=$(shell bb dev/current_arch.clj)
 
 # uberjar is the babashka uberjar (not a java-compatible jar)
