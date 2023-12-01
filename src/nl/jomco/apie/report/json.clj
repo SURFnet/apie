@@ -1,4 +1,4 @@
-(ns nl.jomco.eduhub-validator.report.json
+(ns nl.jomco.apie.report.json
   (:require [clojure.data.json :as json]
             [clojure.string :as string]))
 

@@ -1,6 +1,6 @@
-(ns nl.jomco.eduhub-validator.report.json-test
+(ns nl.jomco.apie.report.json-test
   (:require [clojure.test :refer [deftest is]]
-            [nl.jomco.eduhub-validator.report.json :as sut]))
+            [nl.jomco.apie.report.json :as sut]))
 
 (deftest to-s
   (is (= "1" (sut/to-s 1)))

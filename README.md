@@ -1,81 +1,64 @@
-# Eduhub API validator
+# Apie 🙈 OpenAPI Service Validator
 
-A command-line tool to spider and validate [Open Education
-API](https://openonderwijsapi.nl/) endpoints to ensure compatibility
-with services in
-[SURFeduhub](https://www.surf.nl/surfeduhub-veilig-uitwisselen-van-onderwijsdata).
+A command-line tool to spider and validate API endpoints to ensure
+compatibility with OpenAPI v3 specs.
 
-This tool is intended for developers of OOAPI endpoints at educational
-institutions or their software suppliers.
+Apie takes an OpenAPI description of your service and crawls the
+endpoints, evaluating the interactions as it goes. It then generates a
+compact report containing all the validation issues found.
 
-## Downloading a release
+# For service developers
 
-This repository contains the source code & configuration of the
-validator. If you only need to run the builtin validations, download
-the latest build for your platform from [the Releases
-page](https://github.com/SURFnet/eduhub-validator/releases).
+Use Apie to get quick and readable feedback during development.
 
-The released builds contain a standalone binary `eduhub-validator`
-that has the configuration for multiple OOAPI profiles builtin.
+Run Apie from your automated tests to prevent regressions.
 
-## For OOAPI endpoint developers
+Apie helps you to validate that your service is behaving according to
+spec. Apie is a free, open source, standalone tool that talks to your
+service like any other HTTP client. If you have an OpenAPI v3
+specification for your API, you need minimal configuration to specify
+seed points and rules.
 
-The eduhub-validator binary contains a set of profiles which can be
-used to validate an OpenAPI endpoint for specific use cases.
+# For standards bodies
 
-Endpoints are not required to implement every path in the
-specification, 
+Use Apie to ensure adherence to your standards.
 
-Validating an endpoint works in two steps:
+When you're publishing specifications for others to implement, you
+want to provide all the automated support you can. With Apie, you can
+take your service description as a standard OpenAPI v3 document, add a
+simple rule set and quickly evaluate any implementation to ensure
+adherence!
 
-  - Spidering the endpoint and validating the responses. This will
-    create a large file with "observations"; a sequence of
-    request/response pairs and the associated validation issues.
-    
-  - Aggregating the observations into a readable HTML report.
-  
-## Spidering an endpoint directly
+# Usage
 
 ```sh
-eduhub-validator --base-url https://your-endpoint/
+apie --profile example-profiles/petstore.edn \
+     --base-url https://petstore3.swagger.io/api/v3
 ```
 
-This will exhaustively index your endpoint paths, validate against the
-default `rio` profile and write a report to `report.html` which can be
-opened using any web browser.
+This will spider the paths in the profile, validate against the
+included openapi specification and write a report to `report.html`
+which can be opened using any web browser. See the [petstore example
+report](https://surfnet.github.io/apie/example-report.html).
 
 The intermediate validation results are written to
 `observations.edn`. This file is in [EDN
 format](https://github.com/edn-format/edn) which is similar to JSON
 and can be read as text, but it will probably be very large.
 
-## Spidering via gateway
+See our [configuration documentation](./docs/specification-authors.md)
+for more details.
 
-To run the spider through the Eduhub gateway, you can use the
-`--basic-auth` and `--headers` options:
+## Downloading a release
 
-```sh
-eduhub-validator \
-  --profile rio
-  --base-url https://gateway.test.surfeduhub.nl/ \
-  --basic-auth USERNAME:PASS \
-  --add-header 'x-route: endpoint=demo04.test.surfeduhub.nl' \
-  --add-header 'accept: application/json; version=5' \
-  --add-header 'x-envelope-response: false'
-```
+This repository contains the source code & example configuration of
+Apie. If you only need to run the your own validations, download the
+latest build for your platform from [the Releases
+page](https://github.com/SURFnet/apie/releases).
 
-## Available Eduhub profiles
+The released builds contain a standalone binary `apie`.
 
-A few Eduhub profiles are available in the [profiles](./profiles)
-directory and are built into the binary releases:
-
-  - `ooapi` -- the full OOAPI v5 specification
-  - `rio` -- the RIO profile of OOAPI v5.
-  
-The RIO profile defines the subset of the OOAPI that RIO Mapper
-service requires.
-
-# Extending the validator
+# Developing Apie
 
 ## Prerequisites for running/building from source
 
@@ -87,13 +70,30 @@ runtime, or the full [Clojure
 installation](https://clojure.org/guides/install_clojure) which
 requires Java and is slower to start.
 
-The `validator` script in the root of the repository will use Babashka
-if `bb` is on the PATH, and `clojure` otherwise.
+For running the validator without building, you can use the
+`dev/validate` or `dev/validate.bat` script.
 
-## For specification authors
+The `dev/validate` script will use Babashka if `bb` is on the PATH,
+and `clojure` otherwise.
 
-Information about writing specification profiles can be found in
-[docs/specification-authors.md](./docs/specification-authors.md).
+Alternatively, start a Clojure REPL and go from there.
+
+## Building Apie
+
+The Makefile can build a release for your current operating system:
+
+```
+make apie  # on linux / macos
+```
+
+or
+
+```
+make apie.exe  # for windows (untested)
+```
+
+We build releases for all supported platforms on Github; see
+`.github/workflows/build.yaml` for details.
 
 # Reporting vulnerabilities
 

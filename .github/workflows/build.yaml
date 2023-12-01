@@ -93,7 +93,7 @@ jobs:
           ./lib
 
     - name: Artifact name
-      run: echo filename=eduhub-validator-${{ needs.create_release.outputs.version }}-${{ matrix.arch }} >> $GITHUB_OUTPUT
+      run: echo filename=apie-${{ needs.create_release.outputs.version }}-${{ matrix.arch }} >> $GITHUB_OUTPUT
       id: artifact
     
     - name: Install clj runtime

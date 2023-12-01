@@ -2,7 +2,7 @@
 #
 # Expects the artifact to be in the format
 #
-#        `eduhub-validator-VERSION-ARCH.EXT
+#        `apie-VERSION-ARCH.EXT
 #
 # Where VERSION matches the current git tag (like `v0.0.1-SNAPSHOT`)
 #
@@ -13,8 +13,8 @@
 # babashka (variants of linux, windows and macos), see
 # https://github.com/babashka/babashka/releases
 #
-# In other words, `make eduhub-validator-$VERSION-windows-amd64.zip`
-# and `make eduhub-validator-$VERSION-macos-aarch64.tar.gz` will do
+# In other words, `make apie-$VERSION-windows-amd64.zip`
+# and `make apie-$VERSION-macos-aarch64.tar.gz` will do
 # what you expect as long as $VERSION is the currently tagged version
 
 BB:=bb
@@ -25,9 +25,10 @@ BABASHKA_VERSION:=1.3.186-SNAPSHOT
 
 .PHONY: uberjar
 
-exec_base_name=eduhub-validator
+exec_base_name=apie
 release_name=$(exec_base_name)-$(version)
-source_files=$(shell find src assets profiles -type f)
+source_files=$(shell find src assets -type f)
+current_arch=$(shell bb dev/current_arch.clj)
 
 # uberjar is the babashka uberjar (not a java-compatible jar)
 uberjar=$(exec_base_name)-$(version)-standalone.jar
@@ -35,11 +36,12 @@ uberjar=$(exec_base_name)-$(version)-standalone.jar
 uberjar: $(uberjar)
 
 $(uberjar): deps.edn bb.edn $(source_files)
-	$(BB) uberjar $@ -m nl.jomco.eduhub-validator.main
+	$(BB) uberjar $@ -m nl.jomco.apie.main
 
 release: $(binary_release)
 
 # for unixy systems
+
 $(release_name)-%/$(exec_base_name): babashka-$(BABASHKA_VERSION)-%.tar.gz $(uberjar)
 	mkdir -p $(dir $@)
 	tar -zxO <$< >$@
@@ -64,3 +66,11 @@ $(release_name)-%.tar.gz: $(release_name)-%/$(exec_base_name)
 # for windows
 $(release_name)-%.zip: $(release_name)-%/$(exec_base_name).exe
 	zip -r $@ $(basename $@)
+
+# build for local use, on windows
+$(exec_base_name).exe: $(release_name)-$(current_arch)/$(exec_base_name).exe
+	cp $< $@
+
+# build for local use, non-windows
+$(exec_base_name): $(release_name)-$(current_arch)/$(exec_base_name)
+	cp $< $@

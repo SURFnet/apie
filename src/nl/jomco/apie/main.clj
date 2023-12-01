@@ -1,13 +1,12 @@
-(ns nl.jomco.eduhub-validator.main
+(ns nl.jomco.apie.main
   (:require [clojure.data.json :as data.json]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
-            [nl.jomco.eduhub-validator.included-profiles :as included-profiles]
-            [nl.jomco.eduhub-validator.report :as report]
-            [nl.jomco.eduhub-validator.spider :as spider]
+            [nl.jomco.apie.report :as report]
+            [nl.jomco.apie.spider :as spider]
             [ring.util.codec :as codec]))
 
 (defn- parse-header
@@ -30,13 +29,9 @@
    ["-p" "--report REPORT-PATH" "Path to write report."
     :id :report-path
     :default "report.html"]
-   (if-let [[default] included-profiles/profiles]
-     ["-r" "--profile PROFILE" "Path to profile or name of builtin profile"
-      :id :profile
-      :default default]
-     ["-r" "--profile PROFILE" "Path to profile"
-      :id :profile
-      :missing "PROFILE is missing"])
+   ["-r" "--profile PROFILE" "Path to profile"
+    :id :profile
+    :missing "PROFILE is missing"]
    ["-S" "--no-spider" "Disable spidering (re-use observations from OBSERVATIONS-PATH)."
     :id :no-spider?
     :default false]
@@ -120,32 +115,31 @@
      ;; str needed to coerce hiccup "rawstring"
      (str (report/report spec-data (read-edn observations-path) base-url)))))
 
-(defn -main
-  [& args]
-  (let [{:keys                                               [errors summary]
-         {:keys [no-spider? no-report? profile] :as options} :options}
-        (parse-opts args cli-options)]
-    (when (seq errors)
-      (run! println errors)
-      (println summary)
-      (when included-profiles/profiles
-        (println "\nBuiltin profiles:")
-        (run! #(println " - " %) included-profiles/profiles))
-      (System/exit 1))
-    (let [profile*             (file-or-resource profile)
-          parent-dir           (file-parent profile*)
-          {:keys [openapi-spec]
-           :as   profile-data} (read-edn profile*)
-          ;; if the profile configuration is indicated by a file path
-          ;; not in the current working directory, try to find the
-          ;; corresponding openapi spec in the same directory.
-          spec-data            (if parent-dir
-                                 (read-json (io/file parent-dir openapi-spec))
-                                 (read-json (file-or-resource openapi-spec)))]
+(defn main
+  [{:keys [no-spider? no-report? profile] :as options}]
+  (let [profile*             (file-or-resource profile)
+        parent-dir           (file-parent profile*)
+        {:keys [openapi-spec]
+         :as   profile-data} (read-edn profile*)
+        ;; if the profile configuration is indicated by a file path
+        ;; not in the current working directory, try to find the
+        ;; corresponding openapi spec in the same directory.
+        spec-data            (if parent-dir
+                               (read-json (io/file parent-dir openapi-spec))
+                               (read-json (file-or-resource openapi-spec)))]
       (when-not no-spider?
         (spider spec-data profile-data options))
       (when-not no-report?
-        (report spec-data options)))))
+        (report spec-data options))))
+
+(defn -main
+  [& args]
+  (let [{:keys [errors summary options]} (parse-opts args cli-options)]
+    (when (seq errors)
+      (run! println errors)
+      (println summary)
+      (System/exit 1))
+    (main options)))
 
 (comment
 

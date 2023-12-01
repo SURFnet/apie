@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html><html><head><title>Validation report for https://petstore3.swagger.io/api/v3</title><style>/*<![CDATA[*/
+:root {
+    --border-color: #000;
+    --dimmed-color: #888;
+    --desktop-color: #eef;
+    --bg-color: #fff;
+    --issue-count-color: #600;
+    --issue-count-bg-color: #fbb;
+    --issue-count-border-color: #800;
+    --issue-leading-size: 2.5rem;
+    --code-bg-color: #eee;
+    --heading-bg-color: #ccf;
+}
+
+html {
+    font-family: sans-serif;
+    line-height: 1.5;
+    width: 100%;
+    background: var(--desktop-color);
+}
+
+header, main, footer {
+    margin: 1rem auto;
+    max-width: 80rem;
+}
+footer {
+    margin-top: 2rem;
+    font-size: .8rem;
+    text-align: right;
+}
+
+section section {
+    padding: 1rem;
+    margin: 0 0 1rem 0;
+    border: dotted 2px var(--border-color);
+    border-radius: 1rem;
+    background: var(--bg-color);
+}
+
+h1, h2, h3, h4 {
+    margin: 0;
+}
+
+section > section > h3 {
+    background: var(--heading-bg-color);
+    margin: -1rem -1rem 1rem -1rem;
+    border-radius: 1rem 1rem 0 0;
+    padding: 1rem;
+}
+
+summary {
+    cursor: pointer;
+}
+
+details > summary {
+    list-style: none;
+    position: relative;
+}
+details > summary::after {
+    content: "→";
+    padding-left: 1rem;
+    color: var(--dimmed-color);
+}
+
+dl > div {
+    margin-bottom: .5rem;
+}
+dl > div:last-child {
+    margin-bottom: 0;
+}
+dt:after {
+    content: ': ';
+}
+dd {
+    margin-left: 1rem;
+}
+
+ol, ul {
+    margin: 1rem 0;
+    padding: 0 0 0 1rem;
+}
+
+.and-more {
+    font-style: italic;
+    font-size: .8rem;
+}
+
+q.title {
+    font-style: italic;
+}
+
+li.and-more {
+    margin-top: .5rem;
+}
+li.and-more::marker {
+    content: '';
+}
+.json {
+    background: var(--code-bg-color);
+    padding: .5rem;
+    border-radius: .5rem;
+    overflow: auto;
+}
+
+/* general section */
+
+section.general {
+    display: flex;
+}
+section.general section {
+    margin-right: 1rem;
+}
+section.general section:last-child {
+    margin-right: 0;
+}
+section.general dl {
+    margin: 1rem 0 0 0;
+    font-size: .8rem;
+}
+
+.per-path > p {
+    font-size: .8rem;
+}
+
+/* by-path */
+
+ol.by-schema-path, ol.by-schema-path ul.interactions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ol.by-schema-path > li {
+    padding: 1rem 0;
+    border-top: dotted 2px var(--border-color);
+}
+ol.by-schema-path > li:last-child {
+    padding-bottom: 0;
+}
+
+details.schema-path {
+    margin: 0;
+}
+details.schema-path > summary {
+    margin: 0;
+    list-style: none;
+    position: relative;
+}
+details.schema-path > summary::after {
+    content: '→';
+    display: block;
+    position: absolute;
+    top: 0;
+    right: .5rem;
+    color: var(--dimmed-color);
+}
+details[open].schema-path > summary::after {
+    display: none;
+}
+
+details.schema-path > ul > li {
+    padding: 1rem 0;
+    border-bottom: dotted 1px var(--border-color);
+}
+
+details.schema-path > ul > li:last-child {
+    padding: 1rem 0;
+    border-bottom: inherit;
+}
+
+details.schema-path > summary > div.leading {
+    vertical-align: top;
+    text-align: center;
+    display: inline-block;
+    min-width: var(--issue-leading-size);
+    height: var(--issue-leading-size);
+    line-height: var(--issue-leading-size);
+    border-radius: var(--issue-leading-size);
+    background-color: var(--issue-count-bg-color);
+    border: solid var(--issue-count-border-color) 1px;
+    margin-right: 1rem;
+    padding: 0 .1rem;
+    margin-left: -.5rem;
+}
+details.schema-path > summary > div.leading .count {
+    margin-left: .2em;
+    color: var(--issue-count-color);
+    font-weight: bold;
+}
+details.schema-path > summary > div.leading .count:after {
+    content: '×';
+    font-size: .8rem;
+    font-weight: normal;
+}
+details.schema-path > summary > div.headline {
+    display: inline-block;
+    margin-top: -.2rem;
+}
+
+details.interaction > summary::after {
+    padding-left: 0;
+    display: block;
+    position: absolute;
+    right: .5rem;
+    bottom: 0;
+}
+details[open].interaction > summary::after {
+    display: none;
+}
+
+details.interaction > summary > .headline {
+    font-weight: bold;
+}
+/*]]>*/</style></head><body><header><h1>Validation report for https://petstore3.swagger.io/api/v3</h1></header><main><section class="general"><section class="summary"><h3>Summary</h3><dl><div><dt>Run time</dt><dd>From <strong>Wed Nov 22 15:15:49 CET 2023</strong> till <strong>Wed Nov 22 15:15:51 CET 2023</strong></dd></div></dl></section><section class="kpis"><h3>KPIs</h3><dl><div class="observations"><dt>Observations</dt><dd>13</dd></div><div class="faultless"><dt>Faultless observations</dt><dd>✅ 8 observations have no issues!</dd></div><div class="score"><dt>Validation score</dt><dd><div class="score">😢 38.5% (5) observations have issues.</div></dd></div></dl></section></section><section class="per-path"><h2>Results per request path</h2><p>(sorted by percentage of issues)</p><section class="interaction-path"><h3>/store/inventory</h3><div><div class="summary">0 of 1 observations have no issues.</div><div class="summary"><p>1 validation issue (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">1</span></div><div class="headline"><div class="schema-path">paths//store/inventory/get/responses</div><div class="summary">1 issues in 1 observations</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/store/inventory</code></span></div><div class="summary"><span><strong>Status error</strong>; expected one of: <code>200</code>, got <code>500</code></span> at <span class="path"><code>response</code> / <code>status</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">500</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>status</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/store/inventory</code> / <code>get</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "ranges": [
+      "200"
+    ]
+  },
+  "issue": "status-error"
+}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/store/order/{orderId}</h3><div><div class="summary">0 of 3 observations have no issues.</div><div class="summary"><p>1 validation issue (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">3</span></div><div class="headline"><div class="schema-path">paths//store/order/{orderId}/delete/responses</div><div class="summary">3 issues in 3 observations</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">DELETE</code> <code class="url">/store/order/31</code></span></div><div class="summary"><span><strong>Status error</strong>; expected one of: <code>400</code>, <code>404</code>, got <code>200</code></span> at <span class="path"><code>response</code> / <code>status</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">200</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>status</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/store/order/{orderId}</code> / <code>delete</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "ranges": [
+      "400",
+      "404"
+    ]
+  },
+  "issue": "status-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">DELETE</code> <code class="url">/store/order/102</code></span></div><div class="summary"><span><strong>Status error</strong>; expected one of: <code>400</code>, <code>404</code>, got <code>200</code></span> at <span class="path"><code>response</code> / <code>status</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">200</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>status</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/store/order/{orderId}</code> / <code>delete</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "ranges": [
+      "400",
+      "404"
+    ]
+  },
+  "issue": "status-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">DELETE</code> <code class="url">/store/order/21</code></span></div><div class="summary"><span><strong>Status error</strong>; expected one of: <code>400</code>, <code>404</code>, got <code>200</code></span> at <span class="path"><code>response</code> / <code>status</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">200</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>status</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/store/order/{orderId}</code> / <code>delete</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "ranges": [
+      "400",
+      "404"
+    ]
+  },
+  "issue": "status-error"
+}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/pet/findByStatus</h3><div><div class="summary">2 of 3 observations have no issues.</div><div class="summary"><p>1 validation issue (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/photoUrls/items/type</div><div class="summary">2 issues in 1 observations</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus</code></span></div><div class="summary"><span>Expected <strong>type</strong> <code class="expected">string</code>, got <code class="got">null</code></span> at <span class="path"><code>response</code> / <code>body</code> / <code>10</code> / <code>photoUrls</code> / <code>0</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">null</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"example string"</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>body</code> / <code>10</code> / <code>photoUrls</code> / <code>0</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/pet/findByStatus</code> / <code>get</code> / <code>responses</code> / <code>200</code> / <code>content</code> / <code>application/json</code> / <code>schema</code> / <code>items</code> / <code>properties</code> / <code>photoUrls</code> / <code>items</code> / <code>type</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "type": "string"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus</code></span></div><div class="summary"><span>Expected <strong>type</strong> <code class="expected">string</code>, got <code class="got">null</code></span> at <span class="path"><code>response</code> / <code>body</code> / <code>11</code> / <code>photoUrls</code> / <code>0</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">null</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"example string"</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>body</code> / <code>11</code> / <code>photoUrls</code> / <code>0</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/pet/findByStatus</code> / <code>get</code> / <code>responses</code> / <code>200</code> / <code>content</code> / <code>application/json</code> / <code>schema</code> / <code>items</code> / <code>properties</code> / <code>photoUrls</code> / <code>items</code> / <code>type</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "type": "string"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/pet/{petId}</h3><div><div class="summary">3 of 3 observations have no issues.</div></div></section><section class="interaction-path"><h3>/store/order</h3><div><div class="summary">3 of 3 observations have no issues.</div></div></section></section></main><footer>This report was generated at Wed Nov 22 15:15:51 CET 2023</footer></body></html></html>
