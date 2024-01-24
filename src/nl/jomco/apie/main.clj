@@ -1,5 +1,5 @@
 (ns nl.jomco.apie.main
-  (:require [clojure.data.json :as data.json]
+  (:require [babashka.json :as json]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]
@@ -88,7 +88,7 @@
 
 (defn- read-json
   [f]
-  (data.json/read-json (io/reader f :encoding "UTF-8") false))
+  (json/read (io/reader f :encoding "UTF-8") false))
 
 (defn print-interaction
   [{{:keys [uri query-params method]} :request
