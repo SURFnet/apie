@@ -5,7 +5,7 @@
 set -ex
 
 CLOJURE_VERSION="1.11.1.1273"
-BABASHKA_VERSION="1.3.185"
+BABASHKA_VERSION="1.3.188"
 BABASHKA_ARCH="linux-amd64"
 
 if [ ! -x "bin/clojure" ]; then

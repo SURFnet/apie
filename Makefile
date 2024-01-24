@@ -21,7 +21,7 @@ BB:=bb
 version:=$(shell git describe --tags)
 
 # need latest snapshot for standalone executables
-BABASHKA_VERSION:=1.3.186-SNAPSHOT
+BABASHKA_VERSION:=1.3.188
 
 .PHONY: uberjar
 
