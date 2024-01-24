@@ -72,5 +72,6 @@ $(exec_base_name).exe: $(release_name)-$(current_arch)/$(exec_base_name).exe
 	cp $< $@
 
 # build for local use, non-windows
-$(exec_base_name): $(release_name)-$(current_arch)/$(exec_base_name)
-	cp $< $@
+$(exec_base_name): $(uberjar)
+	cat $(shell which bb) $(uberjar) >$@
+	chmod 755 $@
