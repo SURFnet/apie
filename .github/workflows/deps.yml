@@ -20,6 +20,9 @@ jobs:
           ./bin
           ./lib
 
+    - name: Install clj runtime
+      run: .github/workflows/install-binaries.sh
+
     - name: Install NVD clojure
       run: bin/clojure -Ttools install nvd-clojure/nvd-clojure '{:mvn/version "RELEASE"}' :as nvd;
 
