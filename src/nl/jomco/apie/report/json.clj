@@ -1,5 +1,5 @@
 (ns nl.jomco.apie.report.json
-  (:require [clojure.data.json :as json]
+  (:require [babashka.json :as json]
             [clojure.string :as string]))
 
 (defn to-s
@@ -46,7 +46,7 @@
 
          ;; for anything else fall back to clojure.data.json
          :else
-         (let [v (json/write-str val :escape-slash false, :escape-unicode false)]
+         (let [v (json/write-str val)]
            (if (and max-length (> (count v) max-length))
              (str (subs v 0 max-length) ellipsis)
              v)))))))

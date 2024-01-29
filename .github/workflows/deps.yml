@@ -1,0 +1,35 @@
+name: Run dependency checks
+
+on:
+  push:
+  schedule:
+    - cron: '0 1 * * 1'
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/cache@v4
+      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
+    - uses: actions/cache@v4
+      with:
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
+        path: |
+          ./bin
+          ./lib
+
+    - name: Install NVD clojure
+      run: bin/clojure -Ttools install nvd-clojure/nvd-clojure '{:mvn/version "RELEASE"}' :as nvd;
+
+    - name: Check NVD Secret is configured
+      env:
+        NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
+      if: ${{ env.NVD_API_TOKEN == '' }}
+      run: echo "NVD_API_TOKEN secret is empty"; exit 1
+
+    - name: Check NVD
+      env:
+        NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
+      run: bin/clojure -J-Dclojure.main.report=stderr -Tnvd nvd.task/check :config-filename '".nvd-config.json"' :classpath "\"$(bin/clojure -Spath)\""
