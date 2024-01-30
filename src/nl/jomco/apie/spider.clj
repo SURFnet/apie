@@ -3,7 +3,7 @@
             [nl.jomco.openapi.v3.validator :as validator]
             [nl.jomco.spider :as spider]
             [clojure.string :as string]
-            [clojure.data.json :as json]
+            [babashka.json :as json]
             [babashka.http-client :as http-client]))
 
 (defn fixup-request
@@ -120,7 +120,7 @@
                     request)]
       (let [response (f request)]
         (if (json-type? response)
-          (update response :body json/read-str)
+          (update response :body #(json/read-str % {:key-fn identity}))
           response)))))
 
 (defn wrap-max-requests-per-operation

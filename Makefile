@@ -36,6 +36,7 @@ uberjar=$(exec_base_name)-$(version)-standalone.jar
 uberjar: $(uberjar)
 
 $(uberjar): deps.edn bb.edn $(source_files)
+	rm -f $@
 	$(BB) uberjar $@ -m nl.jomco.apie.main
 
 release: $(binary_release)
