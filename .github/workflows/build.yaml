@@ -1,6 +1,9 @@
 name: Build artifacts
 on:
-  push
+  push:
+  create:
+    tags:
+      - '*'
   
 jobs:
   checks:
