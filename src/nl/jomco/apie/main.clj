@@ -88,7 +88,8 @@
 
 (defn- read-json
   [f]
-  (json/read (io/reader f :encoding "UTF-8") false))
+  (with-open [r  (io/reader f :encoding "UTF-8")]
+    (json/read r {:key-fn str})))
 
 (defn print-interaction
   [{{:keys [uri query-params method]} :request
