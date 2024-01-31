@@ -19,11 +19,12 @@
 
 BB:=bb
 version:=$(shell git describe --tags)
+baked_version:=$(shell cat "src/nl/jomco/apie/version.txt")
 
 # need latest snapshot for standalone executables
 BABASHKA_VERSION:=1.3.188
 
-.PHONY: uberjar
+.PHONY: uberjar bake-version
 
 exec_base_name=apie
 release_name=$(exec_base_name)-$(version)
@@ -35,9 +36,15 @@ uberjar=$(exec_base_name)-$(version)-standalone.jar
 
 uberjar: $(uberjar)
 
+
 $(uberjar): deps.edn bb.edn $(source_files)
+
+$(uberjar): deps.edn bb.edn $(source_files) bake-version
 	rm -f $@
 	$(BB) uberjar $@ -m nl.jomco.apie.main
+
+bake-version:
+	if [ "$(version)" != "$(baked_version)" ]; then	echo "$(version)" >src/nl/jomco/apie/version.txt; fi
 
 release: $(binary_release)
 

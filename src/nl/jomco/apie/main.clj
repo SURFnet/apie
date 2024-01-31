@@ -55,6 +55,9 @@
     "Maximum number of requests per operation in OpenAPI spec."
     :default ##Inf
     :parse-fn parse-long]
+   ["-v" "--version"
+    "Print version and exit."
+    :id :print-version?]
    ["-a" "--basic-auth 'USER:PASS'" "Send basic authentication header."
     :default nil
     :parse-fn (fn [s]
@@ -63,6 +66,12 @@
                     (throw (ex-info "Can't parse basic-auth" {:s s})))
                   {:user user
                    :pass pass}))]])
+
+(defn version
+  "Return app version"
+  []
+  (when-let [r (io/resource "nl/jomco/apie/version.txt")]
+    (string/trim (slurp r))))
 
 (defn file-or-resource
   "Return f as file if it exists, otherwise as resource.
@@ -128,14 +137,17 @@
         spec-data            (if parent-dir
                                (read-json (io/file parent-dir openapi-spec))
                                (read-json (file-or-resource openapi-spec)))]
-      (when-not no-spider?
-        (spider spec-data profile-data options))
-      (when-not no-report?
-        (report spec-data options))))
+    (when-not no-spider?
+      (spider spec-data profile-data options))
+    (when-not no-report?
+      (report spec-data options))))
 
 (defn -main
   [& args]
   (let [{:keys [errors summary options]} (parse-opts args cli-options)]
+    (when (:print-version? options)
+      (println (version))
+      (System/exit 0))
     (when (seq errors)
       (run! println errors)
       (println summary)
