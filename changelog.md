@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.0
+ - Use babashka.json for faster, bb-compatible JSON parsing
+ - Build local binary using local bb for development
+
+## v0.1.0
+
+ - Rename to `apie`
+ - Remove builtin profiles; split off eduhub-validator
+ - Improve petstore example
+
 ## v0.0.4
 
  - Add changelog
