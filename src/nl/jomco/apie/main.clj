@@ -90,12 +90,12 @@
   (when (instance? java.io.File f)
     (.getParentFile f)))
 
-(defn- read-edn
+(defn read-edn
   [f]
   (with-open [in (java.io.PushbackReader. (io/reader f :encoding "UTF-8"))]
     (edn/read in)))
 
-(defn- read-json
+(defn read-json
   [f]
   (with-open [r  (io/reader f :encoding "UTF-8")]
     (json/read r {:key-fn str})))
@@ -108,7 +108,7 @@
               uri)]
     (println status (string/upper-case (name method)) uri)))
 
-(defn- spider
+(defn spider
   [spec-data rules-data {:keys [base-url observations-path] :as options}]
   (println "Spidering" base-url)
   (with-open [w (io/writer observations-path :encoding "UTF-8")]
@@ -117,7 +117,7 @@
                (pprint/pprint % w)) (spider/spider-and-validate spec-data rules-data options))
     (.write w "]")))
 
-(defn- report
+(defn report
   [spec-data {:keys [observations-path report-path base-url]}]
   (println "Writing report to" report-path)
   (binding [*out* (io/writer report-path :encoding "UTF-8")]
