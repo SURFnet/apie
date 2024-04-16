@@ -127,13 +127,13 @@
   (fn [request]
     (let [request (if (json-type? request)
                     (update request :body json/write-str)
-                    request)]
-      (let [response (f request)]
-        (if (json-type? response)
-          (update response :body #(-> %
-                                      (json/read-str {:key-fn identity})
-                                      (force-vec)))
-          response)))))
+                    request)
+          response (f request)]
+      (if (json-type? response)
+        (update response :body #(-> %
+                                    (json/read-str {:key-fn identity})
+                                    (force-vec)))
+        response))))
 
 (defn wrap-max-requests-per-operation
   [f max-requests-per-operation op-path]
@@ -192,7 +192,7 @@
 (defn spider-and-validate
   [openapi-spec
    {:keys [rules seeds] :as _rules}
-   {:keys [base-url max-requests-per-operation max-total-requests] :as options}]
+   {:keys [max-requests-per-operation max-total-requests] :as options}]
   (let [
         validate (-> (validator/validator-context openapi-spec {})
                      (validator/interaction-validator))
