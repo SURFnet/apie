@@ -2,6 +2,7 @@
 
 ## NEXTVERSION
  - Add `assoc` and `dissoc` map functions
+ - Fix JSON parsing of top-level arrays
 
 ## v0.2.0
  - Use babashka.json for faster, bb-compatible JSON parsing
