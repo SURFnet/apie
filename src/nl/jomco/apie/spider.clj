@@ -112,6 +112,16 @@
   [r]
   (string/starts-with? (get-in r [:headers "content-type"] "") "application/json"))
 
+;;  Some babashka json parser implementations return toplevel arrays
+;;  as seqs.  That breaks the matching rules, which expect indexable
+;;  collections. This converts toplevel `x` to a vector if it's a seq.
+
+(defn- force-vec
+  [x]
+  (if (seq? x)
+    (vec x)
+    x))
+
 (defn wrap-json-body
   [f]
   (fn [request]
@@ -120,7 +130,9 @@
                     request)]
       (let [response (f request)]
         (if (json-type? response)
-          (update response :body #(json/read-str % {:key-fn identity}))
+          (update response :body #(-> %
+                                      (json/read-str {:key-fn identity})
+                                      (force-vec)))
           response)))))
 
 (defn wrap-max-requests-per-operation
