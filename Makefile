@@ -36,9 +36,6 @@ uberjar=$(exec_base_name)-$(version)-standalone.jar
 
 uberjar: $(uberjar)
 
-
-$(uberjar): deps.edn bb.edn $(source_files)
-
 $(uberjar): deps.edn bb.edn $(source_files) bake-version
 	rm -f $@
 	$(BB) uberjar $@ -m nl.jomco.apie.main
