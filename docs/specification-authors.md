@@ -158,6 +158,11 @@ The following functions are available in expressions:
 - `(or A B)` true when either A and B are not false
 - `(if A B C)` evaluate B when A is not false, otherwise evaluate C
 - `(= A B)` true if A equals B
+- `(assoc M K V)` returns map M with key-value pair K V added
+- `(dissoc M K)` returns map M with key M removed
+
+All functions are side-effect free and do not modify their
+arguments. In particular, assoc and dissoc return new maps.
 
 ## See also
 

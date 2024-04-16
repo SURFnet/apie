@@ -1,5 +1,8 @@
 # Changelog
 
+## NEXTVERSION
+ - Add `assoc` and `dissoc` map functions
+
 ## v0.2.0
  - Use babashka.json for faster, bb-compatible JSON parsing
  - Build local binary using local bb for development

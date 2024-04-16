@@ -172,6 +172,11 @@
   [{:keys [uri path url]}]
   (or path uri (.getPath (java.net.URI/create url))))
 
+(def spider-env
+  (assoc spider/default-env
+         'assoc assoc
+         'dissoc dissoc))
+
 (defn spider-and-validate
   [openapi-spec
    {:keys [rules seeds] :as _rules}
@@ -187,7 +192,10 @@
                          (wrap-max-requests max-total-requests)
                          (wrap-max-requests-per-operation max-requests-per-operation op-path))]
 
-    (->> (spider/spider {:rules rules :seeds seeds :exec-request exec-request})
+    (->> (spider/spider {:rules rules
+                         :seeds seeds
+                         :exec-request exec-request
+                         :env spider-env})
          (map fixup-interaction)
          (map #(assoc %
                       :issues (validate % [])
