@@ -90,6 +90,20 @@ README.md: usage.txt.generated README.src.md
 	echo "<!-- WARNING! THIS FILE IS GENERATED, EDIT README.src.md INSTEAD -->" >$@
 	sed "/<!-- INCLUDE USAGE HERE -->/r $<" README.src.md >>$@
 
-release_check: README.md
-	# check that working tree is clean
-	exit $$(git status --porcelain | wc -l)
+.PHONY: working_tree_clean_check lint test outdated
+
+# This regenerates README to make sure it's in sync with committed version
+working_tree_clean_check: README.md
+	exit $$(git status --porcelain |tee /dev/fd/2| wc -l)
+
+test:
+	clojure -M:test
+	bb -Sdeps '{:deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}}' -m kaocha.runner/-main
+
+lint:
+	clojure -M:clj-kondo --lint src test
+
+release_check: working_tree_clean_check test lint outdated
+
+outdated:
+	clojure -M:outdated
