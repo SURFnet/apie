@@ -1,4 +1,3 @@
-<!-- WARNING! THIS FILE IS GENERATED, EDIT README.src.md INSTEAD -->
 # Apie 🙈 OpenAPI Service Validator
 
 A command-line tool to spider and validate API endpoints to ensure
@@ -11,34 +10,6 @@ compact report containing all the validation issues found.
 # SYNOPSIS
 
 <!-- INCLUDE USAGE HERE -->
-```
-Usage: apie OPTIONS SEEDS*
-
-OPTIONS:
-  -u, --base-url BASE-URL                                 Base URL of service to validate.
-  -o, --observations OBSERVATIONS-PATH  observations.edn  Path to read/write spidering observations.
-  -p, --report REPORT-PATH              report.html       Path to write report.
-  -r, --profile PROFILE                                   Path to profile
-  -S, --no-spider                       false             Disable spidering (re-use observations from OBSERVATIONS-PATH).
-  -P, --no-report                       false             Disable report generation (spidering will write observations).
-  -h, --add-header 'HEADER: VALUE'      {}                Add header to request. Can be used multiple times.
-  -b, --bearer-token TOKEN              nil               Add bearer token to request.
-  -M, --max-total-requests N            Infinity          Maximum number of requests.
-  -m, --max-requests-per-operation N    Infinity          Maximum number of requests per operation in OpenAPI spec.
-  -v, --version                                           Print version and exit.
-      --help                                              Print usage information and exit.
-  -a, --basic-auth 'USER:PASS'          nil               Send basic authentication header.
-
-SEEDS are full URLs matching BASE-URL, or paths relative to BASE-URL.
-
-If SEEDS are not provided, uses seeds in profile.
-
-To validate all reachable paths from a service, use
-apie --profile=some/profile.edn --base-url=http://example.com
-
-To validate one specific path, use
-apie -M1 --profile=some/profile.edn --base-url=http://example.com '/some/path?param=val'
-```
 
 # For service developers
 

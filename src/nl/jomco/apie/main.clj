@@ -7,7 +7,8 @@
             [clojure.tools.cli :refer [parse-opts]]
             [nl.jomco.apie.report :as report]
             [nl.jomco.apie.spider :as spider]
-            [ring.util.codec :as codec]))
+            [ring.util.codec :as codec])
+  (:import java.net.URI))
 
 (defn- parse-header
   [s]
@@ -19,6 +20,17 @@
 (defn- add-header
   [headers [k v]]
   (update-in headers [k] spider/merge-header-values v))
+
+(defn parse-seed
+  [base-url s]
+  (let [s (string/replace s base-url "")
+        u (URI. s)
+        q (.getRawQuery u)]
+    (cond-> {:method "get"
+             :path (.getRawPath u)}
+      q
+      (assoc :query-params
+             (codec/form-decode q)))))
 
 (def cli-options
   [["-u" "--base-url BASE-URL" "Base URL of service to validate."
@@ -58,6 +70,8 @@
    ["-v" "--version"
     "Print version and exit."
     :id :print-version?]
+   [nil "--help"
+    "Print usage information and exit."]
    ["-a" "--basic-auth 'USER:PASS'" "Send basic authentication header."
     :default nil
     :parse-fn (fn [s]
@@ -66,6 +80,29 @@
                     (throw (ex-info "Can't parse basic-auth" {:s s})))
                   {:user user
                    :pass pass}))]])
+
+(defn usage
+  [summary]
+  (->> ["Apie 🙈 Service Validator"
+        ""
+        "A command-line tool to spider API endpoints and validate"
+        "against OpenAPI v3 specs."
+        ""
+        "Usage: apie OPTIONS SEEDS*"
+        ""
+        "OPTIONS:"
+        summary
+        ""
+        "SEEDS are full URLs matching BASE-URL, or paths relative to BASE-URL."
+        ""
+        "If SEEDS are not provided, uses seeds in profile."
+        ""
+        "To validate all reachable paths from a service, use"
+        "apie --profile=some/profile.edn --base-url=http://example.com"
+        ""
+        "To validate one specific path, use"
+        "apie -M1 --profile=some/profile.edn --base-url=http://example.com '/some/path?param=val'"]
+       (string/join "\n")))
 
 (defn version
   "Return app version"
@@ -144,7 +181,10 @@
 
 (defn -main
   [& args]
-  (let [{:keys [errors summary options]} (parse-opts args cli-options)]
+  (let [{:keys [errors summary options arguments]} (parse-opts args cli-options)]
+    (when (:help options)
+      (println (usage summary))
+      (System/exit 0))
     (when (:print-version? options)
       (println (version))
       (System/exit 0))
@@ -152,7 +192,11 @@
       (run! println errors)
       (println summary)
       (System/exit 1))
-    (main options)))
+
+    (let [options (if (seq arguments)
+                    (assoc options :seeds (map #(parse-seed (:base-url options) %) arguments))
+                    options)]
+      (main options))))
 
 (comment
 

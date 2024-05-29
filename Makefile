@@ -80,3 +80,16 @@ $(exec_base_name).exe: $(release_name)-$(current_arch)/$(exec_base_name).exe
 $(exec_base_name): $(uberjar)
 	cat $(shell which bb) $(uberjar) >$@
 	chmod 755 $@
+
+usage.txt.generated: $(exec_base_name)
+	echo "\`\`\`" >$@
+	"./$(exec_base_name)" --help |sed -n '/^Usage:/,/\Z/p' >>$@
+	echo "\`\`\`" >>$@
+
+README.md: usage.txt.generated README.src.md
+	echo "<!-- WARNING! THIS FILE IS GENERATED, EDIT README.src.md INSTEAD -->" >$@
+	sed "/<!-- INCLUDE USAGE HERE -->/r $<" README.src.md >>$@
+
+release_check: README.md
+	# check that working tree is clean
+	exit $$(git status --porcelain | wc -l)
