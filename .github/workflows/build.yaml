@@ -8,7 +8,7 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v4
     - uses: actions/cache@v4
@@ -22,18 +22,12 @@ jobs:
 
     - name: Install clj runtime
       run: .github/workflows/install-binaries.sh
-          
-    - name: Run tests on Clojure
-      run: bin/clojure -M:test
 
-    - name: Run tests on Babashka
-      run: bin/bb -Sdeps '{:deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}}' -m kaocha.runner/-main 
-          
-    - name: Check dependency freshness
-      run: bin/clojure -M:outdated
-      
-    - name: Run linters
-      run: bin/clojure -M:clj-kondo --lint src test
+    - name: Add clj runtime to PATH
+      run: echo "${PWD}/bin" >> $GITHUB_PATH
+
+    - name: Run release checks
+      run: make release_check
 
   create_release:
     if: startsWith(github.ref, 'refs/tags/v0') || startsWith(github.ref, 'refs/tags/v1')
@@ -97,7 +91,7 @@ jobs:
       run: .github/workflows/install-binaries.sh
 
     - name: Build artifact
-      run: make ${{ steps.artifact.outputs.filename }} BB=bin/bb
+      run: make ${{ steps.artifact.outputs.filename }}
 
     - name: Upload artifact
       uses: actions/upload-release-asset@v1
