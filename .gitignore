@@ -9,3 +9,6 @@
 /target/
 *.jar
 /src/nl/jomco/apie/version.txt
+/usage.txt.generated
+/apie
+/.nrepl-port

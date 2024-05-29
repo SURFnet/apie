@@ -1,6 +1,8 @@
 # Changelog
 
 ## NEXTVERSION
+ - Add SEEDS arguments
+ - Add --help option
  - Update dependencies
  - Add `assoc` and `dissoc` map functions
  - Fix JSON parsing of top-level arrays
