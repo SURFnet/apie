@@ -10,16 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+    # NVD data can change every day, so we use a cache key based on today's date
+    - name: Get current date
+      id: date
+      run: echo "date=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+
     - uses: actions/checkout@v4
     - uses: actions/cache@v4
-      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
-    - uses: actions/cache@v4
       with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
-        path: |
-          ./bin
-          ./lib
-
+        path: "~/.m2"
+          
+        # store as today's cache
+        key: "nvd-clojure-${{ steps.date.outputs.date }}"
+        # if today's cache does not yet exist, fetch from whatever iss
+        # the most recent cache for nvd-clojure
+        # and update that
+        restore-keys: "nvd-clojure-"
+        
     - name: Install clj runtime
       run: .github/workflows/install-binaries.sh
 
