@@ -21,8 +21,20 @@
   [headers [k v]]
   (update-in headers [k] spider/merge-header-values v))
 
+(defn valid-url?
+  [u]
+  (re-matches #"^https?://.*" u))
+
+(defn valid-seed?
+  "Seed argument should be a path or a full url matching base-url"
+  [base-url s]
+  (if (valid-url? s)
+    (string/starts-with? s base-url)
+    true))
+
 (defn parse-seed
   [base-url s]
+  {:pre [(valid-seed? base-url s)]}
   (let [s (string/replace s base-url "")
         u (URI. s)
         q (.getRawQuery u)]
@@ -34,7 +46,8 @@
 
 (def cli-options
   [["-u" "--base-url BASE-URL" "Base URL of service to validate."
-    :missing "BASE-URL is missing"]
+    :missing "BASE-URL is missing"
+    :validate [valid-url? "Must be HTTP or HTTPS url"]]
    ["-o" "--observations OBSERVATIONS-PATH" "Path to read/write spidering observations."
     :id :observations-path
     :default "observations.edn"]
@@ -191,6 +204,9 @@
     (when (seq errors)
       (run! println errors)
       (println summary)
+      (System/exit 1))
+    (when-let [invalid-seeds (seq (remove #(valid-seed? (:base-url options) %) arguments))]
+      (apply println "Invalid SEEDs:" invalid-seeds)
       (System/exit 1))
 
     (let [options (if (seq arguments)
