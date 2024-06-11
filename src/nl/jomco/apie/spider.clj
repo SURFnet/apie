@@ -191,9 +191,9 @@
 
 (defn spider-and-validate
   [openapi-spec
-   {:keys [rules] :as _rules}
+   {:keys [rules seeds] :as _profile}
    {:keys [max-requests-per-operation max-total-requests] :as options}]
-  (let [seeds (or (:seeds options) (:seeds _rules))
+  (let [seeds (or (:seeds options) seeds)
         validate (-> (validator/validator-context openapi-spec {})
                      (validator/interaction-validator))
         matcher  (paths-matcher (keys (get openapi-spec "paths")))

@@ -12,7 +12,7 @@ compact report containing all the validation issues found.
 
 <!-- INCLUDE USAGE HERE -->
 ```
-Usage: apie OPTIONS SEEDS*
+Usage: apie [OPTIONS] [SEED...]
 
 OPTIONS:
   -u, --base-url BASE-URL                                 Base URL of service to validate.
@@ -29,9 +29,9 @@ OPTIONS:
       --help                                              Print usage information and exit.
   -a, --basic-auth 'USER:PASS'          nil               Send basic authentication header.
 
-SEEDS are full URLs matching BASE-URL, or paths relative to BASE-URL.
+SEEDs are full URLs matching BASE-URL, or paths relative to BASE-URL.
 
-If SEEDS are not provided, uses seeds in profile.
+If SEEDs are not provided, uses seeds in profile.
 
 To validate all reachable paths from a service, use
 apie --profile=some/profile.edn --base-url=http://example.com
