@@ -94,6 +94,8 @@ README.md: usage.txt.generated README.src.md
 
 # This regenerates README to make sure it's in sync with committed version
 working_tree_clean_check: README.md
+# git-status --porcelain should print 0 lines.  wc -l counts lines
+# tee /dev/fd/2 prints any uncommitted changes to stderr for logging in CI
 	exit $$(git status --porcelain |tee /dev/fd/2| wc -l)
 
 test:

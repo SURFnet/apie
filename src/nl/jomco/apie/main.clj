@@ -88,14 +88,14 @@
         "A command-line tool to spider API endpoints and validate"
         "against OpenAPI v3 specs."
         ""
-        "Usage: apie OPTIONS SEEDS*"
+        "Usage: apie [OPTIONS] [SEED...]"
         ""
         "OPTIONS:"
         summary
         ""
-        "SEEDS are full URLs matching BASE-URL, or paths relative to BASE-URL."
+        "SEEDs are full URLs matching BASE-URL, or paths relative to BASE-URL."
         ""
-        "If SEEDS are not provided, uses seeds in profile."
+        "If SEEDs are not provided, uses seeds in profile."
         ""
         "To validate all reachable paths from a service, use"
         "apie --profile=some/profile.edn --base-url=http://example.com"
@@ -146,12 +146,12 @@
     (println status (string/upper-case (name method)) uri)))
 
 (defn spider
-  [spec-data rules-data {:keys [base-url observations-path] :as options}]
+  [spec-data profile-data {:keys [base-url observations-path] :as options}]
   (println "Spidering" base-url)
   (with-open [w (io/writer observations-path :encoding "UTF-8")]
     (.write w "[")
     (run! #(do (print-interaction %)
-               (pprint/pprint % w)) (spider/spider-and-validate spec-data rules-data options))
+               (pprint/pprint % w)) (spider/spider-and-validate spec-data profile-data options))
     (.write w "]")))
 
 (defn report
@@ -197,12 +197,3 @@
                     (assoc options :seeds (map #(parse-seed (:base-url options) %) arguments))
                     options)]
       (main options))))
-
-(comment
-
-  (-main "-M" "5" "-u" "https://demo04.test.surfeduhub.nl/")
-
-  (def ooapi-rules (read-edn (file-or-resource "rio")))
-  (def ooapi-spec (read-json (file-or-resource (:openapi-spec ooapi-rules))))
-
-  (def interactions (spider/spider-and-validate ooapi-spec ooapi-rules {:base-url "https://demo04.test.surfeduhub.nl"})))

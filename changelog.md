@@ -1,7 +1,7 @@
 # Changelog
 
 ## NEXTVERSION
- - Add SEEDS arguments
+ - Add SEED argument
  - Add --help option
  - Update dependencies
  - Add `assoc` and `dissoc` map functions
