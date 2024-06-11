@@ -164,6 +164,22 @@ The following functions are available in expressions:
 All functions are side-effect free and do not modify their
 arguments. In particular, assoc and dissoc return new maps.
 
+An example of a rule matching on a request containing query
+parameters, genering a new request with the same query parameters and
+extra argument named "extraArgument":
+
+```clojure
+ {:match     [[:request :method, "get"]
+              [:request :path "/pet/findByStatus"]
+              [:response :status 200]
+              [:response :body ?i "id" ?petId]
+              [:request :query-params ?query-params]]
+  :generates [
+              {:method "get"
+               :path   "/pet/{ ?petId }"
+               :query-params (assoc ?query-params "extraArgument" (inc ?i))}]}
+```
+
 ## See also
 
 [https://git.sr.ht/~jomco/spider](https://git.sr.ht/~jomco/spider) -
