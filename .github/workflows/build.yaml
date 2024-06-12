@@ -1,7 +1,6 @@
 name: Build artifacts
 on:
   push:
-  create:
     tags:
       - '*'
   
@@ -82,13 +81,16 @@ jobs:
         path: |
           ./bin
           ./lib
-
+          
     - name: Artifact name
       run: echo filename=apie-${{ needs.create_release.outputs.version }}-${{ matrix.arch }} >> $GITHUB_OUTPUT
       id: artifact
     
     - name: Install clj runtime
       run: .github/workflows/install-binaries.sh
+
+    - name: Add clj runtime to PATH
+      run: echo "${PWD}/bin" >> $GITHUB_PATH
 
     - name: Build artifact
       run: make ${{ steps.artifact.outputs.filename }}
