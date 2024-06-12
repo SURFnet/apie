@@ -3,7 +3,7 @@ name: Check dependency vulnerabilities
 on:
   push:
   schedule:
-    - cron: '0 1 * * 1'
+    - cron: '0 1 * * 1,2,3,4,5' # every workday
 
 jobs:
   "NVD-check":
