@@ -1,6 +1,8 @@
 # Changelog
 
 ## NEXTVERSION
+
+## 0.2.1
  - Add SEED argument
  - Add --help option
  - Update dependencies
