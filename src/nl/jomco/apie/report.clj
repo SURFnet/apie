@@ -385,7 +385,8 @@
   [openapi interactions base-url]
   (hiccup.page/html5
    [:html
-    [:head [:title (report-title base-url)]
+    [:head [:title (report-title base-url)
+           [:meta {:charset "UTF-8"}]]
      [:style (-> css-resource (io/resource) (slurp) (raw-css))]]
     [:body
      [:header
