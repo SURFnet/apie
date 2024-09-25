@@ -13,3 +13,7 @@
 /apie
 /.nrepl-port
 /linux-install*.sh
+.clj-kondo/
+.idea/
+.lsp/
+*.iml

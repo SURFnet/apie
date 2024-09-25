@@ -4,11 +4,12 @@
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]
             [clojure.string :as string]
-            [clojure.tools.cli :refer [parse-opts]]
+            [clojure.tools.cli :as cli]
             [nl.jomco.apie.report :as report]
             [nl.jomco.apie.spider :as spider]
             [ring.util.codec :as codec])
-  (:import java.net.URI))
+  (:import java.net.URI
+           [java.io File PushbackReader]))
 
 (defn- parse-header
   [s]
@@ -137,12 +138,12 @@
 (defn file-parent
   "If f is a file, return its parent directory"
   [f]
-  (when (instance? java.io.File f)
+  (when (instance? File f)
     (.getParentFile f)))
 
 (defn read-edn
   [f]
-  (with-open [in (java.io.PushbackReader. (io/reader f :encoding "UTF-8"))]
+  (with-open [in (PushbackReader. (io/reader f :encoding "UTF-8"))]
     (edn/read in)))
 
 (defn read-json
@@ -164,7 +165,8 @@
   (with-open [w (io/writer observations-path :encoding "UTF-8")]
     (.write w "[")
     (run! #(do (print-interaction %)
-               (pprint/pprint % w)) (spider/spider-and-validate spec-data profile-data options))
+               (pprint/pprint % w))
+          (spider/spider-and-validate spec-data profile-data options))
     (.write w "]")))
 
 (defn report
@@ -194,7 +196,7 @@
 
 (defn -main
   [& args]
-  (let [{:keys [errors summary options arguments]} (parse-opts args cli-options)]
+  (let [{:keys [errors summary options arguments]} (cli/parse-opts args cli-options)]
     (when (:help options)
       (println (usage summary))
       (System/exit 0))

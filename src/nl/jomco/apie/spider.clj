@@ -4,7 +4,8 @@
             [nl.jomco.spider :as spider]
             [clojure.string :as string]
             [babashka.json :as json]
-            [babashka.http-client :as http-client]))
+            [babashka.http-client :as http-client])
+  (:import [java.net URI URL]))
 
 (defn fixup-request
   "Convert spider request to format expected by validator"
@@ -36,7 +37,6 @@
 (defn add-header
   [headers [k v]]
   (update-in headers [k] merge-header-values v))
-
 
 (defn merge-headers
   [headers1 headers2]
@@ -94,7 +94,7 @@
 (defn wrap-base-url
   "Ensure base-url info is added to request."
   [f base-url]
-  (let [u            (java.net.URL. base-url)
+  (let [u            (URL. base-url)
         base-request {:host   (.getHost u)
                       :port   (.getPort u)
                       :path   "/"
@@ -182,7 +182,7 @@
 
 (defn path
   [{:keys [uri path url]}]
-  (or path uri (.getPath (java.net.URI/create url))))
+  (or path uri (.getPath (URI/create url))))
 
 (def spider-env
   (assoc spider/default-env
