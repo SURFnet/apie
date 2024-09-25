@@ -4,7 +4,8 @@
             [nl.jomco.spider :as spider]
             [clojure.string :as string]
             [babashka.json :as json]
-            [babashka.http-client :as http-client]))
+            [babashka.http-client :as http-client])
+  (:import [java.net URI URL]))
 
 (defn fixup-request
   "Convert spider request to format expected by validator"
@@ -36,7 +37,6 @@
 (defn add-header
   [headers [k v]]
   (update-in headers [k] merge-header-values v))
-
 
 (defn merge-headers
   [headers1 headers2]
@@ -94,7 +94,7 @@
 (defn wrap-base-url
   "Ensure base-url info is added to request."
   [f base-url]
-  (let [u            (java.net.URL. base-url)
+  (let [u            (URL. base-url)
         base-request {:host   (.getHost u)
                       :port   (.getPort u)
                       :path   "/"
@@ -155,6 +155,14 @@
             (f request))
         ::spider/skip))))
 
+(defn wrap-timeout [f timeout]
+  (let [start (System/currentTimeMillis)]
+    (fn [req]
+      (if (and timeout (> (System/currentTimeMillis) (+ start timeout)))
+        (throw (ex-info "Timeout: Spider process has exceeded the maximum duration"
+                        {:during-request req, :max-duration-millis timeout}))
+        (f req)))))
+
 (defn mk-exec-request
   [{:keys [base-url headers basic-auth bearer-token]}]
   (cond-> http-client/request
@@ -182,7 +190,7 @@
 
 (defn path
   [{:keys [uri path url]}]
-  (or path uri (.getPath (java.net.URI/create url))))
+  (or path uri (.getPath (URI/create url))))
 
 (def spider-env
   (assoc spider/default-env
@@ -192,7 +200,7 @@
 (defn spider-and-validate
   [openapi-spec
    {:keys [rules seeds] :as _profile}
-   {:keys [max-requests-per-operation max-total-requests] :as options}]
+   {:keys [max-requests-per-operation max-total-requests spider-timeout-millis] :as options}]
   (let [seeds (or (:seeds options) seeds)
         validate (-> (validator/validator-context openapi-spec {})
                      (validator/interaction-validator))
@@ -202,7 +210,8 @@
                      [:paths template (:method request)]))
         exec-request (-> (mk-exec-request options)
                          (wrap-max-requests max-total-requests)
-                         (wrap-max-requests-per-operation max-requests-per-operation op-path))]
+                         (wrap-max-requests-per-operation max-requests-per-operation op-path)
+                         (wrap-timeout spider-timeout-millis))]
 
     (->> (spider/spider {:rules rules
                          :seeds seeds
