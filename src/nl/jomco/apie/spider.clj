@@ -155,6 +155,12 @@
             (f request))
         ::spider/skip))))
 
+(defn wrap-respect-deadline [f deadline]
+  (fn [req]
+    (if (and deadline (> (System/currentTimeMillis) deadline))
+      (throw (ex-info "Deadline has passed" {:during-request req}))
+      (f req))))
+
 (defn mk-exec-request
   [{:keys [base-url headers basic-auth bearer-token]}]
   (cond-> http-client/request
@@ -192,7 +198,7 @@
 (defn spider-and-validate
   [openapi-spec
    {:keys [rules seeds] :as _profile}
-   {:keys [max-requests-per-operation max-total-requests] :as options}]
+   {:keys [max-requests-per-operation max-total-requests deadline] :as options}]
   (let [seeds (or (:seeds options) seeds)
         validate (-> (validator/validator-context openapi-spec {})
                      (validator/interaction-validator))
@@ -202,7 +208,8 @@
                      [:paths template (:method request)]))
         exec-request (-> (mk-exec-request options)
                          (wrap-max-requests max-total-requests)
-                         (wrap-max-requests-per-operation max-requests-per-operation op-path))]
+                         (wrap-max-requests-per-operation max-requests-per-operation op-path)
+                         (wrap-respect-deadline deadline))]
 
     (->> (spider/spider {:rules rules
                          :seeds seeds
