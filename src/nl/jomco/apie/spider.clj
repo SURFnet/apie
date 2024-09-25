@@ -155,12 +155,13 @@
             (f request))
         ::spider/skip))))
 
-(defn wrap-timeout [f timeout start]
-  (fn [req]
-    (if (and timeout (> (System/currentTimeMillis) (+ start timeout)))
-      (throw (ex-info "Timeout: Spider process has exceeded the maximum duration"
-                      {:during-request req, :max-duration-millis timeout}))
-      (f req))))
+(defn wrap-timeout [f timeout]
+  (let [start (System/currentTimeMillis)]
+    (fn [req]
+      (if (and timeout (> (System/currentTimeMillis) (+ start timeout)))
+        (throw (ex-info "Timeout: Spider process has exceeded the maximum duration"
+                        {:during-request req, :max-duration-millis timeout}))
+        (f req)))))
 
 (defn mk-exec-request
   [{:keys [base-url headers basic-auth bearer-token]}]
@@ -210,7 +211,7 @@
         exec-request (-> (mk-exec-request options)
                          (wrap-max-requests max-total-requests)
                          (wrap-max-requests-per-operation max-requests-per-operation op-path)
-                         (wrap-timeout spider-timeout-millis (System/currentTimeMillis)))]
+                         (wrap-timeout spider-timeout-millis))]
 
     (->> (spider/spider {:rules rules
                          :seeds seeds
