@@ -81,6 +81,10 @@
     "Maximum number of requests per operation in OpenAPI spec."
     :default ##Inf
     :parse-fn parse-long]
+   ["-t" "--spider-timeout-millis N"
+    "Maximum number of milliseconds before timeout of spider."
+    :default ##Inf
+    :parse-fn parse-long]
    ["-v" "--version"
     "Print version and exit."
     :id :print-version?]
