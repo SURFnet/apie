@@ -25,6 +25,7 @@ OPTIONS:
   -b, --bearer-token TOKEN              nil               Add bearer token to request.
   -M, --max-total-requests N            Infinity          Maximum number of requests.
   -m, --max-requests-per-operation N    Infinity          Maximum number of requests per operation in OpenAPI spec.
+  -t  --spider-timeout-millis N         Infinity          Maximum number of milliseconds before spider timeout.
   -v, --version                                           Print version and exit.
       --help                                              Print usage information and exit.
   -a, --basic-auth 'USER:PASS'          nil               Send basic authentication header.
