@@ -105,16 +105,25 @@ li.and-more::marker {
 
 section.general {
     display: flex;
+    grid-gap: 1rem;
 }
 section.general section {
-    margin-right: 1rem;
+    flex: 1;
 }
-section.general section:last-child {
-    margin-right: 0;
+section.general section.result {
+    flex: 1.75;
 }
 section.general dl {
     margin: 1rem 0 0 0;
-    font-size: .8rem;
+}
+section.general dl dd {
+    font-style: italic;
+    max-width: 30em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+section.general section.result dd strong {
+    font-size: 133%;
 }
 
 .per-path > p {

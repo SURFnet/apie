@@ -34,25 +34,85 @@
 (defn- with-issues [interactions]
   (filter :issues interactions))
 
-(defn- score-percent [interactions]
-  (if (empty? interactions)
-    100.0
-    (* 100.0 (/ (count (with-issues interactions))
-                (count interactions)))))
-
-(defn- score-summary [interactions]
-  (let [score (score-percent interactions)]
-    [:div.score
-      (if (zero? score)
-        (str "🙂 no issues found!")
-        (format "😢 %.1f%% (%d) requests have issues."
-                score
-                (count (with-issues interactions))))]))
-
-
 (def css-resource "style.css")
 
-(defn- interactions-summary [interactions]
+(defn- interactions-result [interactions]
+  [:section.result
+   [:h3 "Results"]
+   [:dl
+    [:div
+     [:dt "Number of request with issues"]
+     [:dd
+      [:strong (-> interactions
+                   (with-issues)
+                   (count))]]]
+
+    [:div
+     [:dt "Number of paths with issues"]
+     [:dd
+      [:strong (->> interactions
+                    (with-issues)
+                    (map :operation-path)
+                    (set)
+                    (count))]]]
+
+
+    [:div
+     [:dt "Total number of issues"]
+     [:dd
+      [:strong (->> interactions
+                    (mapcat :issues)
+                    (count))]]]
+
+    [:div
+     [:dt "Number of issue types (by schema path)"]
+     [:dd
+      [:strong (->> interactions
+                    (mapcat :issues)
+                    (map :canonical-schema-path)
+                    (set)
+                    (count))]]]]])
+
+(defn- duration [msecs]
+  (let [secs (quot msecs 1000)
+        terms (->> (cond-> []
+                     (> secs (* 24 60 60))
+                     (conj (t {:zero  ""
+                               :one   "1 day"
+                               :other "%{count} days"}
+                              {:count (quot secs (* 24 60 60))}))
+
+                     (> secs (* 60 60))
+                     (conj (t {:zero  ""
+                               :one   "1 hour"
+                               :other "%{count} hours"}
+                              {:count (mod (quot secs (* 60 60)) 24)}))
+
+                     (> secs 60)
+                     (conj (t {:zero  ""
+                               :one   "1 minute"
+                               :other "%{count} minutes"}
+                              {:count (mod (quot secs 60) 60)}))
+
+                     :else
+                     (conj (t {:zero  ""
+                               :one   "1 second"
+                               :other "%{count} seconds"}
+                              {:count (mod secs 60)})))
+                   (filter (complement (partial = ""))))]
+    (cond
+      (= 1 (count terms))
+      (first terms)
+
+      (seq terms)
+      (str (string/join ", " (drop-last terms))
+           " and "
+           (last terms))
+
+      :else
+      "less than a second")))
+
+(defn- interactions-runtime [base-url interactions]
   (let [responses (->> interactions
                        (map :response))
         start-at     (->> responses
@@ -63,32 +123,29 @@
                           (map :finish-at)
                           (sort)
                           (last))]
-    [:section.summary
-     [:h3 "Summary"]
+    [:section.runtime
+     [:h3 "Run"]
      [:dl
       [:div
-       [:dt "Run time"]
-       [:dd "From "[:strong start-at] " till " [:strong finish-at]]]]]))
+       [:dt "Location"]
+       [:dd [:a {:href base-url} base-url]]]
 
-(defn- kpis-section [interactions]
-  [:section.kpis
-   [:h3 "KPIs"]
-   (let [n             (count interactions)
-         n-with-issues (count (with-issues interactions))]
-     [:dl
-      [:div.observations
-       [:dt "Requests"]
-       [:dd n]]
-      [:div.faultless
-       [:dt "Faultless requests"]
-       [:dd
-        (t {:zero  "✅ no issues found!"
-            :one   "✅ one request has no issues!"
-            :other "✅ %{count} requests have no issues!"}
-           {:count (- n n-with-issues)})]]
-      [:div.score
-       [:dt "Validation score"]
-       [:dd (score-summary interactions)]]])])
+      [:div
+       [:dt "Started at"]
+       [:dd start-at]]
+
+      [:div
+       [:dt "Finished at"]
+       [:dd finish-at]]
+
+      [:div
+       [:dt "Duration"]
+       [:dd (duration (- (.getTime finish-at)
+                         (.getTime start-at)))]]
+
+      [:div
+       [:dt "Number of requests"]
+       [:dd (count interactions)]]]]))
 
 (defn- interaction-summary [{{:keys [method uri query-string]} :request}]
   [:span.interaction-summary
@@ -355,13 +412,16 @@
 (defn- per-path-section [openapi interactions]
   [:section.per-path
    [:h2 "Results per request path"]
-   [:p "(sorted by percentage of issues)"]
+   [:p "(sorted by number of issues)"]
 
    (for [[[_ path] interactions]
          (->> interactions
               (group-by :operation-path)
               (sort-by (fn [[path interactions]]
-                         [(* -1 (score-percent interactions)) path])))]
+                         [(* -1 (-> interactions
+                                    (with-issues)
+                                    (count)))
+                          path])))]
      [:section.interaction-path
       [:h3 path]
       (let [n             (count interactions)
@@ -448,8 +508,8 @@
 
      [:main
       [:section.general
-       (interactions-summary interactions)
-       (kpis-section interactions)]
+       (interactions-result interactions)
+       (interactions-runtime base-url interactions)]
       (per-path-section openapi interactions)]
 
      [:footer
