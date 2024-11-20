@@ -11,6 +11,23 @@
 (def max-value-depth 1)
 (def max-value-length 120)
 
+(defn t-count [{:keys [zero one other] :as templ}
+               {:keys [count] :as _args}]
+  (if (and count (map? templ))
+    (cond
+      (and (zero? count) zero) zero
+      (and (= 1 count) one) one
+      :else other)
+    templ))
+
+(defn t [templ args]
+  (let [templ (t-count templ args)]
+    (assert (string? templ))
+    (reduce (fn [r [k v]]
+              (string/replace r (str "%{" (name k) "}") (str v)))
+            templ
+            args)))
+
 (defn- pretty-json [v & opts]
   [:pre.json (apply json/to-s v opts)])
 
@@ -28,7 +45,7 @@
     [:div.score
       (if (zero? score)
         (str "🙂 no issues found!")
-        (format "😢 %.1f%% (%d) observations have issues."
+        (format "😢 %.1f%% (%d) requests have issues."
                 score
                 (count (with-issues interactions))))]))
 
@@ -60,11 +77,15 @@
          n-with-issues (count (with-issues interactions))]
      [:dl
       [:div.observations
-       [:dt "Observations"]
+       [:dt "Requests"]
        [:dd n]]
       [:div.faultless
-       [:dt "Faultless observations"]
-       [:dd (str "✅ " (- n n-with-issues) " observations have no issues!")]]
+       [:dt "Faultless requests"]
+       [:dd
+        (t {:zero  "✅ no issues found!"
+            :one   "✅ one request has no issues!"
+            :other "✅ %{count} requests have no issues!"}
+           {:count (- n n-with-issues)})]]
       [:div.score
        [:dt "Validation score"]
        [:dd (score-summary interactions)]]])])
@@ -153,11 +174,12 @@
           (fn [i issues]
             (when (seq issues)
               [:li
-               "Invalid "
-               (-> schema
-                   (get-in [schema-keyword i])
-                   (json-schema-title))
-               ", " (count issues) " issue" (when (> (count issues) 1) "s") ":"
+               (t {:one   "Invalid %{title}, one issue:"
+                   :other "Invalid %{title}, %{count} issues:"}
+                  {:count (count issues)
+                   :title (-> schema
+                              (get-in [schema-keyword i])
+                              (json-schema-title))})
                (issue-snippets-list openapi issues)])))
          (into [:ul]))
     [:p "Maybe a fault in the specification?"]))
@@ -176,17 +198,23 @@
        (keep-indexed
         (fn [i issues]
           (when (seq issues)
-            [:li "Invalid " (-> schema
-                                (get-in [schema-keyword i])
-                                (json-schema-title)) ". " (count issues) " issues:"
+            [:li
+             (t {:one   "Invalid %{title}, one issue:"
+                 :other "Invalid %{title}, %{count} issues:"}
+                {:count (count issues)
+                 :title (-> schema
+                            (get-in [schema-keyword i])
+                            (json-schema-title))})
              (issue-snippets-list openapi issues)])))
        (into [:ul])))
 
 (defmethod json-schema-issue-summary "contains"
   [_ {:keys [schema schema-keyword instance]}]
   [:span
-   "Expected list of " (count instance)
-   " items to " [:strong "contain"]
+   (t {:one "Expected list of one item to "
+       :other "Expected list of %{count} items to "}
+      {:count (count instance)})
+   [:strong "contain"]
    " at least one valid "
    (json-schema-title (get schema schema-keyword))])
 
@@ -199,7 +227,11 @@
             (fn [i issues]
               (when (seq issues)
                 [:div
-                 [:dt "Item " i " is not a valid " title "; has " (count issues) " issues"]
+                 [:dt (t {:one   "Item %{i} is not a valid %{title}; one issue"
+                          :other "Item %{i} is not a valid %{title}; %{count} issues"}
+                         {:i     i
+                          :count (count issues)
+                          :title title})]
                  [:dd (issue-snippets-list openapi issues)]])))
            (into [:dl])))
     [:dl [:dt "Collection is empty!"]]))
@@ -207,12 +239,16 @@
 (defmethod json-schema-issue-summary "maxItems"
   [_ {:keys [schema]}]
   [:span
-   "Expected collection to contain no more than " (schema "maxItems") " items"])
+   (t {:one   "Expected collection to contain no more than one item"
+       :other "Expected collection to contain no more than %{count} items"}
+      {:count (schema "maxItems")})])
 
 (defmethod json-schema-issue-summary "minItems"
   [_ {:keys [schema]}]
   [:span
-   "Expected collection to contain least " (schema "minItems") " items"])
+   (t {:one   "Expected collection to contain at least one item"
+       :other "Expected collection to contain at least %{count} items"}
+      {:count (schema "minItems")})])
 
 (defmethod json-schema-issue-summary :default
   [_ {:keys [schema-keyword]}]
@@ -331,7 +367,22 @@
       (let [n             (count interactions)
             n-with-issues (->> interactions (filter :issues) (count))]
         [:div
-         [:div.summary (- n n-with-issues) " of " n " observations have no issues."]
+         [:div.summary
+          (cond
+            (zero? n-with-issues)
+            "No issues found."
+
+            (and (pos? n)
+                 (= n n-with-issues))
+            (t {:one   "Only request has issues."
+                :other "All %{count} requests have issues."}
+               {:count n})
+
+            :else
+            (t {:one   "%{n-with-issues} of one request have issues."
+                :other "%{n-with-issues} of %{count} requests have issues."}
+               {:n-with-issues n-with-issues
+                :count         n}))]
 
          (when (pos? n-with-issues)
            (let [issues-by-schema-path (->> interactions
@@ -341,14 +392,12 @@
                                             (group-by :canonical-schema-path)
                                             (sort-by (fn [[path issues]]
                                                        [(* -1 (count issues)) path])))
-                 n-issue-types  (count issues-by-schema-path)]
+                 n-issue-types         (count issues-by-schema-path)]
              [:div.summary
               [:p
-               (if (> n-issue-types 1)
-                 (format "%d different validation issues"
-                         n-issue-types)
-                 "1 validation issue")
-               " (by schema path):"]
+               (t {:one   "1 validation issue (by schema path):"
+                   :other "%{count} different validation issues (by schema path):"}
+                  {:count n-issue-types})]
               [:ol.by-schema-path
                (for [[[schema-path issues] i]
                      (map vector
@@ -361,10 +410,15 @@
                     [:div.leading [:span.count (count issues)]]
                     [:div.headline
                      [:div.schema-path (string/join "/" schema-path)]
-                     [:div.summary (count issues) " issues in "
-                      (count (filter (fn [{:keys [issues]}]
-                                       (some #(= schema-path (:canonical-schema-path %)) issues))
-                                     interactions)) " observations"]]]
+                     [:div.summary
+                      (t {:one   "one issue in "
+                          :other "%{count} issues in "}
+                         {:count (count issues)})
+                      (t {:one   "one request"
+                          :other "%{count} requests"}
+                         {:count (count (filter (fn [{:keys [issues]}]
+                                                  (some #(= schema-path (:canonical-schema-path %)) issues))
+                                                interactions))})]]]
                    (interaction-snippet-list openapi issues)]])
 
                (when (> (count issues-by-schema-path) max-issues-per-schema-path)
