@@ -14,6 +14,7 @@
 html {
     font-family: sans-serif;
     line-height: 1.5;
+    font-size: 1rem;
     width: 100%;
     background: var(--desktop-color);
 }
@@ -99,6 +100,9 @@ li.and-more::marker {
     padding: .5rem;
     border-radius: .5rem;
     overflow: auto;
+}
+code {
+    background: var(--code-bg-color);
 }
 
 /* general section */

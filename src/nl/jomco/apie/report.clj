@@ -341,7 +341,17 @@
     (example/example openapi (subvec canonical-schema-path 0 (dec (count canonical-schema-path))))))
 
 (defn- path->hiccup [coll]
-  [:span.path (interpose " / " (map #(vector :code %) coll))])
+  [:span.path
+   "["
+   (interpose "]["
+              (loop [[k & ks] coll
+                     r []]
+                (if k
+                  (recur ks
+                         (conj r
+                               [:code (pr-str (if (keyword? k) (name k) k))]))
+                  r)))
+   "]"])
 
 
 ;; this also works for non-json-schema issue types
