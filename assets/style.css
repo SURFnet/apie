@@ -232,4 +232,5 @@ details[open].interaction > summary::after {
 
 details.interaction > summary > .headline {
     font-weight: bold;
+    margin-bottom: 1rem;
 }

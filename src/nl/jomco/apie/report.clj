@@ -166,41 +166,23 @@
 
 (declare issue-snippets-list)
 
-(defmulti json-schema-issue-summary
-  (fn [_ issue]
-    (:schema-keyword issue)))
+(def json-id-re #"[a-zA-Z_$][0-9a-zA-Z_$]*")
 
-(defmulti issue-details
-  "Details for validation issue, dispatches on json schema-keyword"
-  (fn [_ {:keys [schema-keyword]}]
-    schema-keyword))
+(defn- path->hiccup [coll]
+  (into [:span.path]
+        (reduce (fn [m k]
+                  (let [d (if (empty? m) nil ".")
+                        k (if (keyword? k) (name k) k)]
+                    (conj m
+                          (if (and (string? k) (re-matches json-id-re k))
+                            [:span d [:code k]]
+                            [:span "[" [:code (json/to-s k) "]"]]))))
+                []
+                coll)))
 
-(defmethod json-schema-issue-summary "type"
-  [_ {:keys [schema schema-keyword instance]}]
-  [:span
-   "Expected " [:strong "type"] " "
-   [:code.expected (get schema schema-keyword)]
-   ", got "
-   [:code.got (value-type instance)]])
-
-(defmethod json-schema-issue-summary "required"
-  [_ {:keys [hints]}]
-  [:span
-   "Missing " [:strong "required"] " field(s): "
-   (interpose ", "
-              (map #(vector :code.expected %)
-                   (:missing hints)))])
-
-(defmethod json-schema-issue-summary "enum"
-  [_ {:keys [schema schema-keyword path]}]
-  [:span
-   "Expected " [:strong "enum"]
-   " value for " [:code (last path)]
-   " of: ["
-   (interpose ", "
-              (map #(vector :code.expected %)
-                   (get schema schema-keyword)))
-   "]"])
+(defn path-summary [path]
+  (->> path
+       (path->hiccup)))
 
 (defn json-schema-title
   [{:strs [title $ref] :as schema}]
@@ -212,15 +194,55 @@
     [:code.ref $ref]
 
     :else
-    [:code.expected (pretty-json schema)]))
+    [:code.expected (json/to-s schema)]))
+
+(defn list-summary [coll]
+  [:span.list
+   "["
+   (->> coll
+        (map json-schema-title)
+        (interpose ", "))
+   "]"])
+
+(defmulti json-schema-issue-summary
+  (fn [_ issue]
+    (:schema-keyword issue)))
+
+(defmulti issue-details
+  "Details for validation issue, dispatches on json schema-keyword"
+  (fn [_ {:keys [schema-keyword]}]
+    schema-keyword))
+
+(defmethod json-schema-issue-summary "type"
+  [_ {:keys [schema schema-keyword instance path]}]
+  [:span
+   (path-summary path) " "
+   "expected " [:strong "type"] " "
+   [:code.expected (get schema schema-keyword)]
+   ", got "
+   [:code.got (value-type instance)]])
+
+(defmethod json-schema-issue-summary "required"
+  [_ {:keys [hints path]}]
+  [:span
+   (path-summary path) " "
+   "missing " [:strong "required"] " field(s): "
+   (list-summary (:missing hints))])
+
+(defmethod json-schema-issue-summary "enum"
+  [_ {:keys [schema schema-keyword path]}]
+  [:span
+   (path-summary path) " "
+   "expected " [:strong "enum"] " value to be one of: "
+   (list-summary (get schema schema-keyword))])
 
 (defmethod json-schema-issue-summary "oneOf"
-  [_ {:keys [schema schema-keyword hints]}]
+  [_ {:keys [schema schema-keyword hints path]}]
   [:span
-   "Expected exactly " [:strong "one of"]
+   (path-summary path) " "
+   "expected exactly " [:strong "one of"]
    " (validated against " (:ok-count hints) "): "
-   (interpose ", "
-              (map json-schema-title (get schema schema-keyword)))
+   (list-summary (get schema schema-keyword))
    (when (pos? (:ok-count hints))
      [:span " (but instance validates to " [:strong "all"] " the schemas!)"])])
 
@@ -243,12 +265,12 @@
     [:p "Maybe a fault in the specification?"]))
 
 (defmethod json-schema-issue-summary "anyOf"
-  [_ {:keys [schema schema-keyword]}]
+  [_ {:keys [schema schema-keyword path]}]
   [:span
-   "Expected " [:strong "any of"]
+   (path-summary path) " "
+   "expected " [:strong "any of"]
    " (validated against none): "
-   (interpose ", "
-              (map json-schema-title (get schema schema-keyword)))])
+   (list-summary (get schema schema-keyword))])
 
 (defmethod issue-details "anyOf"
   [openapi {:keys [schema schema-keyword sub-issues]}]
@@ -267,10 +289,11 @@
        (into [:ul])))
 
 (defmethod json-schema-issue-summary "contains"
-  [_ {:keys [schema schema-keyword instance]}]
+  [_ {:keys [schema schema-keyword instance path]}]
   [:span
-   (t {:one "Expected list of one item to "
-       :other "Expected list of %{count} items to "}
+   (path-summary path) " "
+   (t {:one "expected list of one item to "
+       :other "expected list of %{count} items to "}
       {:count (count instance)})
    [:strong "contain"]
    " at least one valid "
@@ -295,22 +318,26 @@
     [:dl [:dt "Collection is empty!"]]))
 
 (defmethod json-schema-issue-summary "maxItems"
-  [_ {:keys [schema]}]
+  [_ {:keys [schema path]}]
   [:span
-   (t {:one   "Expected collection to contain no more than one item"
-       :other "Expected collection to contain no more than %{count} items"}
+   (path-summary path) " "
+
+   (t {:one   "expected collection to contain no more than one item"
+       :other "expected collection to contain no more than %{count} items"}
       {:count (schema "maxItems")})])
 
 (defmethod json-schema-issue-summary "minItems"
-  [_ {:keys [schema]}]
+  [_ {:keys [schema path]}]
   [:span
-   (t {:one   "Expected collection to contain at least one item"
-       :other "Expected collection to contain at least %{count} items"}
+   (path-summary path) " "
+   (t {:one   "expected collection to contain at least one item"
+       :other "expected collection to contain at least %{count} items"}
       {:count (schema "minItems")})])
 
 (defmethod json-schema-issue-summary :default
-  [_ {:keys [schema-keyword]}]
+  [_ {:keys [schema-keyword path]}]
   [:span
+   (path-summary path) " "
    "JSON Schema Issue: " [:code schema-keyword]])
 
 (defmulti issue-summary
@@ -328,11 +355,11 @@
    "Issue: " [:code.issue-type issue]])
 
 (defmethod issue-summary "status-error"
-  [_ {:keys [hints instance]}]
+  [_ {:keys [hints instance path]}]
   [:span
-   [:strong "Status error"] "; expected one of: ["
-   (interpose ", " (map #(vector :code %) (:ranges hints)))
-   "], got " [:code instance]])
+   (path-summary path) " expected one of: "
+   (list-summary (:ranges hints))
+   ", got " [:code instance]])
 
 (defn- issue-example
   [openapi {:keys [schema-keyword canonical-schema-path]}]
@@ -340,20 +367,6 @@
     ;; schema-keyword issues have a full json-schema as the parent of
     ;; the schema keyword
     (example/example openapi (subvec canonical-schema-path 0 (dec (count canonical-schema-path))))))
-
-(defn- path->hiccup [coll]
-  [:span.path
-   "["
-   (interpose "]["
-              (loop [[k & ks] coll
-                     r []]
-                (if k
-                  (recur ks
-                         (conj r
-                               [:code (pr-str (if (keyword? k) (name k) k))]))
-                  r)))
-   "]"])
-
 
 ;; this also works for non-json-schema issue types
 (defmethod issue-details :default
@@ -389,18 +402,18 @@
 
 (defn issue-snippet
   "Display issue with summary and details"
-  [openapi {:keys [path] :as issue} _i]
+  [openapi issue _i]
   [:details.issue
-   [:summary.issue (issue-summary openapi issue) " at " (path->hiccup path)]
+   [:summary.issue (issue-summary openapi issue)]
    (issue-details openapi issue)])
 
 (defn- interaction-snippet
   "Display interaction with method, path, summary and details"
-  [openapi {:keys [interaction path] :as issue} _i]
+  [openapi {:keys [interaction] :as issue} _i]
   [:details.interaction
    [:summary
     [:div.headline (interaction-summary interaction)]
-    [:div.summary (issue-summary openapi issue) " at " (path->hiccup path)]]
+    [:div.summary (issue-summary openapi issue)]]
    (issue-details openapi issue)])
 
 (defn- issue-snippets-list
@@ -520,8 +533,9 @@
   [openapi interactions base-url]
   (hiccup.page/html5
    [:html
-    [:head [:title (report-title base-url)
-           [:meta {:charset "UTF-8"}]]
+    [:head
+     [:title (report-title base-url)]
+     [:meta {:charset "UTF-8"}]
      [:style (-> css-resource (io/resource) (slurp) (raw-css))]]
     [:body
      [:header
