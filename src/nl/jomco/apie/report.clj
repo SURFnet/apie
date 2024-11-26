@@ -196,10 +196,11 @@
   [:span
    "Expected " [:strong "enum"]
    " value for " [:code (last path)]
-   " of: "
+   " of: ["
    (interpose ", "
               (map #(vector :code.expected %)
-                   (get schema schema-keyword)))])
+                   (get schema schema-keyword)))
+   "]"])
 
 (defn json-schema-title
   [{:strs [title $ref] :as schema}]
@@ -329,9 +330,9 @@
 (defmethod issue-summary "status-error"
   [_ {:keys [hints instance]}]
   [:span
-   [:strong "Status error"] "; expected one of: "
+   [:strong "Status error"] "; expected one of: ["
    (interpose ", " (map #(vector :code %) (:ranges hints)))
-   ", got " [:code instance]])
+   "], got " [:code instance]])
 
 (defn- issue-example
   [openapi {:keys [schema-keyword canonical-schema-path]}]
@@ -358,13 +359,23 @@
 (defmethod issue-details :default
   [openapi {:keys [instance path schema-path] :as issue}]
   [:dl
+   (if-let [example (issue-example openapi issue)]
+     [:div.side-by-side
+      [:div
+       [:dt "Value"]
+       [:dd (pretty-json instance
+                         :max-depth max-value-depth
+                         :max-length max-value-length)]]
+      [:div
+       [:dt "Example from schema"]
+       [:dd (pretty-json example)]]]
+     [:div
+      [:dt "Value"]
+      [:dd (pretty-json instance
+                        :max-depth max-value-depth
+                        :max-length max-value-length)]])
    (for [[label value]
-         {"Value"               (pretty-json instance
-                                             :max-depth max-value-depth
-                                             :max-length max-value-length)
-          "Example from schema" (when-let [example (issue-example openapi issue)]
-                                  (pretty-json example))
-          "Path in body"        (path->hiccup path)
+         {"Path in body"        (path->hiccup path)
           "Full schema path"    (path->hiccup schema-path)}]
      (when value
        [:div

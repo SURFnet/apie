@@ -74,6 +74,16 @@ dt:after {
 dd {
     margin-left: 1rem;
 }
+dl > div.side-by-side {
+    display: flex;
+    gap: 1rem;
+}
+dl > div.side-by-side > div {
+    width: 100%;
+}
+dl > div.side-by-side > div > dd {
+    margin-left: inherit;
+}
 
 ol, ul {
     margin: 1rem 0;
