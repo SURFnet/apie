@@ -188,11 +188,11 @@
                 []
                 coll)))
 
-(defn path-summary [path]
+(defn- path-summary [path]
   (->> path
        (path->hiccup)))
 
-(defn json-schema-title
+(defn- json-schema-title
   [{:strs [title $ref] :as schema}]
   (cond
     title
@@ -204,7 +204,7 @@
     :else
     [:code.expected (json/to-s schema)]))
 
-(defn list-summary [coll]
+(defn- list-summary [coll]
   [:span.list
    "["
    (->> coll
@@ -212,30 +212,47 @@
         (interpose ", "))
    "]"])
 
+(defn- issue-example
+  [openapi {:keys [schema-keyword canonical-schema-path]}]
+  (when schema-keyword
+    ;; schema-keyword issues have a full json-schema as the parent of
+    ;; the schema keyword
+    (example/example openapi (subvec canonical-schema-path 0 (dec (count canonical-schema-path))))))
+
+
+
 (defmulti json-schema-issue-summary
   (fn [_ issue]
     (:schema-keyword issue)))
 
-(defmulti issue-details
-  "Details for validation issue, dispatches on json schema-keyword"
-  (fn [_ {:keys [schema-keyword]}]
-    schema-keyword))
+;; TODO "additionalProperties"
 
-(defmethod json-schema-issue-summary "type"
+;; TODO "allOf"
+
+(defmethod json-schema-issue-summary "anyOf"
+  [_ {:keys [schema schema-keyword path]}]
+  [:span
+   (path-summary path) " "
+   "expected " [:strong "any of"]
+   " (validated against none): "
+   (list-summary (get schema schema-keyword))])
+
+;; TODO "const"
+
+(defmethod json-schema-issue-summary "contains"
   [_ {:keys [schema schema-keyword instance path]}]
   [:span
    (path-summary path) " "
-   "expected " [:strong "type"] " "
-   [:code.expected (get schema schema-keyword)]
-   ", got "
-   [:code.got (value-type instance)]])
+   (t {:one "expected list of one item to "
+       :other "expected list of %{count} items to "}
+      {:count (count instance)})
+   [:strong "contain"]
+   " at least one valid "
+   (json-schema-title (get schema schema-keyword))])
 
-(defmethod json-schema-issue-summary "required"
-  [_ {:keys [hints path]}]
-  [:span
-   (path-summary path) " "
-   "missing " [:strong "required"] " field(s): "
-   (list-summary (:missing hints))])
+;; TODO "dependentRequired"
+
+;; TODO "discriminator"
 
 (defmethod json-schema-issue-summary "enum"
   [_ {:keys [schema schema-keyword path]}]
@@ -243,6 +260,103 @@
    (path-summary path) " "
    "expected " [:strong "enum"] " value to be one of: "
    (list-summary (get schema schema-keyword))])
+
+(defmethod json-schema-issue-summary "exclusiveMaximum"
+  [_ {:keys [schema path]}]
+  [:span
+   (path-summary path) " "
+   "expected number to be smaller than " (schema "exclusiveMaximum")])
+
+;; TODO "if then else"
+
+(defmethod json-schema-issue-summary "exclusiveMinimum"
+  [_ {:keys [schema path]}]
+  [:span
+   (path-summary path) " "
+   "expected number to be larger than " (schema "exclusiveMinimum")])
+
+;; TODO "items"
+
+(defmethod json-schema-issue-summary "format"
+  [_ {:keys [schema path]}]
+  [:span
+   (path-summary path) " "
+   "expected string to be of format: " [:code (schema "format")]])
+
+(defmethod json-schema-issue-summary "maxItems"
+  [_ {:keys [schema path hints]}]
+  [:span
+   (path-summary path) " "
+   (t {:one   "expected collection to contain no more than one item"
+       :other "expected collection to contain no more than %{count} items"}
+      {:count (schema "maxItems")})
+   (when-let [n (:count hints)] (str " (got " n ")"))])
+
+(defmethod json-schema-issue-summary "maxLength"
+  [_ {:keys [schema path hints]}]
+  [:span
+   (path-summary path) " "
+   (t {:one   "expected string to contain no more than one character"
+       :other "expected string to contain no more than %{count} characters"}
+      {:count (schema "maxLength")})
+   (when-let [n (:count hints)] (str " (got " n ")"))])
+
+(defmethod json-schema-issue-summary "maxProperties"
+  [_ {:keys [schema path hints]}]
+  [:span
+   (path-summary path) " "
+   (t {:one   "expected object to contain no more than one property"
+       :other "expected object to contain no more than %{count} properties"}
+      {:count (schema "maxProperties")})
+   (when-let [n (:count hints)] (str " (got " n ")"))])
+
+(defmethod json-schema-issue-summary "maximum"
+  [_ {:keys [schema path]}]
+  [:span
+   (path-summary path) " "
+   "expected number to be " (schema "maximum") " or smaller"])
+
+(defmethod json-schema-issue-summary "minItems"
+  [_ {:keys [schema path hints]}]
+  [:span
+   (path-summary path) " "
+   (t {:one   "expected collection to contain at least one item"
+       :other "expected collection to contain at least %{count} items"}
+      {:count (schema "minItems")})
+   (when-let [n (:count hints)] (str " (got " n ")"))])
+
+
+(defmethod json-schema-issue-summary "minLength"
+  [_ {:keys [schema path hints]}]
+  [:span
+   (path-summary path) " "
+   (t {:one   "expected string to contain at least one character"
+       :other "expected string to contain at least %{count} characters"}
+      {:count (schema "minLength")})
+   (when-let [n (:count hints)] (str " (got " n ")"))])
+
+(defmethod json-schema-issue-summary "minProperties"
+  [_ {:keys [schema path hints]}]
+  [:span
+   (path-summary path) " "
+   (t {:one   "expected object to contain at least one property"
+       :other "expected object to contain at least %{count} properties"}
+      {:count (schema "minProperties")})
+   (when-let [n (:count hints)] (str " (got " n ")"))])
+
+(defmethod json-schema-issue-summary "minimum"
+  [_ {:keys [schema path]}]
+  [:span
+   (path-summary path) " "
+   "expected number to be " (schema "minimum") " or larger"])
+
+(defmethod json-schema-issue-summary "multipleOf"
+  [_ {:keys [schema path]}]
+  [:span
+   (path-summary path) " "
+   "expected number to be a multiple of " (schema "multipleOf")])
+
+;; TODO "not"
 
 (defmethod json-schema-issue-summary "oneOf"
   [_ {:keys [schema schema-keyword hints path]}]
@@ -253,6 +367,67 @@
    (list-summary (get schema schema-keyword))
    (when (pos? (:ok-count hints))
      [:span " (but instance validates to " [:strong "all"] " the schemas!)"])])
+
+(defmethod json-schema-issue-summary "pattern"
+  [_ {:keys [schema path]}]
+  [:span
+   (path-summary path) " "
+   "expected string to be a match regular expression: " [:code (schema "pattern")]])
+
+;; TODO "patternProperties"
+
+;; TODO "prefixItems"
+
+;; TODO "propertyNames"
+
+;; TODO "properties"
+
+(defmethod json-schema-issue-summary "required"
+  [_ {:keys [hints path]}]
+  [:span
+   (path-summary path) " "
+   "missing " [:strong "required"] " field(s): "
+   (list-summary (:missing hints))])
+
+(defmethod json-schema-issue-summary "type"
+  [_ {:keys [schema schema-keyword instance path]}]
+  [:span
+   (path-summary path) " "
+   "expected " [:strong "type"] " "
+   [:code.expected (get schema schema-keyword)]
+   ", got "
+   [:code.got (value-type instance)]])
+
+;; TODO "uniqueItems"
+
+(defmethod json-schema-issue-summary :default
+  [_ {:keys [schema-keyword path]}]
+  [:span
+   (path-summary path) " "
+   "JSON Schema Issue: " [:code schema-keyword]])
+
+
+
+(defmulti issue-details
+  "Details for validation issue, dispatches on json schema-keyword"
+  (fn [_ {:keys [schema-keyword]}]
+    schema-keyword))
+
+(defmethod issue-details "anyOf"
+  [openapi {:keys [schema schema-keyword sub-issues]}]
+  (->> sub-issues
+       (keep-indexed
+        (fn [i issues]
+          (when (seq issues)
+            [:li
+             (t {:one   "Invalid %{title}, one issue:"
+                 :other "Invalid %{title}, %{count} issues:"}
+                {:count (count issues)
+                 :title (-> schema
+                            (get-in [schema-keyword i])
+                            (json-schema-title))})
+             (issue-snippets-list openapi issues)])))
+       (into [:ul])))
 
 (defmethod issue-details "oneOf"
   [openapi {:keys [schema schema-keyword hints sub-issues]}]
@@ -272,41 +447,6 @@
          (into [:ul]))
     [:p "Maybe a fault in the specification?"]))
 
-(defmethod json-schema-issue-summary "anyOf"
-  [_ {:keys [schema schema-keyword path]}]
-  [:span
-   (path-summary path) " "
-   "expected " [:strong "any of"]
-   " (validated against none): "
-   (list-summary (get schema schema-keyword))])
-
-(defmethod issue-details "anyOf"
-  [openapi {:keys [schema schema-keyword sub-issues]}]
-  (->> sub-issues
-       (keep-indexed
-        (fn [i issues]
-          (when (seq issues)
-            [:li
-             (t {:one   "Invalid %{title}, one issue:"
-                 :other "Invalid %{title}, %{count} issues:"}
-                {:count (count issues)
-                 :title (-> schema
-                            (get-in [schema-keyword i])
-                            (json-schema-title))})
-             (issue-snippets-list openapi issues)])))
-       (into [:ul])))
-
-(defmethod json-schema-issue-summary "contains"
-  [_ {:keys [schema schema-keyword instance path]}]
-  [:span
-   (path-summary path) " "
-   (t {:one "expected list of one item to "
-       :other "expected list of %{count} items to "}
-      {:count (count instance)})
-   [:strong "contain"]
-   " at least one valid "
-   (json-schema-title (get schema schema-keyword))])
-
 (defmethod issue-details "contains"
   [openapi {:keys [instance sub-issues schema schema-keyword]}]
   (if (seq instance)
@@ -324,57 +464,6 @@
                  [:dd (issue-snippets-list openapi issues)]])))
            (into [:dl])))
     [:dl [:dt "Collection is empty!"]]))
-
-(defmethod json-schema-issue-summary "maxItems"
-  [_ {:keys [schema path]}]
-  [:span
-   (path-summary path) " "
-
-   (t {:one   "expected collection to contain no more than one item"
-       :other "expected collection to contain no more than %{count} items"}
-      {:count (schema "maxItems")})])
-
-(defmethod json-schema-issue-summary "minItems"
-  [_ {:keys [schema path]}]
-  [:span
-   (path-summary path) " "
-   (t {:one   "expected collection to contain at least one item"
-       :other "expected collection to contain at least %{count} items"}
-      {:count (schema "minItems")})])
-
-(defmethod json-schema-issue-summary :default
-  [_ {:keys [schema-keyword path]}]
-  [:span
-   (path-summary path) " "
-   "JSON Schema Issue: " [:code schema-keyword]])
-
-(defmulti issue-summary
-  "One sentance summary of issue"
-  (fn [_ issue]
-    (:issue issue)))
-
-(defmethod issue-summary "schema-validation-error"
-  [openapi issue]
-  (json-schema-issue-summary openapi issue))
-
-(defmethod issue-summary :default
-  [_ {:keys [issue]}]
-  [:span
-   "Issue: " [:code.issue-type issue]])
-
-(defmethod issue-summary "status-error"
-  [_ {:keys [hints instance path]}]
-  [:span
-   (path-summary path) " expected one of: "
-   (list-summary (:ranges hints))
-   ", got " [:code instance]])
-
-(defn- issue-example
-  [openapi {:keys [schema-keyword canonical-schema-path]}]
-  (when schema-keyword
-    ;; schema-keyword issues have a full json-schema as the parent of
-    ;; the schema keyword
-    (example/example openapi (subvec canonical-schema-path 0 (dec (count canonical-schema-path))))))
 
 ;; this also works for non-json-schema issue types
 (defmethod issue-details :default
@@ -407,6 +496,31 @@
     [:dd (-> issue
              (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
              (pretty-json))]]])
+
+
+
+(defmulti issue-summary
+  "One sentance summary of issue"
+  (fn [_ issue]
+    (:issue issue)))
+
+(defmethod issue-summary "schema-validation-error"
+  [openapi issue]
+  (json-schema-issue-summary openapi issue))
+
+(defmethod issue-summary "status-error"
+  [_ {:keys [hints instance path]}]
+  [:span
+   (path-summary path) " expected one of: "
+   (list-summary (:ranges hints))
+   ", got " [:code instance]])
+
+(defmethod issue-summary :default
+  [_ {:keys [issue]}]
+  [:span
+   "Issue: " [:code.issue-type issue]])
+
+
 
 (defn issue-snippet
   "Display issue with summary and details"
