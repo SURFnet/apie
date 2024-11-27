@@ -4,7 +4,8 @@
             [hiccup.page]
             [hiccup.util]
             [nl.jomco.apie.report.json :as json]
-            [nl.jomco.openapi.v3.example :as example]))
+            [nl.jomco.openapi.v3.example :as example])
+  (:import java.net.URLEncoder))
 
 (def max-issues-per-schema-path 10)
 (def max-issues 3)
@@ -147,12 +148,19 @@
        [:dt "Number of requests"]
        [:dd (count interactions)]]]]))
 
-(defn- interaction-summary [{{:keys [method uri query-string]} :request}]
+(defn- interaction-summary [{{:keys [method uri query-string query-params]} :request}]
   [:span.interaction-summary
    [:code.method (string/upper-case (name method))]
    " "
-   [:code.url uri (when query-string
-                    (str "?" query-string))]])
+   [:code.url uri (cond
+                    query-string
+                    (str "?" query-string)
+
+                    query-params
+                    (str "?"
+                         (->> query-params
+                              (map #(str (URLEncoder/encode (key %)) "=" (URLEncoder/encode (val %))))
+                              (string/join "&"))))]])
 
 (defn- value-type [v]
   (cond
