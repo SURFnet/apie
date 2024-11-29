@@ -14,6 +14,7 @@
 html {
     font-family: sans-serif;
     line-height: 1.5;
+    font-size: 1rem;
     width: 100%;
     background: var(--desktop-color);
 }
@@ -73,6 +74,16 @@ dt:after {
 dd {
     margin-left: 1rem;
 }
+dl > div.side-by-side {
+    display: flex;
+    gap: 1rem;
+}
+dl > div.side-by-side > div {
+    width: 100%;
+}
+dl > div.side-by-side > div > dd {
+    margin-left: inherit;
+}
 
 ol, ul {
     margin: 1rem 0;
@@ -100,21 +111,33 @@ li.and-more::marker {
     border-radius: .5rem;
     overflow: auto;
 }
+code {
+    background: var(--code-bg-color);
+}
 
 /* general section */
 
 section.general {
     display: flex;
+    grid-gap: 1rem;
 }
 section.general section {
-    margin-right: 1rem;
+    flex: 1;
 }
-section.general section:last-child {
-    margin-right: 0;
+section.general section.result {
+    flex: 1.75;
 }
 section.general dl {
     margin: 1rem 0 0 0;
-    font-size: .8rem;
+}
+section.general dl dd {
+    font-style: italic;
+    max-width: 30em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+section.general section.result dd strong {
+    font-size: 133%;
 }
 
 .per-path > p {
@@ -209,4 +232,5 @@ details[open].interaction > summary::after {
 
 details.interaction > summary > .headline {
     font-weight: bold;
+    margin-bottom: 1rem;
 }
