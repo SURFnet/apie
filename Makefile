@@ -90,8 +90,6 @@ README.md: usage.txt.generated README.src.md
 	echo "<!-- WARNING! THIS FILE IS GENERATED, EDIT README.src.md INSTEAD -->" >$@
 	sed "/<!-- INCLUDE USAGE HERE -->/r $<" README.src.md >>$@
 
-.PHONY: working_tree_clean_check lint test outdated
-
 # This regenerates README to make sure it's in sync with committed version
 working_tree_clean_check: README.md
 # git-status --porcelain should print 0 lines.  wc -l counts lines
@@ -105,7 +103,11 @@ test:
 lint:
 	clojure -M:clj-kondo --lint src test
 
-release_check: working_tree_clean_check test lint outdated
+check: test lint
+
+release_check: working_tree_clean_check check outdated
 
 outdated:
 	clojure -M:outdated
+
+.PHONY: check lint outdated release_check test working_tree_clean_check
