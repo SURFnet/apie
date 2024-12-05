@@ -2,6 +2,11 @@
 
 ## NEXTVERSION
 
+## 0.2.2
+ - Report text and layout improvements
+ - Ability to load extra CSS files
+ - Add --spider-timeout-millis option
+
 ## 0.2.1
  - Add SEED argument
  - Add --help option
