@@ -35,7 +35,7 @@
 (defn- with-issues [interactions]
   (filter :issues interactions))
 
-(def css-resource "style.css")
+(def css-resources ["style.css" "extra.css"])
 
 (defn- interactions-result [interactions]
   [:section.result
@@ -658,7 +658,10 @@
     [:head
      [:title (report-title base-url)]
      [:meta {:charset "UTF-8"}]
-     [:style (-> css-resource (io/resource) (slurp) (raw-css))]]
+     [:style (->> css-resources
+                  (map #(some-> % io/resource slurp))
+                  (string/join)
+                  (raw-css))]]
     [:body
      [:header
       [:h1 (report-title base-url)]]
