@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><html><head><title>Validation report for https://petstore3.swagger.io/api/v3</title><style>/*<![CDATA[*/
+<html><html><head><title>Validation report for https://petstore3.swagger.io/api/v3</title><meta charset="UTF-8"><style>/*<![CDATA[*/
 :root {
     --border-color: #000;
     --dimmed-color: #888;
@@ -16,6 +16,7 @@
 html {
     font-family: sans-serif;
     line-height: 1.5;
+    font-size: 1rem;
     width: 100%;
     background: var(--desktop-color);
 }
@@ -75,6 +76,16 @@ dt:after {
 dd {
     margin-left: 1rem;
 }
+dl > div.side-by-side {
+    display: flex;
+    gap: 1rem;
+}
+dl > div.side-by-side > div {
+    width: 100%;
+}
+dl > div.side-by-side > div > dd {
+    margin-left: inherit;
+}
 
 ol, ul {
     margin: 1rem 0;
@@ -102,21 +113,33 @@ li.and-more::marker {
     border-radius: .5rem;
     overflow: auto;
 }
+code {
+    background: var(--code-bg-color);
+}
 
 /* general section */
 
 section.general {
     display: flex;
+    grid-gap: 1rem;
 }
 section.general section {
-    margin-right: 1rem;
+    flex: 1;
 }
-section.general section:last-child {
-    margin-right: 0;
+section.general section.result {
+    flex: 1.75;
 }
 section.general dl {
     margin: 1rem 0 0 0;
-    font-size: .8rem;
+}
+section.general dl dd {
+    font-style: italic;
+    max-width: 30em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+section.general section.result dd strong {
+    font-size: 133%;
 }
 
 .per-path > p {
@@ -211,46 +234,618 @@ details[open].interaction > summary::after {
 
 details.interaction > summary > .headline {
     font-weight: bold;
+    margin-bottom: 1rem;
 }
-/*]]>*/</style></head><body><header><h1>Validation report for https://petstore3.swagger.io/api/v3</h1></header><main><section class="general"><section class="summary"><h3>Summary</h3><dl><div><dt>Run time</dt><dd>From <strong>Wed Nov 22 15:15:49 CET 2023</strong> till <strong>Wed Nov 22 15:15:51 CET 2023</strong></dd></div></dl></section><section class="kpis"><h3>KPIs</h3><dl><div class="observations"><dt>Observations</dt><dd>13</dd></div><div class="faultless"><dt>Faultless observations</dt><dd>✅ 8 observations have no issues!</dd></div><div class="score"><dt>Validation score</dt><dd><div class="score">😢 38.5% (5) observations have issues.</div></dd></div></dl></section></section><section class="per-path"><h2>Results per request path</h2><p>(sorted by percentage of issues)</p><section class="interaction-path"><h3>/store/inventory</h3><div><div class="summary">0 of 1 observations have no issues.</div><div class="summary"><p>1 validation issue (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">1</span></div><div class="headline"><div class="schema-path">paths//store/inventory/get/responses</div><div class="summary">1 issues in 1 observations</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/store/inventory</code></span></div><div class="summary"><span><strong>Status error</strong>; expected one of: <code>200</code>, got <code>500</code></span> at <span class="path"><code>response</code> / <code>status</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">500</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>status</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/store/inventory</code> / <code>get</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+/*]]>*/</style></head><body><header><h1>Validation report for https://petstore3.swagger.io/api/v3</h1></header><main><section class="general"><section class="result"><h3>Results</h3><dl><div><dt>Number of request with issues</dt><dd><strong>7</strong></dd></div><div><dt>Number of paths with issues</dt><dd><strong>4</strong></dd></div><div><dt>Total number of issues</dt><dd><strong>749</strong></dd></div><div><dt>Number of issue types (by schema path)</dt><dd><strong>14</strong></dd></div></dl></section><section class="runtime"><h3>Run</h3><dl><div><dt>Location</dt><dd><a href="https://petstore3.swagger.io/api/v3">https://petstore3.swagger.io/api/v3</a></dd></div><div><dt>Started at</dt><dd>Fri Nov 29 14:43:59 CET 2024</dd></div><div><dt>Finished at</dt><dd>Fri Nov 29 14:44:07 CET 2024</dd></div><div><dt>Duration</dt><dd>7 seconds</dd></div><div><dt>Number of requests</dt><dd>9</dd></div></dl></section></section><section class="per-path"><h2>Results per request path</h2><p>(sorted by number of issues)</p><section class="interaction-path"><h3>/pet/findByStatus</h3><div><div class="summary">All 2 requests have issues.</div><div class="summary"><p>12 different validation issues (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">102</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/maxProperties</div><div class="summary">102 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span></span> expected object to contain no more than 2 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 3867397159864197997,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc",
+  "photoUrls": [],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>maxProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "maxProperties": 2
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span></span> expected object to contain no more than 2 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 4493143897019697949,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc",
+  "photoUrls": [],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>maxProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "maxProperties": 2
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span></span> expected object to contain no more than 2 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 3967572860687794422,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc",
+  "photoUrls": [],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>maxProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "maxProperties": 2
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li class="and-more">and 99 more..</li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">102</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/minProperties</div><div class="summary">102 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span></span> expected object to contain at least 99 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 3867397159864197997,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc",
+  "photoUrls": [],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>minProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "minProperties": 99
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span></span> expected object to contain at least 99 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 4493143897019697949,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc",
+  "photoUrls": [],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>minProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "minProperties": 99
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span></span> expected object to contain at least 99 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 3967572860687794422,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc",
+  "photoUrls": [],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>minProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "minProperties": 99
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li class="and-more">and 99 more..</li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">102</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/name/minLength</div><div class="summary">102 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>name</code></span></span> expected string to contain at least 999 characters (got 61)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>minLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 61
+  },
+  "schema": {
+    "minLength": 999
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>name</code></span></span> expected string to contain at least 999 characters (got 61)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>minLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 61
+  },
+  "schema": {
+    "minLength": 999
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>name</code></span></span> expected string to contain at least 999 characters (got 61)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>minLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 61
+  },
+  "schema": {
+    "minLength": 999
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li class="and-more">and 99 more..</li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">101</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/id/multipleOf</div><div class="summary">101 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>id</code></span></span> expected number to be a multiple of 7987</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">3867397159864197997</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>multipleOf</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "multipleOf": 7987
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>id</code></span></span> expected number to be a multiple of 7987</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">4493143897019697949</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>multipleOf</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "multipleOf": 7987
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>id</code></span></span> expected number to be a multiple of 7987</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">3967572860687794422</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>multipleOf</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "multipleOf": 7987
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li class="and-more">and 98 more..</li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">101</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/name/pattern</div><div class="summary">101 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>name</code></span></span> expected string to be a match regular expression: <code>^[a-z]{3}$</code></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>pattern</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "pattern": "^[a-z]{3}$"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>name</code></span></span> expected string to be a match regular expression: <code>^[a-z]{3}$</code></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>pattern</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "pattern": "^[a-z]{3}$"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>name</code></span></span> expected string to be a match regular expression: <code>^[a-z]{3}$</code></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>pattern</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "pattern": "^[a-z]{3}$"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li class="and-more">and 98 more..</li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">100</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/id/maximum</div><div class="summary">100 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>id</code></span></span> expected number to be 1 or smaller</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">3867397159864197997</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>maximum</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "maximum": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>id</code></span></span> expected number to be 1 or smaller</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">4493143897019697949</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>maximum</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "maximum": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>id</code></span></span> expected number to be 1 or smaller</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">3967572860687794422</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>maximum</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "maximum": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li class="and-more">and 97 more..</li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">92</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/name/maxLength</div><div class="summary">92 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>name</code></span></span> expected string to contain no more than one character (got 61)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>maxLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 61
+  },
+  "schema": {
+    "maxLength": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>name</code></span></span> expected string to contain no more than one character (got 61)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>maxLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 61
+  },
+  "schema": {
+    "maxLength": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>name</code></span></span> expected string to contain no more than one character (got 61)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"E-Ph!Wt):y`rU%/ok7;dr|K-E(U5^&F-.?Mc?SUmU6(Zy,pHuWgh}y<pHZ.Nc"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>2]</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>maxLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 61
+  },
+  "schema": {
+    "maxLength": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li class="and-more">and 89 more..</li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">23</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/id/minimum</div><div class="summary">23 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>54]</code></span><span>.<code>id</code></span></span> expected number to be 99999999 or larger</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">1212</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>54]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>minimum</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "minimum": 99999999
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=available</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>id</code></span></span> expected number to be 99999999 or larger</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">7</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>0]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>minimum</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "minimum": 99999999
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=available</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>id</code></span></span> expected number to be 99999999 or larger</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">8</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>1]</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>minimum</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "minimum": 99999999
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li class="and-more">and 20 more..</li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">3</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/required</div><div class="summary">3 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=pending</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>54]</code></span></span> missing <strong>required</strong> field(s): <span class="list">[<code class="expected">"photoUrls"</code>]</span></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 1212,
+  "name": "Kitty",
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>54]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>required</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "missing": [
+      "photoUrls"
+    ]
+  },
+  "schema": {
+    "required": [
+      "name",
+      "photoUrls"
+    ]
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=available</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>37]</code></span></span> missing <strong>required</strong> field(s): <span class="list">[<code class="expected">"photoUrls"</code>]</span></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 12345678789,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "doggie",
+  "tags": [
+    …
+  ],
+  "status": "available"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>37]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>required</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "missing": [
+      "photoUrls"
+    ]
+  },
+  "schema": {
+    "required": [
+      "name",
+      "photoUrls"
+    ]
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=available</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>42]</code></span></span> missing <strong>required</strong> field(s): <span class="list">[<code class="expected">"photoUrls"</code>]</span></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 6,
+  "name": "dog",
+  "status": "available"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>42]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>required</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "missing": [
+      "photoUrls"
+    ]
+  },
+  "schema": {
+    "required": [
+      "name",
+      "photoUrls"
+    ]
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Tag/type</div><div class="summary">2 issues in one request</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=available</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>13]</code></span><span>.<code>tags</code></span><span>[<code>0]</code></span></span> expected <strong>type</strong> <code class="expected">object</code>, got <code class="got">string</code></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"{\n  \"id\": 0"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "id": null,
+  "name": "example string"
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>13]</code></span><span>.<code>tags</code></span><span>[<code>0]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>tags</code></span><span>.<code>items</code></span><span>.<code>type</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "type": "object"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus?status=available</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>13]</code></span><span>.<code>tags</code></span><span>[<code>1]</code></span></span> expected <strong>type</strong> <code class="expected">object</code>, got <code class="got">string</code></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"\n  \"name\": \"string\""</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "id": null,
+  "name": "example string"
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>[<code>13]</code></span><span>.<code>tags</code></span><span>[<code>1]</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/findByStatus"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>items</code></span><span>.<code>properties</code></span><span>.<code>tags</code></span><span>.<code>items</code></span><span>.<code>type</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "type": "object"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li><li class="and-more">and 2 more..</li></ol></div></div></section><section class="interaction-path"><h3>/pet/{petId}</h3><div><div class="summary">All 2 requests have issues.</div><div class="summary"><p>7 different validation issues (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/maxProperties</div><div class="summary">2 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6450933012286507709</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span></span> expected object to contain no more than 2 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 6450933012286507709,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "ez",
+  "photoUrls": [
+    …,
+    …
+  ],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>maxProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "maxProperties": 2
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6420714298991602775</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span></span> expected object to contain no more than 2 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 6420714298991602775,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "zc|3iJ[4a-t;MK'`~CevW3<e4K>$s_R4fS1i%#gR'KWI~OZ",
+  "photoUrls": [
+    …
+  ],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>maxProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "maxProperties": 2
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/minProperties</div><div class="summary">2 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6450933012286507709</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span></span> expected object to contain at least 99 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 6450933012286507709,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "ez",
+  "photoUrls": [
+    …,
+    …
+  ],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>minProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "minProperties": 99
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6420714298991602775</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span></span> expected object to contain at least 99 properties (got 6)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">{
+  "id": 6420714298991602775,
+  "category": {
+    "id": …,
+    "name": …
+  },
+  "name": "zc|3iJ[4a-t;MK'`~CevW3<e4K>$s_R4fS1i%#gR'KWI~OZ",
+  "photoUrls": [
+    …
+  ],
+  "tags": [
+    …,
+    …,
+    …,
+    …,
+    …,
+    …
+  ],
+  "status": "pending"
+}</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">{
+  "name": "doggie",
+  "photoUrls": [
+    "example string"
+  ]
+}</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>minProperties</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 6
+  },
+  "schema": {
+    "minProperties": 99
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/id/maximum</div><div class="summary">2 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6450933012286507709</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>id</code></span></span> expected number to be 1 or smaller</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">6450933012286507709</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>maximum</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "maximum": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6420714298991602775</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>id</code></span></span> expected number to be 1 or smaller</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">6420714298991602775</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>maximum</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "maximum": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/id/multipleOf</div><div class="summary">2 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6450933012286507709</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>id</code></span></span> expected number to be a multiple of 7987</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">6450933012286507709</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>multipleOf</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "multipleOf": 7987
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6420714298991602775</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>id</code></span></span> expected number to be a multiple of 7987</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">6420714298991602775</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">10</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>id</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>id</code></span><span>.<code>multipleOf</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "multipleOf": 7987
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/name/maxLength</div><div class="summary">2 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6450933012286507709</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span> expected string to contain no more than one character (got 2)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"ez"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>maxLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 2
+  },
+  "schema": {
+    "maxLength": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6420714298991602775</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span> expected string to contain no more than one character (got 47)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"zc|3iJ[4a-t;MK'`~CevW3<e4K>$s_R4fS1i%#gR'KWI~OZ"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>maxLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 47
+  },
+  "schema": {
+    "maxLength": 1
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/name/minLength</div><div class="summary">2 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6450933012286507709</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span> expected string to contain at least 999 characters (got 2)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"ez"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>minLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 2
+  },
+  "schema": {
+    "minLength": 999
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6420714298991602775</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span> expected string to contain at least 999 characters (got 47)</span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"zc|3iJ[4a-t;MK'`~CevW3<e4K>$s_R4fS1i%#gR'KWI~OZ"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>minLength</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "count": 47
+  },
+  "schema": {
+    "minLength": 999
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li><li><details class="schema-path"><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/name/pattern</div><div class="summary">2 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6450933012286507709</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span> expected string to be a match regular expression: <code>^[a-z]{3}$</code></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"ez"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>pattern</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "pattern": "^[a-z]{3}$"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/6420714298991602775</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span> expected string to be a match regular expression: <code>^[a-z]{3}$</code></span></div></summary><dl><div class="side-by-side"><div><dt>Value</dt><dd><pre class="json">"zc|3iJ[4a-t;MK'`~CevW3<e4K>$s_R4fS1i%#gR'KWI~OZ"</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"doggie"</pre></dd></div></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>body</code></span><span>.<code>name</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/pet/{petId}"]</code></span><span>.<code>get</code></span><span>.<code>responses</code></span><span>[<code>"200"]</code></span><span>.<code>content</code></span><span>[<code>"application/json"]</code></span><span>.<code>schema</code></span><span>.<code>properties</code></span><span>.<code>name</code></span><span>.<code>pattern</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "schema": {
+    "pattern": "^[a-z]{3}$"
+  },
+  "issue": "schema-validation-error"
+}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/store/order/{orderId}</h3><div><div class="summary">All 2 requests have issues.</div><div class="summary"><p>1 validation issue (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">paths//store/order/{orderId}/delete/responses</div><div class="summary">2 issues in 2 requests</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">DELETE</code> <code class="url">/store/order/29</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>status</code></span></span> expected one of: <span class="list">[<code class="expected">"400"</code>, <code class="expected">"404"</code>]</span>, got <code>200</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">200</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>status</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/store/order/{orderId}"]</code></span><span>.<code>delete</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "ranges": [
+      "400",
+      "404"
+    ]
+  },
+  "issue": "status-error"
+}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">DELETE</code> <code class="url">/store/order/2801201013</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>status</code></span></span> expected one of: <span class="list">[<code class="expected">"400"</code>, <code class="expected">"404"</code>]</span>, got <code>200</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">200</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>status</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/store/order/{orderId}"]</code></span><span>.<code>delete</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
+  "hints": {
+    "ranges": [
+      "400",
+      "404"
+    ]
+  },
+  "issue": "status-error"
+}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/store/inventory</h3><div><div class="summary">Only request has issues.</div><div class="summary"><p>1 validation issue (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">1</span></div><div class="headline"><div class="schema-path">paths//store/inventory/get/responses</div><div class="summary">one issue in one request</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/store/inventory</code></span></div><div class="summary"><span><span class="path"><span><code>response</code></span><span>.<code>status</code></span></span> expected one of: <span class="list">[<code class="expected">"200"</code>]</span>, got <code>500</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">500</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><span><code>response</code></span><span>.<code>status</code></span></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><span><code>paths</code></span><span>[<code>"/store/inventory"]</code></span><span>.<code>get</code></span></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
   "hints": {
     "ranges": [
       "200"
     ]
   },
   "issue": "status-error"
-}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/store/order/{orderId}</h3><div><div class="summary">0 of 3 observations have no issues.</div><div class="summary"><p>1 validation issue (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">3</span></div><div class="headline"><div class="schema-path">paths//store/order/{orderId}/delete/responses</div><div class="summary">3 issues in 3 observations</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">DELETE</code> <code class="url">/store/order/31</code></span></div><div class="summary"><span><strong>Status error</strong>; expected one of: <code>400</code>, <code>404</code>, got <code>200</code></span> at <span class="path"><code>response</code> / <code>status</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">200</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>status</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/store/order/{orderId}</code> / <code>delete</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
-  "hints": {
-    "ranges": [
-      "400",
-      "404"
-    ]
-  },
-  "issue": "status-error"
-}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">DELETE</code> <code class="url">/store/order/102</code></span></div><div class="summary"><span><strong>Status error</strong>; expected one of: <code>400</code>, <code>404</code>, got <code>200</code></span> at <span class="path"><code>response</code> / <code>status</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">200</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>status</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/store/order/{orderId}</code> / <code>delete</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
-  "hints": {
-    "ranges": [
-      "400",
-      "404"
-    ]
-  },
-  "issue": "status-error"
-}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">DELETE</code> <code class="url">/store/order/21</code></span></div><div class="summary"><span><strong>Status error</strong>; expected one of: <code>400</code>, <code>404</code>, got <code>200</code></span> at <span class="path"><code>response</code> / <code>status</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">200</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>status</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/store/order/{orderId}</code> / <code>delete</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
-  "hints": {
-    "ranges": [
-      "400",
-      "404"
-    ]
-  },
-  "issue": "status-error"
-}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/pet/findByStatus</h3><div><div class="summary">2 of 3 observations have no issues.</div><div class="summary"><p>1 validation issue (by schema path):</p><ol class="by-schema-path"><li><details class="schema-path" open><summary><div class="leading"><span class="count">2</span></div><div class="headline"><div class="schema-path">components/schemas/Pet/properties/photoUrls/items/type</div><div class="summary">2 issues in 1 observations</div></div></summary><ul class="interactions"><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus</code></span></div><div class="summary"><span>Expected <strong>type</strong> <code class="expected">string</code>, got <code class="got">null</code></span> at <span class="path"><code>response</code> / <code>body</code> / <code>10</code> / <code>photoUrls</code> / <code>0</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">null</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"example string"</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>body</code> / <code>10</code> / <code>photoUrls</code> / <code>0</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/pet/findByStatus</code> / <code>get</code> / <code>responses</code> / <code>200</code> / <code>content</code> / <code>application/json</code> / <code>schema</code> / <code>items</code> / <code>properties</code> / <code>photoUrls</code> / <code>items</code> / <code>type</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
-  "schema": {
-    "type": "string"
-  },
-  "issue": "schema-validation-error"
-}</pre></dd></div></dl></details></li><li><details class="interaction"><summary><div class="headline"><span class="interaction-summary"><code class="method">GET</code> <code class="url">/pet/findByStatus</code></span></div><div class="summary"><span>Expected <strong>type</strong> <code class="expected">string</code>, got <code class="got">null</code></span> at <span class="path"><code>response</code> / <code>body</code> / <code>11</code> / <code>photoUrls</code> / <code>0</code></span></div></summary><dl><div><dt>Value</dt><dd><pre class="json">null</pre></dd></div><div><dt>Example from schema</dt><dd><pre class="json">"example string"</pre></dd></div><div><dt>Path in body</dt><dd><span class="path"><code>response</code> / <code>body</code> / <code>11</code> / <code>photoUrls</code> / <code>0</code></span></dd></div><div><dt>Full schema path</dt><dd><span class="path"><code>paths</code> / <code>/pet/findByStatus</code> / <code>get</code> / <code>responses</code> / <code>200</code> / <code>content</code> / <code>application/json</code> / <code>schema</code> / <code>items</code> / <code>properties</code> / <code>photoUrls</code> / <code>items</code> / <code>type</code></span></dd></div><div><dt>Issue data</dt><dd><pre class="json">{
-  "schema": {
-    "type": "string"
-  },
-  "issue": "schema-validation-error"
-}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/pet/{petId}</h3><div><div class="summary">3 of 3 observations have no issues.</div></div></section><section class="interaction-path"><h3>/store/order</h3><div><div class="summary">3 of 3 observations have no issues.</div></div></section></section></main><footer>This report was generated at Wed Nov 22 15:15:51 CET 2023</footer></body></html></html>
+}</pre></dd></div></dl></details></li></ul></details></li></ol></div></div></section><section class="interaction-path"><h3>/store/order</h3><div><div class="summary">No issues found.</div></div></section></section></main><footer>This report was generated at Thu Dec 05 12:56:50 CET 2024</footer></body></html></html>
