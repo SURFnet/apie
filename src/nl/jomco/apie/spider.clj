@@ -108,9 +108,33 @@
              (merge request)
              (assoc :path (str path-prefix path)))))))
 
-(defn json-type?
+
+;; See https://datatracker.ietf.org/doc/html/rfc6838#section-4.2
+
+(def ^:private media-type-regex
+  #"([a-z0-9][a-z0-9-^&$#!_.+]*)/([a-z0-9][a-z0-9-^&$#!_.+]*?)(?:\+([a-z0-9-]+))?(?:;\s*(.*))?")
+
+(defn- parse-media-type
+  [mtype]
+  (when-let [[_ type subtype suffix parameter-string]
+             (->> mtype
+                  string/lower-case
+                  (re-matches media-type-regex))]
+    {:type             type
+     :subtype          subtype
+     :suffix           suffix
+     :parameter-string parameter-string}))
+
+;; we should parse the response body as json if the content type
+;; is "application/json" or the media suffix is json
+;;
+;; See https://www.rfc-editor.org/rfc/rfc6838#section-4.11
+
+(defn- json-type?
   [r]
-  (string/starts-with? (get-in r [:headers "content-type"] "") "application/json"))
+  (let [{:keys [type subtype suffix]} (parse-media-type (get-in r [:headers "content-type"] ""))]
+    (or (and (= "application" type) (= "json" subtype))
+        (= "json" suffix))))
 
 ;;  Some babashka json parser implementations return toplevel arrays
 ;;  as seqs.  That breaks the matching rules, which expect indexable
