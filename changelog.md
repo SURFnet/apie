@@ -1,6 +1,7 @@
 # Changelog
 
 ## NEXTVERSION
+ - Parse JSON bodies when mime subtype is "json"
 
 ## 0.2.2
  - Report text and layout improvements
