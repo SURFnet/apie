@@ -29,10 +29,12 @@ jobs:
         restore-keys: "nvd-clojure-"
         
     - name: Install clj runtime
-      run: .github/workflows/install-binaries.sh
+      run: |
+        .github/workflows/install-binaries.sh
+        echo "${PWD}/bin" >> $GITHUB_PATH
 
     - name: Install NVD clojure
-      run: bin/clojure -Ttools install nvd-clojure/nvd-clojure '{:mvn/version "RELEASE"}' :as nvd;
+      run: .github/workflows/install-nvd-clojure-tool.sh
 
     - name: Check that NVD Secret is set
       env:
@@ -43,4 +45,4 @@ jobs:
     - name: Check clojure dependencies with NVD
       env:
         NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
-      run: bin/clojure -J-Dclojure.main.report=stderr -Sdeps '{:deps {org.owasp/dependency-check-maven {:mvn/version "10.0.2"}}}' -Tnvd nvd.task/check :config-filename '".nvd-config.json"' :classpath "\"$(bin/clojure -Spath)\""
+      run: clojure -J-Dclojure.main.report=stderr -Tnvd nvd.task/check :config-filename '".nvd-config.json"' :classpath "\"$(clojure -Spath)\""
