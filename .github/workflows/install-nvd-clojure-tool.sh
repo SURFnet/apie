@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# SPDX-FileCopyrightText: 2024, 2025 SURF B.V.
+# SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+# SPDX-FileContributor: Remco van 't Veer
+
 set -ex
 
 # See also: https://github.com/rm-hull/nvd-clojure/pull/183

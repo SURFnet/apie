@@ -1,3 +1,8 @@
+;; SPDX-FileCopyrightText: 2024, 2025 SURF B.V.
+;; SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+;; SPDX-FileContributor: Joost Diepenmaat
+;; SPDX-FileContributor: Michiel de Mare
+
 (ns nl.jomco.apie.main
   (:require [babashka.json :as json]
             [clojure.edn :as edn]
