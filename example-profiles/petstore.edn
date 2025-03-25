@@ -1,3 +1,7 @@
+;; SPDX-FileCopyrightText: 2024, 2025 SURF B.V.
+;; SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+;; SPDX-FileContributor: Joost Diepenmaat
+
 {:openapi-spec "petstore.openapi.json"
  :seeds
  [{:method       "get"
@@ -12,7 +16,7 @@
   {:method "get"
    :path   "/store/inventory"}]
  :rules
- [;; if a pet is found in lists, it should also have its own resource
+ [ ;; if a pet is found in lists, it should also have its own resource
   ;; url
   {:match     [[:request :method, "get"]
                [:request :path "/pet/findByStatus"]

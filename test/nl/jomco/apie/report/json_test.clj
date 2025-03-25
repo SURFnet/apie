@@ -1,3 +1,7 @@
+;; SPDX-FileCopyrightText: 2024, 2025 SURF B.V.
+;; SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+;; SPDX-FileContributor: Joost Diepenmaat
+
 (ns nl.jomco.apie.report.json-test
   (:require [clojure.test :refer [deftest is]]
             [nl.jomco.apie.report.json :as sut]))

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024, 2025 SURF B.V.
+# SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+# SPDX-FileContributor: Joost Diepenmaat
+# SPDX-FileContributor: Remco van 't Veer
+
 # Recipes for building release artifacts
 #
 # Expects the artifact to be in the format
@@ -100,8 +105,13 @@ test:
 	clojure -M:test
 	bb -Sdeps '{:deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}}' -m kaocha.runner/-main
 
-lint:
+lint-clj:
 	clojure -M:clj-kondo --lint src test
+
+lint-spdx:
+	reuse lint
+
+lint: lint-clj lint-spdx
 
 check: test lint
 
@@ -110,4 +120,4 @@ release_check: working_tree_clean_check check outdated
 outdated:
 	clojure -M:outdated
 
-.PHONY: check lint outdated release_check test working_tree_clean_check
+.PHONY: check lint lint-clj lint-spdx outdated release_check test working_tree_clean_check

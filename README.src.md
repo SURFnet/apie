@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2024, 2025 SURF B.V.
+SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+SPDX-FileContributor: Joost Diepenmaat
+-->
 # Apie 🙈 OpenAPI Service Validator
 
 A command-line tool to spider and validate API endpoints to ensure

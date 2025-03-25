@@ -1,3 +1,9 @@
+;; SPDX-FileCopyrightText: 2024, 2025 SURF B.V.
+;; SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+;; SPDX-FileContributor: Joost Diepenmaat
+;; SPDX-FileContributor: Michiel de Mare
+;; SPDX-FileContributor: Remco van 't Veer
+
 (ns nl.jomco.apie.report
   (:require [clojure.string :as string]
             [clojure.java.io :as io]

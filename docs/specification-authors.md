@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024, 2025 SURF B.V.
+SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+SPDX-FileContributor: Joost Diepenmaat
+-->
+
 # For OpenAPI specification authors
 
 This document is intended for authors of the OpenAPI specs and the
