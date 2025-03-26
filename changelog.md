@@ -8,6 +8,9 @@ SPDX-FileContributor: Remco van 't Veer
 
 ## NEXTVERSION
 
+## 0.2.4
+ - Ability to add extra items to report runtime section
+
 ## 0.2.3
  - Parse JSON bodies when mime subtype is "json"
 
