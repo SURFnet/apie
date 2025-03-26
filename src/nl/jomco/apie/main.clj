@@ -2,6 +2,7 @@
 ;; SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
 ;; SPDX-FileContributor: Joost Diepenmaat
 ;; SPDX-FileContributor: Michiel de Mare
+;; SPDX-FileContributor: Remco van 't Veer
 
 (ns nl.jomco.apie.main
   (:require [babashka.json :as json]
@@ -179,12 +180,19 @@
     (.write w "]")))
 
 (defn report
-  [spec-data {:keys [observations-path report-path base-url]}]
+  "Report on observations by writing an HTML document.
+
+  Reads observations from `observations-path` and writes to
+  `report-path` using `spec-data` to group observations in the report.
+
+  Pass `runtime-extra` to add information to the \"runtime\" section
+  of the report using a map of titles and values."
+  [spec-data {:keys [observations-path report-path base-url] :as opts}]
   (println "Writing report to" report-path)
   (binding [*out* (io/writer report-path :encoding "UTF-8")]
     (println
      ;; str needed to coerce hiccup "rawstring"
-     (str (report/report spec-data (read-edn observations-path) base-url)))))
+     (str (report/report spec-data (read-edn observations-path) base-url opts)))))
 
 (defn main
   [{:keys [no-spider? no-report? profile] :as options}]

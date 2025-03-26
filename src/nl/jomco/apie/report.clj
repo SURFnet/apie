@@ -119,7 +119,8 @@
       :else
       "less than a second")))
 
-(defn- interactions-runtime [base-url interactions]
+(defn- interactions-runtime
+  [base-url interactions {:keys [runtime-extra]}]
   (let [responses (->> interactions
                        (map :response))
         start-at     (->> responses
@@ -152,7 +153,12 @@
 
       [:div
        [:dt "Number of requests"]
-       [:dd (count interactions)]]]]))
+       [:dd (count interactions)]]
+
+      (for [[title data] runtime-extra]
+        [:div
+         [:dt title]
+         [:dd data]])]]))
 
 (defn- interaction-summary [{{:keys [method uri query-string query-params]} :request}]
   [:span.interaction-summary
@@ -658,7 +664,7 @@
   (str "Validation report for " base-url))
 
 (defn report
-  [openapi interactions base-url]
+  [openapi interactions base-url & [opts]]
   (hiccup.page/html5
    [:html
     [:head
@@ -675,7 +681,7 @@
      [:main
       [:section.general
        (interactions-result interactions)
-       (interactions-runtime base-url interactions)]
+       (interactions-runtime base-url interactions opts)]
       (per-path-section openapi interactions)]
 
      [:footer
