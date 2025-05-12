@@ -8,6 +8,9 @@ SPDX-FileContributor: Remco van 't Veer
 
 ## NEXTVERSION
 
+## 0.2.5
+ - Spider catches IOExceptions; they get reported as Network errors.
+
 ## 0.2.4
  - Ability to add extra items to report runtime section
 

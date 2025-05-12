@@ -532,7 +532,7 @@
    ", got " [:code instance]])
 
 (defmethod issue-summary "network-error"
-  [_ {:keys [hints instance path]}]
+  [_ {:keys [hints]}]
   [:span
    (str "Network error: " (:message hints))])
 
