@@ -10,7 +10,8 @@
             [clojure.string :as string]
             [babashka.json :as json]
             [babashka.http-client :as http-client])
-  (:import [java.net URI URL]))
+  (:import [java.net URI URL]
+           [java.io IOException]))
 
 (defn fixup-request
   "Convert spider request to format expected by validator"
@@ -82,9 +83,12 @@
       (assoc :uri (select-keys req [:host :port :path :scheme]))
       (dissoc :host :port :path :scheme)))
 
-(defn fixup-validator-request
-  [req]
-  (assoc req :uri (:path req)))
+(defn wrap-io-exception-handler [f]
+  (fn [request]
+    (try
+      (f request)
+      (catch IOException ex
+        {:status 0, :body (.getMessage ex), :headers {}}))))
 
 (defn wrap-client
   [f client]
@@ -196,6 +200,9 @@
   [{:keys [base-url headers basic-auth bearer-token]}]
   (cond-> http-client/request
     :always
+    (wrap-io-exception-handler)
+
+    :always
     (wrap-client (http-client/client (assoc http-client/default-client-opts
                                             :follow-redirects :never)))
 
@@ -226,13 +233,21 @@
          'assoc assoc
          'dissoc dissoc))
 
+(defn wrap-network-error [validate]
+   (fn [{:keys [response] :as interaction} path]
+     (if (= 0 (:status response))
+       [{:issue "network-error"
+         :hints {:message (:body response)}}]
+       (validate interaction path))))
+
 (defn spider-and-validate
   [openapi-spec
    {:keys [rules seeds] :as _profile}
    {:keys [max-requests-per-operation max-total-requests spider-timeout-millis] :as options}]
   (let [seeds (or (:seeds options) seeds)
         validate (-> (validator/validator-context openapi-spec {})
-                     (validator/interaction-validator))
+                     (validator/interaction-validator)
+                     (wrap-network-error))
         matcher  (paths-matcher (keys (get openapi-spec "paths")))
         op-path  (fn [request]
                    (when-let [template (:template (matcher (path request)))]
