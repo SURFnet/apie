@@ -477,6 +477,10 @@
            (into [:dl])))
     [:dl [:dt "Collection is empty!"]]))
 
+(defmethod issue-details "network-error"
+  [_ _]
+  nil)
+
 ;; this also works for non-json-schema issue types
 (defmethod issue-details :default
   [openapi {:keys [instance path schema-path] :as issue}]
@@ -526,6 +530,11 @@
    (path-summary path) " expected one of: "
    (list-summary (:ranges hints))
    ", got " [:code instance]])
+
+(defmethod issue-summary "network-error"
+  [_ {:keys [hints instance path]}]
+  [:span
+   (str "Network error: " (:message hints))])
 
 (defmethod issue-summary :default
   [_ {:keys [issue]}]
