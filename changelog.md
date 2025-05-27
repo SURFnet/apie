@@ -6,7 +6,8 @@ SPDX-FileContributor: Remco van 't Veer
 -->
 # Changelog
 
-## NEXTVERSION
+## 0.2.6
+ - Update `spider` dependency, fixes issue generating requests
 
 ## 0.2.5
  - Spider catches IOExceptions; they get reported as Network errors.
