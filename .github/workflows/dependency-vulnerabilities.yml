@@ -12,7 +12,7 @@ on:
 
 jobs:
   "NVD-check":
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
 
@@ -32,14 +32,16 @@ jobs:
         # the most recent cache for nvd-clojure
         # and update that
         restore-keys: "nvd-clojure-"
-        
+
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
     - name: Install clj runtime
       run: |
         .github/workflows/install-binaries.sh
         echo "${PWD}/bin" >> $GITHUB_PATH
-
-    - name: Install NVD clojure
-      run: .github/workflows/install-nvd-clojure-tool.sh
 
     - name: Check that NVD Secret is set
       env:
@@ -49,5 +51,6 @@ jobs:
 
     - name: Check clojure dependencies with NVD
       env:
-        NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
-      run: clojure -J-Dclojure.main.report=stderr -Tnvd nvd.task/check :config-filename '".nvd-config.json"' :classpath "\"$(clojure -Spath)\""
+        CLJ_WATSON_NVD_API_KEY: "${{ secrets.NVD_API_TOKEN }}"
+      run: |
+        clojure -M:clj-watson scan -p deps.edn -f -w .watson.properties

@@ -15,7 +15,14 @@
            nl.jomco/spider                {:mvn/version "0.2.1"}}
  :aliases {:test      {:extra-deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}
                        :main-opts  ["-m" "kaocha.runner"]}
+
            :clj-kondo {:replace-deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}
                        :main-opts    ["-m" "clj-kondo.main"]}
+
            :outdated  {:replace-deps {com.github.liquidz/antq {:mvn/version "RELEASE"}}
-                       :main-opts    ["-m" "antq.core"]}}}
+                       :main-opts    ["-m" "antq.core"]}
+
+           :clj-watson {:replace-deps
+                        {io.github.clj-holmes/clj-watson
+                         {:git/tag "v6.0.1" :git/sha "b520351"}}
+                        :main-opts ["-m" "clj-watson.cli"]}}}
