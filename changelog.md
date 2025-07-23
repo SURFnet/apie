@@ -6,6 +6,9 @@ SPDX-FileContributor: Remco van 't Veer
 -->
 # Changelog
 
+## 1.0.0
+- Update dependency checks
+
 ## 0.2.6
  - Update `spider` dependency, fixes issue generating requests
 
