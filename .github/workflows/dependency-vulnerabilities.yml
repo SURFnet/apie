@@ -53,4 +53,4 @@ jobs:
       env:
         CLJ_WATSON_NVD_API_KEY: "${{ secrets.NVD_API_TOKEN }}"
       run: |
-        clojure -M:clj-watson scan -p deps.edn -f -w .watson.properties
+        make nvd

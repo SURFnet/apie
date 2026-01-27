@@ -120,4 +120,7 @@ release_check: working_tree_clean_check check outdated
 outdated:
 	clojure -M:outdated
 
-.PHONY: check lint lint-clj lint-spdx outdated release_check test working_tree_clean_check
+nvd:
+	clojure -M:clj-watson scan -p deps.edn -f -w .watson.properties
+
+.PHONY: check lint lint-clj lint-spdx outdated nvd release_check test working_tree_clean_check

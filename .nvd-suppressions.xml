@@ -4,4 +4,9 @@
     SPDX-FileContributor: Joost Diepenmaat
 -->
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress>
+    <notes>False positive: matches to wrong.</notes>
+    <packageUrl regex="true">.*openapi-v3-validator.*</packageUrl>
+    <cve>CVE-2025-15104</cve>
+  </suppress>
 </suppressions>
