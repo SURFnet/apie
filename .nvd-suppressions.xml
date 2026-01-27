@@ -5,7 +5,7 @@
 -->
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
   <suppress>
-    <notes>False positive: matches to wrong.</notes>
+    <notes>False positive: matches wrong package.</notes>
     <packageUrl regex="true">.*openapi-v3-validator.*</packageUrl>
     <cve>CVE-2025-15104</cve>
   </suppress>
