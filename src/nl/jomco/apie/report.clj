@@ -128,18 +128,19 @@
       :else
       "less than a second")))
 
+(defn- min-date [a b] (if (.before (or a b) b) a b))
+(defn- max-date [a b] (if (.after (or a b) b) a b))
+
 (defn- observations-runtime
   [base-url observations-path {:keys [runtime-extra]}]
   (let [{:keys [n-requests start-at finish-at]}
         (with-observations observations-path
           (fn [observations]
             (reduce (fn [m {{:keys [start-at finish-at]} :response}]
-                      (let [min #(if (.before (or %1 %2) %2) %1 %2)
-                            max #(if (.after (or %1 %2) %2) %1 %2)]
-                        (-> m
-                            (update :n-requests inc)
-                            (update :start-at min start-at)
-                            (update :finish-at max finish-at))))
+                      (-> m
+                          (update :n-requests inc)
+                          (update :start-at min-date start-at)
+                          (update :finish-at max-date finish-at)))
                     {:n-requests 0
                      :start-at   nil
                      :finish-at  nil}
