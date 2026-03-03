@@ -42,13 +42,9 @@
 
 (def css-resources ["style.css" "extra.css"])
 
-(defn lazy-observations [in]
-  (lazy-seq (when-let [observation (edn/read {:eof nil} in)]
-              (cons observation (lazy-observations in)))))
-
 (defn with-observations [path f]
   (with-open [in (PushbackReader. (io/reader path :encoding "UTF-8"))]
-    (f (lazy-observations in))))
+    (f (take-while some? (repeatedly #(edn/read {:eof nil} in))))))
 
 (defn- observations-result [observations-path]
   (let [{:keys [n-issues
