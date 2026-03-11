@@ -173,11 +173,9 @@
   [spec-data profile-data {:keys [base-url observations-path] :as options}]
   (println "Spidering" base-url)
   (with-open [w (io/writer observations-path :encoding "UTF-8")]
-    (.write w "[")
     (run! #(do (print-interaction %)
                (pprint/pprint % w))
-          (spider/spider-and-validate spec-data profile-data options))
-    (.write w "]")))
+          (spider/spider-and-validate spec-data profile-data options))))
 
 (defn report
   "Report on observations by writing an HTML document.
@@ -192,7 +190,7 @@
   (binding [*out* (io/writer report-path :encoding "UTF-8")]
     (println
      ;; str needed to coerce hiccup "rawstring"
-     (str (report/report spec-data (read-edn observations-path) base-url opts)))))
+     (str (report/report spec-data observations-path base-url opts)))))
 
 (defn main
   [{:keys [no-spider? no-report? profile] :as options}]

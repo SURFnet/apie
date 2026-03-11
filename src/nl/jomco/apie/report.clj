@@ -5,13 +5,15 @@
 ;; SPDX-FileContributor: Remco van 't Veer
 
 (ns nl.jomco.apie.report
-  (:require [clojure.string :as string]
+  (:require [clojure.edn :as edn]
+            [clojure.string :as string]
             [clojure.java.io :as io]
             [hiccup.page]
             [hiccup.util]
             [nl.jomco.apie.report.json :as json]
             [nl.jomco.openapi.v3.example :as example])
-  (:import java.net.URLEncoder))
+  (:import java.net.URLEncoder
+           [java.io PushbackReader]))
 
 (def max-issues-per-schema-path 10)
 (def max-issues 3)
@@ -38,47 +40,54 @@
 (defn- pretty-json [v & opts]
   [:pre.json (apply json/to-s v opts)])
 
-(defn- with-issues [interactions]
-  (filter :issues interactions))
-
 (def css-resources ["style.css" "extra.css"])
 
-(defn- interactions-result [interactions]
-  [:section.result
-   [:h3 "Results"]
-   [:dl
-    [:div
-     [:dt "Number of request with issues"]
-     [:dd
-      [:strong (-> interactions
-                   (with-issues)
-                   (count))]]]
+(defn with-observations [path f]
+  (with-open [in (PushbackReader. (io/reader path :encoding "UTF-8"))]
+    (f (take-while some? (repeatedly #(edn/read {:eof nil} in))))))
 
-    [:div
-     [:dt "Number of paths with issues"]
-     [:dd
-      [:strong (->> interactions
-                    (with-issues)
-                    (map :operation-path)
-                    (set)
-                    (count))]]]
+(defn- observations-result [observations-path]
+  (let [{:keys [n-issues
+                n-req-with-issues
+                operation-paths-with-issues
+                schema-paths-with-issues]}
+        (with-observations observations-path
+          (fn [observations]
+            (reduce (fn [m {:keys [issues operation-path]}]
+                      (cond-> m
+                        :always (update :n-issues + (count issues))
+                        issues  (update :n-req-with-issues inc)
+                        issues  (update :operation-paths-with-issues
+                                        conj operation-path)
+                        issues  (update :schema-paths-with-issues
+                                        into (map :canonical-schema-path issues))))
+                    {:n-issues                 0
+                     :n-req-with-issues        0
+                     :paths-with-issues        #{}
+                     :schema-paths-with-issues #{}}
+                    observations)))]
+    [:section.result
+     [:h3 "Results"]
+     [:dl
+      [:div
+       [:dt "Number of request with issues"]
+       [:dd
+        [:strong n-req-with-issues]]]
 
+      [:div
+       [:dt "Number of paths with issues"]
+       [:dd
+        [:strong (count operation-paths-with-issues)]]]
 
-    [:div
-     [:dt "Total number of issues"]
-     [:dd
-      [:strong (->> interactions
-                    (mapcat :issues)
-                    (count))]]]
+      [:div
+       [:dt "Total number of issues"]
+       [:dd
+        [:strong n-issues]]]
 
-    [:div
-     [:dt "Number of issue types (by schema path)"]
-     [:dd
-      [:strong (->> interactions
-                    (mapcat :issues)
-                    (map :canonical-schema-path)
-                    (set)
-                    (count))]]]]])
+      [:div
+       [:dt "Number of issue types (by schema path)"]
+       [:dd
+        [:strong (count schema-paths-with-issues)]]]]]))
 
 (defn- duration [msecs]
   (let [secs (quot msecs 1000)
@@ -119,18 +128,23 @@
       :else
       "less than a second")))
 
-(defn- interactions-runtime
-  [base-url interactions {:keys [runtime-extra]}]
-  (let [responses (->> interactions
-                       (map :response))
-        start-at     (->> responses
-                          (map :start-at)
-                          (sort)
-                          (first))
-        finish-at    (->> responses
-                          (map :finish-at)
-                          (sort)
-                          (last))]
+(defn- min-date [a b] (if (.before (or a b) b) a b))
+(defn- max-date [a b] (if (.after (or a b) b) a b))
+
+(defn- observations-runtime
+  [base-url observations-path {:keys [runtime-extra]}]
+  (let [{:keys [n-requests start-at finish-at]}
+        (with-observations observations-path
+          (fn [observations]
+            (reduce (fn [m {{:keys [start-at finish-at]} :response}]
+                      (-> m
+                          (update :n-requests inc)
+                          (update :start-at min-date start-at)
+                          (update :finish-at max-date finish-at)))
+                    {:n-requests 0
+                     :start-at   nil
+                     :finish-at  nil}
+                    observations)))]
     [:section.runtime
      [:h3 "Run"]
      [:dl
@@ -153,14 +167,14 @@
 
       [:div
        [:dt "Number of requests"]
-       [:dd (count interactions)]]
+       [:dd n-requests]]
 
       (for [[title data] runtime-extra]
         [:div
          [:dt title]
          [:dd data]])]]))
 
-(defn- interaction-summary [{{:keys [method uri query-string query-params]} :request}]
+(defn- observation-summary [{{:keys [method uri query-string query-params]} :request}]
   [:span.interaction-summary
    [:code.method (string/upper-case (name method))]
    " "
@@ -510,7 +524,7 @@
    [:div
     [:dt "Issue data"]
     [:dd (-> issue
-             (dissoc :canonical-schema-path :instance :interaction :path :schema-path :schema-keyword)
+             (dissoc :canonical-schema-path :instance :observation :path :schema-path :schema-keyword)
              (pretty-json))]]])
 
 
@@ -550,12 +564,12 @@
    [:summary.issue (issue-summary openapi issue)]
    (issue-details openapi issue)])
 
-(defn- interaction-snippet
-  "Display interaction with method, path, summary and details"
-  [openapi {:keys [interaction] :as issue} _i]
+(defn- observation-snippet
+  "Display observation with method, path, summary and details"
+  [openapi {:keys [observation] :as issue} _i]
   [:details.interaction
    [:summary
-    [:div.headline (interaction-summary interaction)]
+    [:div.headline (observation-summary observation)]
     [:div.summary (issue-summary openapi issue)]]
    (issue-details openapi issue)])
 
@@ -572,98 +586,112 @@
       (- (count issues) max-issues)
       " more.."])])
 
-(defn- interaction-snippet-list
+(defn- observation-snippet-list
   [openapi issues]
   [:ul.interactions
    (for [[issue i]
          (map vector
               (take max-issues issues)
               (iterate inc 0))]
-     [:li (interaction-snippet openapi issue i)])
+     [:li (observation-snippet openapi issue i)])
    (when (> (count issues) max-issues)
      [:li.and-more
       "and "
       (- (count issues) max-issues)
       " more.."])])
 
-(defn- per-path-section [openapi interactions]
+(defn- path-section [openapi observations-path operation-path]
+  (let [observations
+        (with-observations observations-path
+          (fn [observations]
+            (->> observations
+                 (map #(dissoc % :response))
+                 (filterv #(= operation-path (:operation-path %))))))
+
+        issues-by-schema-path
+        (->> observations
+             (mapcat #(map (fn [x] (assoc x :observation %))
+                           (:issues %)))
+             (group-by :canonical-schema-path)
+             (sort-by (fn [[path issues]]
+                        [(* -1 (count issues)) path])))
+
+        n-issue-types (count issues-by-schema-path)]
+    [:div.summary
+     [:p
+      (t {:one   "1 validation issue (by schema path):"
+          :other "%{count} different validation issues (by schema path):"}
+         {:count n-issue-types})]
+     [:ol.by-schema-path
+      (for [[[schema-path issues] i]
+            (map vector
+                 (take max-issues-per-schema-path
+                       issues-by-schema-path)
+                 (iterate inc 0))]
+        [:li
+         [:details.schema-path (when (= 0 i) {:open true})
+          [:summary
+           [:div.leading [:span.count (count issues)]]
+           [:div.headline
+            [:div.schema-path (string/join "/" schema-path)]
+            [:div.summary
+             (t {:one   "one issue in "
+                 :other "%{count} issues in "}
+                {:count (count issues)})
+             (t {:one   "one request"
+                 :other "%{count} requests"}
+                {:count (->> observations
+                             (filter (fn [{:keys [issues]}]
+                                       (some #(= schema-path (:canonical-schema-path %)) issues)))
+                             count)})]]]
+          (observation-snippet-list openapi issues)]])
+
+      (when (> (count issues-by-schema-path) max-issues-per-schema-path)
+        [:li.and-more
+         "and "
+         (- (count issues-by-schema-path)
+            max-issues-per-schema-path)
+         " more.."])]]))
+
+(defn- per-path-section [openapi observations-path]
   [:section.per-path
    [:h2 "Results per request path"]
    [:p "(sorted by number of issues)"]
 
-   (for [[[_ path] interactions]
-         (->> interactions
-              (group-by :operation-path)
-              (sort-by (fn [[path interactions]]
-                         [(* -1 (-> interactions
-                                    (with-issues)
-                                    (count)))
-                          path])))]
+   (for [[[_ path _method :as operation-path] {:keys [n n-with-issues]}]
+         (with-observations observations-path
+           (fn [observations]
+             (->> observations
+                  (reduce (fn [m {:keys [operation-path issues]}]
+                            (let [f (fnil (if issues inc identity) 0)]
+                              (-> m
+                                  (update-in [operation-path :n] (fnil inc 0))
+                                  (update-in [operation-path :n-with-issues] f))))
+                          {})
+                  (sort-by (fn [[_ {:keys [n-with-issues]}]]
+                             (* -1 (or n-with-issues 0)))))))]
      [:section.interaction-path
       [:h3 path]
-      (let [n             (count interactions)
-            n-with-issues (->> interactions (filter :issues) (count))]
-        [:div
-         [:div.summary
-          (cond
-            (zero? n-with-issues)
-            "No issues found."
+      [:div
+       [:div.summary
+        (cond
+          (zero? n-with-issues)
+          "No issues found."
 
-            (and (pos? n)
-                 (= n n-with-issues))
-            (t {:one   "Only request has issues."
-                :other "All %{count} requests have issues."}
-               {:count n})
+          (and (pos? n)
+               (= n n-with-issues))
+          (t {:one   "Only request has issues."
+              :other "All %{count} requests have issues."}
+             {:count n})
 
-            :else
-            (t {:one   "%{n-with-issues} of one request have issues."
-                :other "%{n-with-issues} of %{count} requests have issues."}
-               {:n-with-issues n-with-issues
-                :count         n}))]
+          :else
+          (t {:one   "%{n-with-issues} of one request have issues."
+              :other "%{n-with-issues} of %{count} requests have issues."}
+             {:n-with-issues n-with-issues
+              :count         n}))]
 
-         (when (pos? n-with-issues)
-           (let [issues-by-schema-path (->> interactions
-                                            (mapcat (fn [interaction]
-                                                      (map #(assoc % :interaction interaction)
-                                                           (:issues interaction))))
-                                            (group-by :canonical-schema-path)
-                                            (sort-by (fn [[path issues]]
-                                                       [(* -1 (count issues)) path])))
-                 n-issue-types         (count issues-by-schema-path)]
-             [:div.summary
-              [:p
-               (t {:one   "1 validation issue (by schema path):"
-                   :other "%{count} different validation issues (by schema path):"}
-                  {:count n-issue-types})]
-              [:ol.by-schema-path
-               (for [[[schema-path issues] i]
-                     (map vector
-                          (take max-issues-per-schema-path
-                                issues-by-schema-path)
-                          (iterate inc 0))]
-                 [:li
-                  [:details.schema-path (when (= 0 i) {:open true})
-                   [:summary
-                    [:div.leading [:span.count (count issues)]]
-                    [:div.headline
-                     [:div.schema-path (string/join "/" schema-path)]
-                     [:div.summary
-                      (t {:one   "one issue in "
-                          :other "%{count} issues in "}
-                         {:count (count issues)})
-                      (t {:one   "one request"
-                          :other "%{count} requests"}
-                         {:count (count (filter (fn [{:keys [issues]}]
-                                                  (some #(= schema-path (:canonical-schema-path %)) issues))
-                                                interactions))})]]]
-                   (interaction-snippet-list openapi issues)]])
-
-               (when (> (count issues-by-schema-path) max-issues-per-schema-path)
-                 [:li.and-more
-                  "and "
-                  (- (count issues-by-schema-path)
-                     max-issues-per-schema-path)
-                  " more.."])]]))])])])
+       (when (pos? n-with-issues)
+         (path-section openapi observations-path operation-path))]])])
 
 (defn- raw-css [css]
   (hiccup.util/raw-string "/*<![CDATA[*/\n" css "/*]]>*/"))
@@ -673,7 +701,7 @@
   (str "Validation report for " base-url))
 
 (defn report
-  [openapi interactions base-url & [opts]]
+  [openapi observations-path base-url & [opts]]
   (hiccup.page/html5
    [:html
     [:head
@@ -689,9 +717,8 @@
 
      [:main
       [:section.general
-       (interactions-result interactions)
-       (interactions-runtime base-url interactions opts)]
-      (per-path-section openapi interactions)]
-
+       (observations-result observations-path)
+       (observations-runtime base-url observations-path opts)]
+      (per-path-section openapi observations-path)]
      [:footer
       "This report was generated at " (java.util.Date.)]]]))
