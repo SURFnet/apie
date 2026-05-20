@@ -8,6 +8,7 @@ SPDX-FileContributor: Remco van 't Veer
 
 ## 1.0.1
 - Update openapi-v3-validator: support deepObject parameters
+- Update other dependencies
 
 ## 1.0.0
 - Update dependency checks
