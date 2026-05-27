@@ -446,12 +446,12 @@
         (fn [i issues]
           (when (seq issues)
             [:li
-             (t {:one   "Invalid %{title}, one issue:"
-                 :other "Invalid %{title}, %{count} issues:"}
-                {:count (count issues)
-                 :title (-> schema
-                            (get-in [schema-keyword i])
-                            (json-schema-title))})
+             "Invalid " (-> schema
+                           (get-in [schema-keyword i])
+                           (json-schema-title))
+             (t {:one   ", one issue:"
+                 :other ", %{count} issues:"}
+                {:count (count issues)})
              (issue-snippets-list openapi issues)])))
        (into [:ul])))
 
@@ -463,12 +463,12 @@
           (fn [i issues]
             (when (seq issues)
               [:li
-               (t {:one   "Invalid %{title}, one issue:"
-                   :other "Invalid %{title}, %{count} issues:"}
-                  {:count (count issues)
-                   :title (-> schema
-                              (get-in [schema-keyword i])
-                              (json-schema-title))})
+               "Invalid " (-> schema
+                             (get-in [schema-keyword i])
+                             (json-schema-title))
+               (t {:one   ", one issue:"
+                   :other ", %{count} issues:"}
+                  {:count (count issues)})
                (issue-snippets-list openapi issues)])))
          (into [:ul]))
     [:p "Maybe a fault in the specification?"]))
