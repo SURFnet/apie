@@ -6,6 +6,9 @@ SPDX-FileContributor: Remco van 't Veer
 -->
 # Changelog
 
+## 1.0.2
+- Fix reporting of schema title in oneOf and someOf issues
+
 ## 1.0.1
 - Update openapi-v3-validator: support deepObject parameters
 - Update other dependencies
