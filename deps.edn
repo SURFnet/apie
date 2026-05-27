@@ -23,6 +23,6 @@
                        :main-opts    ["-m" "antq.core"]}
 
            :clj-watson {:replace-deps
-                        {io.github.clj-holmes/clj-watson {:git/tag "v6.1.0" :git/sha "b520351"}
+                        {io.github.clj-holmes/clj-watson {:git/tag "v6.1.0" :git/sha "be98e4d"}
                          org.owasp/dependency-check-core {:mvn/version "RELEASE"}}
                         :main-opts ["-m" "clj-watson.cli"]}}}
