@@ -6,7 +6,6 @@
 name: Run checks
 
 on:
-  push:
   workflow_call:
 
 jobs:

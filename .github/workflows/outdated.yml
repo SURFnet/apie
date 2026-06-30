@@ -6,7 +6,6 @@
 name: Run outdated check
 
 on:
-  push:
   workflow_call:
 
 jobs:

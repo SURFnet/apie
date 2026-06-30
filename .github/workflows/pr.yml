@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 SURF B.V.
+# SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+# SPDX-FileContributor: Joost Diepenmaat
+# SPDX-FileContributor: Remco van 't Veer
+
+name: Run checks for PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  nvd:
+    uses: ./.github/workflows/nvd.yml
+
+  check:
+    uses: ./.github/workflows/check.yml
+
+  outdated:
+    uses: ./.github/workflows/outdated.yml

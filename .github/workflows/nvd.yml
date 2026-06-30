@@ -6,7 +6,6 @@
 name: Check dependency vulnerabilities
 
 on:
-  push:
   workflow_call:
   schedule:
     - cron: '30 3 * * 1'
