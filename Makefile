@@ -120,6 +120,9 @@ release_check: working_tree_clean_check check outdated
 outdated:
 	clojure -M:outdated
 
+export CLJ_WATSON_NVD_API_KEY=dummy
+export CLJ_WATSON_NVD_API_DATAFEED_URL=https://dependency-check.github.io/DependencyCheck_Builder/nvd_cache/nvdcve-{0}.json.gz
+
 nvd:
 	clojure -M:clj-watson scan -p deps.edn -f -w .watson.properties
 
