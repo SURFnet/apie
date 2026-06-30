@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: 2026 SURF B.V.
+# SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+# SPDX-FileContributor: Joost Diepenmaat
+# SPDX-FileContributor: Remco van 't Veer
+
+name: Run checks
+
+on:
+  workflow_call:
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/cache@v6
+      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
+
+    - uses: actions/setup-java@v5
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - uses: actions/cache@v6
+      with:
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
+        path: |
+          ./bin
+          ./lib
+
+    - name: Install packages
+      run: |
+        sudo apt-get install -y reuse
+        ./.github/workflows/install-binaries.sh
+        echo "${PWD}/bin" >> $GITHUB_PATH
+
+    - name: Run make check
+      run: |
+        make check
