@@ -35,10 +35,15 @@ jobs:
         ./.github/workflows/install-binaries.sh
         echo "${PWD}/bin" >> $GITHUB_PATH
 
+    - id: date-yymmdd
+      run: 'echo "date=$(date -u "+%Y%m%d")" >> $GITHUB_OUTPUT'
+
     - uses: actions/cache@v6
       with:
         path: "~/.m2"
-        key: "nvd"
+        key: nvd-${{ steps.date-yymmdd.outputs.date }}
+        restore-keys: |
+          nvd-
 
     - name: Check clojure dependencies with NVD
       run: |
