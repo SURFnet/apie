@@ -11,7 +11,7 @@
            org.babashka/json              {:mvn/version "0.1.6"}
            hiccup/hiccup                  {:mvn/version "2.0.0"}
            nl.jomco/clj-http-status-codes {:mvn/version "0.2"}
-           nl.jomco/openapi-v3-validator  {:mvn/version "0.2.8"}
+           nl.jomco/openapi-v3-validator  {:mvn/version "0.2.9"}
            nl.jomco/spider                {:mvn/version "0.2.1"}}
  :aliases {:test      {:extra-deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}
                        :main-opts  ["-m" "kaocha.runner"]}
