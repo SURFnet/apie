@@ -6,6 +6,9 @@ SPDX-FileContributor: Remco van 't Veer
 -->
 # Changelog
 
+## 1.0.3
+- Update openapi-v3-validator, allow matching on "structured syntax suffixes" in media ranges.
+
 ## 1.0.2
 - Fix reporting of schema title in oneOf and someOf issues
 
