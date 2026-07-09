@@ -5,7 +5,7 @@ on:
   push: { branches: [ "main", "master" ] }
 
 jobs:
-  # No need to run job-check.yml, already run by push.yml
+  # No need to run job_check.yml, already run by push.yml
 
   nvd:
-    uses: ./.github/workflows/job-nvd.yml
+    uses: ./.github/workflows/job_nvd.yml

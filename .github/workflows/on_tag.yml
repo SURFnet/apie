@@ -5,11 +5,11 @@ on:
   push: { tags: [ "*" ] }
 
 jobs:
-  # No need to run job-check.yml, already run by push.yml
+  # No need to run job_check.yml, already run by push.yml
 
   build:
-    uses: ./.github/workflows/job-build.yml
+    uses: ./.github/workflows/job_build.yml
     secrets: inherit
 
   nvd:
-    uses: ./.github/workflows/job-nvd.yml
+    uses: ./.github/workflows/job_nvd.yml
