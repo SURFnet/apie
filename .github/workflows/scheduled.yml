@@ -8,4 +8,4 @@ on:
 
 jobs:
   nvd:
-    uses: ./.github/workflows/jobs/nvd.yml
+    uses: ./.github/workflows/job-nvd.yml

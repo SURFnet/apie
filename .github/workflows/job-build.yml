@@ -57,7 +57,7 @@ jobs:
       with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
     - uses: actions/cache@v6
       with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/jobs/install-binaries.sh') }}"
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/install-binaries.sh') }}"
         path: |
           ./bin
           ./lib
@@ -67,7 +67,7 @@ jobs:
       id: artifact
     
     - name: Install clj runtime
-      run: .github/workflows/jobs/install-binaries.sh
+      run: .github/install-binaries.sh
 
     - name: Add clj runtime to PATH
       run: echo "${PWD}/bin" >> $GITHUB_PATH

@@ -6,7 +6,7 @@ on:
 
 jobs:
   check:
-    uses: ./.github/workflows/jobs/check.yml
+    uses: ./.github/workflows/job-check.yml
 
   nvd:
-    uses: ./.github/workflows/jobs/nvd.yml
+    uses: ./.github/workflows/job-nvd.yml

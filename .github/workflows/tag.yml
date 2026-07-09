@@ -6,11 +6,11 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/jobs/build.yml
+    uses: ./.github/workflows/job-build.yml
     secrets: inherit
 
   nvd:
-    uses: ./.github/workflows/jobs/nvd.yml
+    uses: ./.github/workflows/job-nvd.yml
 
   check:
-    uses: ./.github/workflows/jobs/check.yml
+    uses: ./.github/workflows/job-check.yml

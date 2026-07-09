@@ -3,13 +3,13 @@
 # SPDX-FileContributor: Joost Diepenmaat
 # SPDX-FileContributor: Remco van 't Veer
 
-name: Run outdated check
+name: Run checks
 
 on:
   workflow_call:
 
 jobs:
-  outdated:
+  check:
     runs-on: ubuntu-22.04
 
     steps:
@@ -24,16 +24,17 @@ jobs:
 
     - uses: actions/cache@v6
       with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/jobs/install-binaries.sh') }}"
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/install-binaries.sh') }}"
         path: |
           ./bin
           ./lib
 
-    - name: Install clojure and bb runtime
+    - name: Install packages
       run: |
-        ./.github/workflows/jobs/install-binaries.sh
+        sudo apt-get install -y reuse
+        ./.github/install-binaries.sh
         echo "${PWD}/bin" >> $GITHUB_PATH
 
-    - name: Run make outdated
+    - name: Run make check
       run: |
-        make outdated
+        make check

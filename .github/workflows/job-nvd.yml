@@ -22,14 +22,14 @@ jobs:
 
     - uses: actions/cache@v6
       with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/jobs/install-binaries.sh') }}"
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/install-binaries.sh') }}"
         path: |
           ./bin
           ./lib
 
     - name: Install clojure and bb runtime
       run: |
-        ./.github/workflows/jobs/install-binaries.sh
+        ./.github/install-binaries.sh
         echo "${PWD}/bin" >> $GITHUB_PATH
 
     - id: date-yymmdd
