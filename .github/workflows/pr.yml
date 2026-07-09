@@ -10,11 +10,11 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  nvd:
-    uses: ./.github/workflows/nvd.yml
-
   check:
-    uses: ./.github/workflows/check.yml
+    uses: ./.github/workflows/jobs/check.yml
+
+  nvd:
+    uses: ./.github/workflows/jobs/nvd.yml
 
   outdated:
-    uses: ./.github/workflows/outdated.yml
+    uses: ./.github/workflows/jobs/outdated.yml

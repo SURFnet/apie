@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2026 SURF B.V.
+# SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+
+on:
+  push: { branches: [ "*" ] }
+
+jobs:
+  check:
+    uses: ./.github/workflows/jobs/check.yml

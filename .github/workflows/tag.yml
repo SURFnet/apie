@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 SURF B.V.
+# SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+
+on:
+  push: { tags: [ "*" ] }
+
+jobs:
+  build:
+    uses: ./.github/workflows/jobs/build.yml
+    secrets: inherit
+
+  nvd:
+    uses: ./.github/workflows/jobs/nvd.yml
+
+  check:
+    uses: ./.github/workflows/jobs/check.yml

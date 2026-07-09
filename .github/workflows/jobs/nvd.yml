@@ -7,9 +7,6 @@ name: Check dependency vulnerabilities
 
 on:
   workflow_call:
-  schedule:
-    - cron: '30 3 * * 1'
-      timezone: Europe/Amsterdam
 
 jobs:
   nvd:
@@ -25,14 +22,14 @@ jobs:
 
     - uses: actions/cache@v6
       with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/jobs/install-binaries.sh') }}"
         path: |
           ./bin
           ./lib
 
     - name: Install clojure and bb runtime
       run: |
-        ./.github/workflows/install-binaries.sh
+        ./.github/workflows/jobs/install-binaries.sh
         echo "${PWD}/bin" >> $GITHUB_PATH
 
     - id: date-yymmdd

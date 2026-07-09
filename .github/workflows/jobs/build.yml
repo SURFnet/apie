@@ -4,35 +4,11 @@
 # SPDX-FileContributor: Remco van 't Veer
 
 name: Build artifacts
+
 on:
-  push:
-    tags:
-      - '*'
-  
+  workflow_call:
+
 jobs:
-  checks:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v7
-    - uses: actions/cache@v6
-      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
-    - uses: actions/cache@v6
-      with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
-        path: |
-          ./bin
-          ./lib
-
-    - name: Install packages
-      run: |
-        sudo apt-get install -y reuse
-        .github/workflows/install-binaries.sh
-        echo "${PWD}/bin" >> $GITHUB_PATH
-
-    - name: Run release checks
-      run: make release_check
-
   create_release:
     if: startsWith(github.ref, 'refs/tags/v0') || startsWith(github.ref, 'refs/tags/v1')
     runs-on: ubuntu-latest
@@ -81,7 +57,7 @@ jobs:
       with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
     - uses: actions/cache@v6
       with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/jobs/install-binaries.sh') }}"
         path: |
           ./bin
           ./lib
@@ -91,7 +67,7 @@ jobs:
       id: artifact
     
     - name: Install clj runtime
-      run: .github/workflows/install-binaries.sh
+      run: .github/workflows/jobs/install-binaries.sh
 
     - name: Add clj runtime to PATH
       run: echo "${PWD}/bin" >> $GITHUB_PATH

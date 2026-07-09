@@ -24,7 +24,7 @@ jobs:
 
     - uses: actions/cache@v6
       with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/install-binaries.sh') }}"
+        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/workflows/jobs/install-binaries.sh') }}"
         path: |
           ./bin
           ./lib
@@ -32,7 +32,7 @@ jobs:
     - name: Install packages
       run: |
         sudo apt-get install -y reuse
-        ./.github/workflows/install-binaries.sh
+        ./.github/workflows/jobs/install-binaries.sh
         echo "${PWD}/bin" >> $GITHUB_PATH
 
     - name: Run make check

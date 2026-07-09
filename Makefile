@@ -113,9 +113,7 @@ lint-spdx:
 
 lint: lint-clj lint-spdx
 
-check: test lint
-
-release_check: working_tree_clean_check check outdated
+check: test lint working_tree_clean_check
 
 outdated:
 	clojure -M:outdated
@@ -126,4 +124,4 @@ export CLJ_WATSON_NVD_API_DATAFEED_URL=https://dependency-check.github.io/Depend
 nvd:
 	clojure -M:clj-watson scan -p deps.edn -f -w .watson.properties
 
-.PHONY: check lint lint-clj lint-spdx outdated nvd release_check test working_tree_clean_check
+.PHONY: check lint lint-clj lint-spdx outdated nvd test working_tree_clean_check
