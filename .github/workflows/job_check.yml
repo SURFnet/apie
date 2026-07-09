@@ -14,26 +14,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-    - uses: actions/cache@v6
-      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('deps.edn') }}-m2" }
+    - uses: ./.github/clojure
 
-    - uses: actions/setup-java@v5
-      with:
-        distribution: 'temurin'
-        java-version: '21'
-
-    - uses: actions/cache@v6
-      with:
-        key: "clojure-${{ runner.os }}-${{ hashFiles('.github/install-binaries.sh') }}"
-        path: |
-          ./bin
-          ./lib
-
-    - name: Install packages
+    - name: Install reuse
       run: |
         sudo apt-get install -y reuse
-        ./.github/install-binaries.sh
-        echo "${PWD}/bin" >> $GITHUB_PATH
 
     - name: Run make check
       run: |
