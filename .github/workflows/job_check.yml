@@ -14,8 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-    - uses: ./.github/clojure
-      with: { m2_cache_key: m2-check }
+    - uses: jomco/clojure-action@v0
+      with: { m2-cache-key: m2-check }
 
     - name: Install reuse
       run: |
