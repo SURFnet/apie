@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2026 SURF B.V.
+# SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+# SPDX-FileContributor: Joost Diepenmaat
+# SPDX-FileContributor: Remco van 't Veer
+
+name: Run outdated check
+
+on:
+  workflow_call:
+
+jobs:
+  outdated:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v7
+    - uses: jomco/clojure-action@v0
+      with: { m2-cache-key: m2-outdated }
+
+    - name: Run make outdated
+      run: |
+        make outdated

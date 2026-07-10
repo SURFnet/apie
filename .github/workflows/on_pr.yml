@@ -10,11 +10,10 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  nvd:
-    uses: ./.github/workflows/nvd.yml
+  # No need to run job_check.yml, already run by on_push.yml
 
-  check:
-    uses: ./.github/workflows/check.yml
+  nvd:
+    uses: ./.github/workflows/job_nvd.yml
 
   outdated:
-    uses: ./.github/workflows/outdated.yml
+    uses: ./.github/workflows/job_outdated.yml

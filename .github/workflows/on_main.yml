@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 SURF B.V.
+# SPDX-License-Identifier: EPL-2.0 WITH Classpath-exception-2.0
+
+on:
+  push: { branches: [ "main", "master" ] }
+
+jobs:
+  # No need to run job_check.yml, already run by on_push.yml
+
+  nvd:
+    uses: ./.github/workflows/job_nvd.yml
