@@ -51,7 +51,7 @@ runs:
         if [ ! -x ${{ inputs.dir }}/bin/clojure ]; then
           curl -OL "https://github.com/clojure/brew-install/releases/download/${{ inputs.clojure }}/posix-install.sh"
           chmod +x posix-install.sh
-          sudo ./posix-install.sh --prefix ${{ inputs.dir }}
+          ./posix-install.sh --prefix ${{ inputs.dir }}
           rm -f posix-install.sh
         fi
 
@@ -60,7 +60,7 @@ runs:
       run: |
         if [ ! -x ${{ inputs.dir }}/bin/bb ]; then
           curl -OL "https://github.com/babashka/babashka/releases/download/v${{ inputs.babashka }}/babashka-${{ inputs.babashka }}-${{ inputs.arch }}.tar.gz"
-          sudo tar xzf babashka-${{ inputs.babashka }}-${{ inputs.arch }}.tar.gz -C ${{ inputs.dir }}/bin
+          tar xzf babashka-${{ inputs.babashka }}-${{ inputs.arch }}.tar.gz -C ${{ inputs.dir }}/bin
           rm -f babashka-${{ inputs.babashka }}-${{ inputs.arch }}.tar.gz
         fi
 
