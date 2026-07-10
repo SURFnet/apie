@@ -25,6 +25,13 @@ runs:
         distribution: 'temurin'
         java-version: '${{ inputs.java }}'
 
+    - uses: actions/cache@v6
+      with:
+        path: |
+          ${{ inputs.dir }}
+          ~/.deps.clj
+        key: "${{ runner.os }}-${{ inputs.clojure }}-${{ inputs.babashka }}-clojure"
+
     - id: cache-date
       shell: bash
       run: |
@@ -32,18 +39,11 @@ runs:
 
     - uses: actions/cache@v6
       with:
-        path: "${{ inputs.dir }}"
-        key: "${{ runner.os }}-${{ inputs.clojure }}-${{ inputs.babashka }}-clojure-${{ steps.cache-date.outputs.out }}"
-
-    - uses: actions/cache@v6
-      with:
-        path: "~/.deps.clj"
-        key: "${{ runner.os }}-${{ inputs.clojure }}-${{ inputs.babashka }}-deps.clj-${{ steps.cache-date.outputs.out }}"
-
-    - uses: actions/cache@v6
-      with:
         path: "~/.m2"
         key: "${{ runner.os }}-${{ inputs.clojure }}-${{ inputs.babashka }}-${{ inputs.m2_cache_key }}-${{ steps.cache-date.outputs.out }}"
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.clojure }}-${{ inputs.babashka }}-${{ inputs.m2_cache_key }}-${{ steps.cache-date.outputs.out }}
+          ${{ runner.os }}-${{ inputs.clojure }}-${{ inputs.babashka }}-${{ inputs.m2_cache_key }}
 
     - name: Install clojure
       shell: bash
