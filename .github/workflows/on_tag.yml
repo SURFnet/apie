@@ -5,7 +5,7 @@ on:
   push: { tags: [ "*" ] }
 
 jobs:
-  # No need to run job_check.yml, already run by push.yml
+  # No need to run job_check.yml, already run by on_push.yml
 
   build:
     uses: ./.github/workflows/job_build.yml
