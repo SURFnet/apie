@@ -51,9 +51,20 @@
       (assoc :query-params
              (codec/form-decode q)))))
 
+(defn file-or-resource
+  "Return f as file if it exists, otherwise as resource.
+
+  Returns nil if neither resource or file are present."
+  [f]
+  (assert f)
+  (let [file (io/file f)]
+    (if (.exists file)
+      file
+      (io/resource f))))
+
 (def cli-options
   [["-u" "--base-url BASE-URL" "Base URL of service to validate."
-    :missing "BASE-URL is missing"
+    :missing "BASE-URL is required"
     :validate [valid-url? "Must be HTTP or HTTPS url"]]
    ["-o" "--observations OBSERVATIONS-PATH" "Path to read/write spidering observations."
     :id :observations-path
@@ -63,7 +74,8 @@
     :default "report.html"]
    ["-r" "--profile PROFILE" "Path to profile"
     :id :profile
-    :missing "PROFILE is missing"]
+    :missing "PROFILE is required"
+    :validate [file-or-resource "Cannot find file or built-in profile"]]
    ["-S" "--no-spider" "Disable spidering (re-use observations from OBSERVATIONS-PATH)."
     :id :no-spider?
     :default false]
@@ -133,17 +145,6 @@
   []
   (when-let [r (io/resource "nl/jomco/apie/version.txt")]
     (string/trim (slurp r))))
-
-(defn file-or-resource
-  "Return f as file if it exists, otherwise as resource.
-
-  Returns nil if neither resource or file are present."
-  [f]
-  (assert f)
-  (let [file (io/file f)]
-    (if (.exists file)
-      file
-      (io/resource f))))
 
 (defn file-parent
   "If f is a file, return its parent directory"
