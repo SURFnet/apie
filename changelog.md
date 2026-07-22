@@ -6,6 +6,10 @@ SPDX-FileContributor: Remco van 't Veer
 -->
 # Changelog
 
+## 1.0.4
+- Improve error message when profile does not exist
+- Include profile in report
+
 ## 1.0.3
 - Update openapi-v3-validator, allow matching on "structured syntax suffixes" in media ranges.
 
