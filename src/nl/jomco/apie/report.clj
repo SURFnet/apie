@@ -132,7 +132,7 @@
 (defn- max-date [a b] (if (.after (or a b) b) a b))
 
 (defn- observations-runtime
-  [base-url observations-path {:keys [runtime-extra]}]
+  [base-url observations-path {:keys [runtime-extra profile]}]
   (let [{:keys [n-requests start-at finish-at]}
         (with-observations observations-path
           (fn [observations]
@@ -152,6 +152,9 @@
        [:dt "Location"]
        [:dd [:a {:href base-url} base-url]]]
 
+      [:div
+       [:dt "Profile"]
+       [:dd profile]]
       [:div
        [:dt "Started at"]
        [:dd start-at]]
